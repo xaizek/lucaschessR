@@ -5,7 +5,7 @@ Lucas Chess (R) is a GUI of chess:
 
 1. To train in many different ways.
 2. To play chess against any UCI engine.
-3. To compete against motors and games from LiChess, Fics or Fide.
+3. To compete against engines.
 4. It has utilities to edit games, create polyglot books, tournaments between engines ...
 
 This is an update of Lucas Chess with a new version of python (2.7 -> 3.7) and the main graphic library, from pyqt4 to pyside2 (qt4 -> qt5).
