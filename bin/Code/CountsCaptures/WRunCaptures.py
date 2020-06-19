@@ -54,7 +54,7 @@ class WRunCaptures(QTVarios.WDialogo):
 
         self.lb_result = Controles.LB(self).ponTipoLetra(puntos=10, peso=500).anchoFijo(254).altoFijo(32).ponWrap()
         self.lb_info = (
-            Controles.LB(self).ponTipoLetra(puntos=14, peso=500).anchoFijo(254).ponFondoN("#cfb7a7").alinCentrado()
+            Controles.LB(self).ponTipoLetra(puntos=14, peso=500).anchoFijo(254).ponColorFondoN("white", "#496075").alinCentrado()
         )
 
         # Botones
@@ -140,16 +140,6 @@ class WRunCaptures(QTVarios.WDialogo):
     def closeEvent(self, event):
         self.save_video()
         event.accept()
-
-    def process_toolbar(self):
-        accion = self.sender().clave
-        if accion in ["terminar", "cancelar"]:
-            self.save_video()
-            self.reject()
-        elif accion == "comprobar":
-            self.check()
-        elif accion == "seguir":
-            self.seguir()
 
     def terminar(self):
         self.save_video()
@@ -259,6 +249,6 @@ class WRunCaptures(QTVarios.WDialogo):
                 self.lb_result.ponColorN("red")
             self.board.ponPosicion(position_obj)
 
-        self.db_captures.change_capture(self.capture)
+        self.db_captures.change_count_capture(self.capture)
         self.pon_info_posic()
         self.show_tb(self.terminar, self.seguir)

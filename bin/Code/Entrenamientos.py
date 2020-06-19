@@ -2,6 +2,14 @@ import os
 import random
 import shutil
 
+import Code
+from Code.QT import QTUtil2
+from Code.QT import QTVarios
+from Code.QT import Controles
+from Code import TrListas
+from Code import Util
+from Code.SQL import UtilSQL
+from Code.Constantes import *
 from Code import Resistance
 from Code import GestorFindAllMoves
 from Code import GestorResistance
@@ -24,17 +32,10 @@ from Code.QT import PantallaPotencia
 from Code.QT import PantallaPuente
 from Code.QT import PantallaVisualiza
 from Code.QT import PantallaTurnOnLights
-from Code.Mate import WMate15
-from Code.QT import QTUtil2
-from Code.QT import QTVarios
-from Code.QT import Controles
 from Code.CountsCaptures import WCountsCaptures
 from Code.Tactics import Tactics, GestorTacticas, PantallaTacticas
-from Code import TrListas
-from Code import Util
-from Code.SQL import UtilSQL
-import Code
-from Code.Constantes import *
+from Code.Mate15 import WMate15
+from Code.Coordinates import WCoordinatesBlocks, WCoordinatesBasic
 
 
 class TrainingFNS:
@@ -270,7 +271,7 @@ class Entrenamientos:
             4: ("n", "Spatial", _("Basic test") + ": a1"),
             5: ("N", "Cburnett", _("Basic test") + ": e4"),
         }
-        menu2 = menu1.submenu(_("Becoming a knight tamer"), self.procesador.tablero.piezas.icono("N"))
+        menu2 = menu1.submenu(_("Becoming a knight tamer"), Iconos.Knight())
         vicon = Code.todasPiezas.icono
         icl, icn, tit = hd[1]
         menu3 = menu2.submenu(tit, vicon(icl, icn))
@@ -305,6 +306,12 @@ class Entrenamientos:
 
         menu1.separador()
         xopcion(menu1, "visualiza", _("The board at a glance"), Iconos.Gafas())
+
+        menu1.separador()
+        menu2 = menu1.submenu(_("Coordinates"), Iconos.Coordinates())
+        xopcion(menu2, "coordinates_basic", _("Basic"), Iconos.West())
+        menu2.separador()
+        xopcion(menu2, "coordinates_blocks", _("By blocks"), Iconos.Blocks())
 
         menu1.separador()
         xopcion(menu1, "anotar", _("Writing down moves of a game"), Iconos.Write())
@@ -464,6 +471,12 @@ class Entrenamientos:
 
                 elif resp == "15mate":
                     self.mate15()
+
+                elif resp == "coordinates_blocks":
+                    self.coordinates_blocks()
+
+                elif resp == "coordinates_basic":
+                    self.coordinates_basic()
 
             else:
                 if resp <= -100:
@@ -647,6 +660,14 @@ class Entrenamientos:
 
     def mate15(self):
         w = WMate15.WMate15(self.procesador)
+        w.exec_()
+
+    def coordinates_blocks(self):
+        w = WCoordinatesBlocks.WCoordinatesBlocks(self.procesador)
+        w.exec_()
+
+    def coordinates_basic(self):
+        w = WCoordinatesBasic.WCoordinatesBasic(self.procesador)
         w.exec_()
 
 

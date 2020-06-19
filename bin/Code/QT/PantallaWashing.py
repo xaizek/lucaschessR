@@ -30,7 +30,7 @@ class WWashing(QTVarios.WDialogo):
 
         self.dbwashing = Washing.DBWashing(procesador.configuracion)
         self.washing = self.dbwashing.washing
-        eng = self.washing.lastEngine(procesador.configuracion)
+        eng = self.washing.last_engine(procesador.configuracion)
         finished = eng is None
 
         owner = procesador.main_window
@@ -118,7 +118,7 @@ class WWashing(QTVarios.WDialogo):
             html = html % (
                 _("Washing"),
                 self.washing.num_engines(),
-                self.washing.totalEngines(procesador.configuracion),
+                self.washing.total_engines(procesador.configuracion),
                 _("Engine"),
                 eng.name,
                 _("Elo"),

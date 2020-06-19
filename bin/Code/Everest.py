@@ -197,7 +197,7 @@ class Expeditions:
         if not self.db.existeTabla(self.tabla):
             self.creaTabla()
 
-        liCampos = (
+        li_fields = (
             "DATE_INIT",
             "NAME",
             "DATE_END",
@@ -211,7 +211,7 @@ class Expeditions:
             "COLOR",
         )  # , "GAMES" Games no se lee en cache, leeOtroCampo,
         # o al escribir un reg
-        self.dbf = self.db.dbf(self.tabla, ",".join(liCampos), orden="DATE_INIT DESC")
+        self.dbf = self.db.dbf(self.tabla, ",".join(li_fields), orden="DATE_INIT DESC")
         self.dbf.leer()
 
     def close(self):

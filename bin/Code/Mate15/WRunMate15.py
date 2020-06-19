@@ -18,7 +18,7 @@ class WRunMate15(QTVarios.WDialogo):
         self.mate15 = mate15
         self.db_mate15 = db_mate15
 
-        conf_board = self.configuracion.config_board("runmate15", 64)
+        conf_board = self.configuracion.config_board("RUNMATE15", 64)
 
         self.board = Tablero.TableroEstatico(self, conf_board)
         self.board.crea()

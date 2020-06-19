@@ -16,7 +16,7 @@ from Code.Constantes import *
 def gestorWashing(procesador):
     dbwashing = Washing.DBWashing(procesador.configuracion)
     washing = dbwashing.washing
-    engine = washing.lastEngine(procesador.configuracion)
+    engine = washing.last_engine(procesador.configuracion)
     if engine.state == Washing.CREATING:
         procesador.gestor = GestorWashingCreate(procesador)
         procesador.gestor.inicio(dbwashing, washing, engine)
@@ -36,7 +36,7 @@ class GestorWashingReplay(Gestor.Gestor):
         self.washing = washing
         self.engine = engine
 
-        self.dbwashing.addGame()
+        self.dbwashing.add_game()
 
         self.game_type = GT_WASHING_REPLAY
 
@@ -146,7 +146,7 @@ class GestorWashingReplay(Gestor.Gestor):
             return False
 
         movUsu = move.movimiento().lower()
-        self.dbwashing.addTime(self.timekeeper.stop())
+        self.dbwashing.add_time(self.timekeeper.stop())
 
         jgObj = self.partidaObj.move(self.posJugadaObj)
         movObj = jgObj.movimiento().lower()
@@ -164,12 +164,12 @@ class GestorWashingReplay(Gestor.Gestor):
                     if ptsUsu < ptsObj - 10:
                         lic[-1] += ' <span style="color:red"><b>%s</b></span>' % _("Bad move")
                         self.errores += 1
-                        self.dbwashing.addHint()
+                        self.dbwashing.add_hint()
 
                 else:
                     lic.append("%s: %s (?) %s" % (_("Played now"), move.pgn_translated(), _("Bad move")))
                     self.errores += 1
-                    self.dbwashing.addHint()
+                    self.dbwashing.add_hint()
 
             else:
                 # Debe ser una move de libro para aceptarla
@@ -182,7 +182,7 @@ class GestorWashingReplay(Gestor.Gestor):
                 else:
                     lic.append("%s: %s (?) %s" % (_("Played now"), move.pgn_translated(), _("Bad move")))
                     self.errores += 1
-                    self.dbwashing.addHint()
+                    self.dbwashing.add_hint()
 
             comment = "<br>".join(lic)
             w = PantallaJuicio.MensajeF(self.main_window, comment)
@@ -639,7 +639,7 @@ class GestorWashingCreate(Gestor.Gestor):
             return False
 
         movimiento = move.movimiento()
-        self.addTime()
+        self.add_time()
 
         siAnalisis = False
 
@@ -676,7 +676,7 @@ class GestorWashingCreate(Gestor.Gestor):
                         )
                         if siBien:
                             move = jgTutor
-                            self.addHint()
+                            self.add_hint()
                     del tutor
 
         self.move_the_pieces(move.liMovs)
@@ -735,22 +735,22 @@ class GestorWashingCreate(Gestor.Gestor):
 
     def final_x(self):
         if len(self.game) > 0:
-            self.addTime()
+            self.add_time()
             self.saveGame(False)
         self.finalizar()
 
-    def addHint(self):
-        self.dbwashing.addHint()
+    def add_hint(self):
+        self.dbwashing.add_hint()
         self.ponRotuloDatos()
 
-    def addTime(self):
+    def add_time(self):
         secs = self.timekeeper.stop()
         if secs:
-            self.dbwashing.addTime(secs)
+            self.dbwashing.add_time(secs)
             self.ponRotuloDatos()
 
-    def addGame(self):
-        self.dbwashing.addGame()
+    def add_game(self):
+        self.dbwashing.add_game()
         self.ponRotuloDatos()
 
     def saveGame(self, siFinal):
@@ -758,7 +758,7 @@ class GestorWashingCreate(Gestor.Gestor):
 
     def cancelGame(self):
         self.dbwashing.saveGame(None, False)
-        self.addGame()
+        self.add_game()
 
     def atras(self):
         if len(self.game):
@@ -768,8 +768,8 @@ class GestorWashingCreate(Gestor.Gestor):
             self.goto_end()
             self.opening = Apertura.AperturaPol(30, self.engine.elo)
             self.is_analyzed_by_tutor = False
-            self.addHint()
-            self.addTime()
+            self.add_hint()
+            self.add_time()
             self.refresh()
             self.siguiente_jugada()
 
@@ -777,8 +777,8 @@ class GestorWashingCreate(Gestor.Gestor):
         if not QTUtil2.pregunta(self.main_window, _("Restart the game?")):
             return
 
-        self.addTime()
-        self.addGame()
+        self.add_time()
+        self.add_game()
         self.game.set_position()
         self.dbwashing.saveGame(None, False)
 

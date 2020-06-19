@@ -77,7 +77,7 @@ class DBFcache:
 
     def ponSelect(self, select):
         self.select = select
-        self.liCampos = [campo.strip() for campo in self.select.split(",")]
+        self.li_fields = [campo.strip() for campo in self.select.split(",")]
 
     def ponOrden(self, orden):
         """
@@ -150,7 +150,7 @@ class DBFcache:
             self.cursor.execute("SELECT %s FROM %s WHERE rowid =%d" % (self.select, self.ctabla, self.ID))
             liValores = self.cursor.fetchone()
             recValores = Record()
-            for numCampo, campo in enumerate(self.liCampos):
+            for numCampo, campo in enumerate(self.li_fields):
                 setattr(recValores, campo, liValores[numCampo])
             self.writeCache(numRecno, recValores)
         self.reg = recValores

@@ -53,7 +53,7 @@ class DBgames:
         self.mincache = 2024
         self.maxcache = 4048
 
-        self.liCampos = self.lista_campos()
+        self.li_fields = self.lista_campos()
 
         self.allows_duplicates = self.recuperaConfig("ALLOWS_DUPLICATES", True)
         self.allows_positions = self.recuperaConfig("ALLOWS_POSITIONS", True)
@@ -113,7 +113,7 @@ class DBgames:
 
     @property
     def select(self):
-        return ",".join('"%s"' % campo for campo in self.liCampos)
+        return ",".join('"%s"' % campo for campo in self.li_fields)
 
     def lista_campos(self):
         cursor = self.conexion.execute("pragma table_info(Games)")
@@ -177,7 +177,7 @@ class DBgames:
             if filOther is None:
                 return None
         # Hay que intercambiar rowid, con rowidOther
-        selectAll = ",".join(self.liCampos)
+        selectAll = ",".join(self.li_fields)
         cursor = self.conexion.execute("SELECT %s FROM Games WHERE rowid =%d" % (selectAll, rowid))
         reg = cursor.fetchone()
         cursor = self.conexion.execute("SELECT %s FROM Games WHERE rowid =%d" % (selectAll, rowidOther))
@@ -187,7 +187,7 @@ class DBgames:
         sql = "UPDATE Games SET XPV=? WHERE ROWID = %d" % rowidOther
         self.conexion.execute(sql, ("?????",))
 
-        updateAll = ",".join(["%s=?" % campo for campo in self.liCampos])
+        updateAll = ",".join(["%s=?" % campo for campo in self.li_fields])
         sql = "UPDATE Games SET %s" % updateAll + " WHERE ROWID = %d"
 
         self.conexion.execute(sql % rowid, regOther)
@@ -362,14 +362,14 @@ class DBgames:
     def leeRegAllRecno(self, recno):
         raw = self.leeAllRecno(recno)
         alm = Util.Record()
-        for campo in self.liCampos:
+        for campo in self.li_fields:
             setattr(alm, campo, raw[campo])
         return alm, raw
 
     def leeDicAllRecno(self, recno):
         raw = self.leeAllRecno(recno)
         dic = {}
-        for campo in self.liCampos:
+        for campo in self.li_fields:
             dic[campo] = raw[campo]
         return dic
 
@@ -410,7 +410,7 @@ class DBgames:
 
     def yield_polyglot(self):
         select = "XPV"
-        si_result = "RESULT" in self.liCampos
+        si_result = "RESULT" in self.li_fields
         if si_result:
             select += ",RESULT"
         sql = "SELECT %s FROM Games" % (select,)
@@ -470,7 +470,7 @@ class DBgames:
             p.read_pv(pv)
 
         litags = []
-        for field in self.liCampos:
+        for field in self.li_fields:
             if not (field in ("XPV", "_DATA_", "PLYCOUNT")):
                 v = raw[field]
                 if v:
@@ -485,7 +485,7 @@ class DBgames:
         raw = self.leeAllRecno(recno)
         litags = []
         result = "*"
-        for field in self.liCampos:
+        for field in self.li_fields:
             if not (field in ("XPV", "_DATA_", "PLYCOUNT")):
                 v = raw[field]
                 if v:
@@ -541,14 +541,14 @@ class DBgames:
         return self.inserta(game)
 
     def li_tags(self):
-        return [tag for tag in self.liCampos if not (tag in ("XPV", "_DATA_"))]
+        return [tag for tag in self.li_fields if not (tag in ("XPV", "_DATA_"))]
 
     def add_column(self, column: str):
         column = column.upper()
         sql = "ALTER TABLE Games ADD COLUMN '%s' VARCHAR;" % column
         self.conexion.execute(sql)
         self.conexion.commit()
-        self.liCampos.append(column)
+        self.li_fields.append(column)
 
     def leerPGNs(self, ficheros, dlTmp):
         erroneos = duplicados = importados = 0
@@ -569,8 +569,8 @@ class DBgames:
                 ferr.write("\n")
 
         si_cols_cambiados = False
-        select = ",".join('"%s"' % campo for campo in self.liCampos)
-        select_values = ("?," * len(self.liCampos))[:-1]
+        select = ",".join('"%s"' % campo for campo in self.li_fields)
+        select_values = ("?," * len(self.li_fields))[:-1]
         sql = "INSERT INTO Games (%s) VALUES (%s);" % (select, select_values)
 
         st_xpv_bloque = set()
@@ -660,7 +660,7 @@ class DBgames:
                     st_xpv_bloque.add(xpv)
 
                     for k in dCab:
-                        if not (k in self.liCampos):
+                        if not (k in self.li_fields):
 
                             # Grabamos lo que hay
                             if li_regs:
@@ -676,12 +676,12 @@ class DBgames:
 
                             self.add_column(k)
                             si_cols_cambiados = True
-                            select_values = ("?," * len(self.liCampos))[:-1]
+                            select_values = ("?," * len(self.li_fields))[:-1]
                             sql = "insert into Games (%s) values (%s);" % (self.select, select_values)
 
                     reg = []
                     result = "*"
-                    for campo in self.liCampos:
+                    for campo in self.li_fields:
                         if campo == "XPV":
                             reg.append(xpv)
                         elif campo == "_DATA_":
@@ -744,16 +744,16 @@ class DBgames:
             self.db_stat.massive_append_set(True)
 
         si_cols_cambiados = False
-        for campo in db.liCampos:
-            if campo not in self.liCampos:
+        for campo in db.li_fields:
+            if campo not in self.li_fields:
                 self.add_column(campo)
                 si_cols_cambiados = True
 
         select = db.select
-        select_values = ("?," * len(db.liCampos))[:-1]
+        select_values = ("?," * len(db.li_fields))[:-1]
         sql = "INSERT INTO Games (%s) VALUES (%s);" % (select, select_values)
 
-        pos_result = db.liCampos.index("RESULT") if "RESULT" in db.liCampos else None
+        pos_result = db.li_fields.index("RESULT") if "RESULT" in db.li_fields else None
 
         st_xpv_bloque = set()
 
@@ -875,12 +875,12 @@ class DBgames:
 
         # Test si hay nuevos tags
         for tag, valor in partida_modificada.li_tags:
-            if not (tag.upper() in self.liCampos):
+            if not (tag.upper() in self.li_fields):
                 self.add_column(tag)
 
         # Modificamos datos antiguos
         li_data = []
-        for campo in self.liCampos:
+        for campo in self.li_fields:
             if campo == "XPV":
                 dato = partida_modificada.xpv()
             elif campo == "_DATA_":
@@ -893,7 +893,7 @@ class DBgames:
 
         resp.changed = True
 
-        fields = ",".join(["%s=?" % field for field in self.liCampos])
+        fields = ",".join(["%s=?" % field for field in self.li_fields])
         rowid = self.li_row_ids[recno]
         sql = "UPDATE Games SET %s WHERE ROWID = %d" % (fields, rowid)
         self.conexion.execute(sql, li_data)
@@ -928,7 +928,7 @@ class DBgames:
 
         # Test si hay nuevos tags
         for tag, valor in partida_nueva.li_tags:
-            if not (tag.upper() in self.liCampos):
+            if not (tag.upper() in self.li_fields):
                 self.add_column(tag)
 
         li_fields = []
@@ -985,7 +985,10 @@ class DBgames:
         return resp
 
     def has_positions(self):
-        return "FEN" in self.liCampos
+        return "FEN" in self.li_fields
+
+    def has_field(self, field):
+        return field in self.li_fields
 
 
 def get_random_game():

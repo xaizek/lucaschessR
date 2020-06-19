@@ -138,10 +138,10 @@ class Washing:
         self.li_tactics = []
         self.posTactics = 0
 
-    def numEngines(self):
+    def num_engines(self):
         return len(self.liEngines)
 
-    def totalEngines(self, configuracion):
+    def total_engines(self, configuracion):
         n = 0
         for k, m in configuracion.dic_engines.items():
             if m.elo < 3000:
@@ -156,7 +156,7 @@ class Washing:
             g += eng.games
         return h, t, g
 
-    def lastEngine(self, configuracion):
+    def last_engine(self, configuracion):
         st = set()
         if self.liEngines:
             eng = self.liEngines[-1]
@@ -194,16 +194,16 @@ class Washing:
         self.posTactics = db["POSTACTICS"]
         self.li_tactics = db["TACTICS"]
 
-    def addHint(self, hint=1):
+    def add_hint(self, hint=1):
         eng = self.liEngines[-1]
         eng.hints += hint
         eng.hints_current += hint
 
-    def addTime(self, secs):
+    def add_time(self, secs):
         eng = self.liEngines[-1]
         eng.secs += secs
 
-    def addGame(self):
+    def add_game(self):
         eng = self.liEngines[-1]
         eng.games += 1
 
@@ -232,17 +232,17 @@ class Washing:
         eng.saveGame(db, game)
         self.save(db)
 
-    def createTactics(self, db, tipo):
+    def create_tactics(self, db, tipo):
         if tipo == "UNED":
-            self.createTacticsUNED(db)
+            self.create_tactics_uned(db)
         elif tipo == "UWE":
-            self.createTacticsUWE(db)
+            self.create_tactics_uwe(db)
         elif tipo == "SM":
-            self.createTacticsSM(db)
+            self.create_tactics_sm(db)
         else:
-            self.createTacticsUNED(db)
+            self.create_tactics_uned(db)
 
-    def createTacticsUNED(self, db):
+    def create_tactics_uned(self, db):
         folder = Code.path_resource("Trainings", "Tactics by UNED chess school")
         li = []
         for fns in os.listdir(folder):
@@ -257,7 +257,7 @@ class Washing:
         self.posTactics = 0
         db["POSTACTICS"] = 0
 
-    def createTacticsUWE(self, db):
+    def create_tactics_uwe(self, db):
         folder = Code.path_resource("Trainings", "Tactics by Uwe Auerswald")
 
         d = {}
@@ -281,7 +281,7 @@ class Washing:
         self.posTactics = 0
         db["POSTACTICS"] = 0
 
-    def createTacticsSM(self, db):
+    def create_tactics_sm(self, db):
         file = Code.path_resource("IntFiles", "tactic0.bm")
         li = []
         with open(file) as f:
@@ -307,52 +307,52 @@ class DBWashing:
         self.configuracion = configuracion
         self.filename = "washing.wsm"
         self.file = os.path.join(configuracion.carpeta, self.filename)
-        self.washing = self.washingRestore()
+        self.washing = self.restore()
 
     def new(self, tactic):
         Util.remove_file(self.file)
-        self.washing = self.washingRestore(tactic)
+        self.washing = self.restore(tactic)
 
-    def washingRestore(self, tactic=None):
+    def restore(self, tactic=None):
         with UtilSQL.DictRawSQL(self.file) as db:
             w = Washing()
             if not ("TACTICS" in db):
-                w.createTactics(db, tactic)
+                w.create_tactics(db, tactic)
             else:
                 w.restore(db)
         self.washing = w
         return w
 
-    def saveWashing(self):
-        with Util.DictRawSQL(self.file) as db:
+    def save(self):
+        with UtilSQL.DictRawSQL(self.file) as db:
             self.washing.save(db)
 
-    def addHint(self, hint=1):
-        self.washing.addHint(hint)
-        self.saveWashing()
+    def add_hint(self, hint=1):
+        self.washing.add_hint(hint)
+        self.save()
 
-    def addTime(self, secs):
-        self.washing.addTime(secs)
-        self.saveWashing()
+    def add_time(self, secs):
+        self.washing.add_time(secs)
+        self.save()
 
-    def addGame(self):
-        self.washing.addGame()
-        self.saveWashing()
+    def add_game(self):
+        self.washing.add_game()
+        self.save()
 
     def saveGame(self, game, siFinal):
-        with Util.DictRawSQL(self.file) as db:
+        with UtilSQL.DictRawSQL(self.file) as db:
             self.washing.saveGame(db, game, siFinal)
             if siFinal:
                 db.pack()
 
     def restoreGame(self, engine):
-        with Util.DictRawSQL(self.file) as db:
+        with UtilSQL.DictRawSQL(self.file) as db:
             return engine.restoreGame(db)
 
     def next_tactic(self, engine):
         if engine.liNumTactics:
             n = engine.liNumTactics[0]
-            linea = self.washing.liTactics[n]
+            linea = self.washing.li_tactics[n]
             line = WLine()
             line.read_line(linea)
         else:
@@ -368,13 +368,13 @@ class DBWashing:
                 engine.hints_current = 0
         else:
             engine.liNumTactics.append(n)
-        self.saveWashing()
+        self.save()
 
     def done_reinit(self, engine):
         self.washing.assign_tactics(engine)
         if engine.state == ENDED:
             engine.assign_date()
 
-            with Util.DictRawSQL(self.file) as db:
+            with UtilSQL.DictRawSQL(self.file) as db:
                 db.pack()
-        self.saveWashing()
+        self.save()

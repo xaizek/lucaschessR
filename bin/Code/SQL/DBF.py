@@ -73,7 +73,7 @@ class DBF:
 
     def ponSelect(self, select):
         self.select = select.upper()
-        self.liCampos = [campo.strip() for campo in self.select.split(",")]
+        self.li_fields = [campo.strip() for campo in self.select.split(",")]
 
     def ponOrden(self, orden):
         """
@@ -190,7 +190,7 @@ class DBF:
         self.ID = self.liIDs[numRecno][0]
         self.cursor.execute("SELECT %s FROM %s WHERE rowid =%d" % (self.select, self.ctabla, self.ID))
         liValores = self.cursor.fetchone()
-        for numCampo, campo in enumerate(self.liCampos):
+        for numCampo, campo in enumerate(self.li_fields):
             setattr(self, campo, liValores[numCampo])
 
     def leeOtroCampo(self, recno, campo):
@@ -303,19 +303,19 @@ class DBF:
         else:
             return False
 
-    def insertar(self, regNuevo, liCampos=None):
+    def insertar(self, regNuevo, li_fields=None):
         """
         Inserta un registro.
         @param regNuevo: registro cuyas variables son los valores a insertar.
-        @param liCampos: si la lista de campos a insertar es diferente se indica.
+        @param li_fields: si la lista de campos a insertar es diferente se indica.
         @return : el id nuevo insertado.
         """
-        if liCampos is None:
-            liCampos = self.liCampos
+        if li_fields is None:
+            li_fields = self.li_fields
         campos = ""
         values = ""
         liValues = []
-        for campo in liCampos:
+        for campo in li_fields:
             if hasattr(regNuevo, campo):
                 campos += campo + ","
                 values += "?,"
@@ -401,12 +401,12 @@ class DBF:
             return
         campos = ""
         values = ""
-        liCampos = []
+        li_fields = []
         for campo in dir(lista[0]):
             if campo.isupper():
                 campos += campo + ","
                 values += "?,"
-                liCampos.append(campo)
+                li_fields.append(campo)
         campos = campos[:-1]
         values = values[:-1]
 
@@ -416,7 +416,7 @@ class DBF:
 
         for n, reg in enumerate(lista):
             liValues = []
-            for campo in liCampos:
+            for campo in li_fields:
                 liValues.append(getattr(reg, campo))
             try:
                 self.cursor.execute(cSQL, liValues)
@@ -450,23 +450,23 @@ class DBF:
     def baseRegistro(self):
         return Record()
 
-    def modificar(self, recno, regNuevo, liCampos=None):
+    def modificar(self, recno, regNuevo, li_fields=None):
         """
         Modifica un registro.
         @param recno: registro a modificar.
         @param regNuevo: almacen de datos con las variables y contenidos a modificar.
-        @param liCampos: si la lista de campos a modificar es diferente se indica.
+        @param li_fields: si la lista de campos a modificar es diferente se indica.
         @return: registro modificado, que puede ser diferente al indicado inicialmente.
         """
-        if liCampos is None:
-            liCampos = self.liCampos
+        if li_fields is None:
+            li_fields = self.li_fields
 
         self.goto(recno)
 
         campos = ""
         liValues = []
         siReleer = True
-        for campo in liCampos:
+        for campo in li_fields:
             if hasattr(regNuevo, campo):
                 valorNue = getattr(regNuevo, campo)
                 valorAnt = getattr(self, campo)
@@ -536,14 +536,14 @@ class DBF:
         """
 
         reg = Record()
-        for campo in self.liCampos:
+        for campo in self.li_fields:
             setattr(reg, campo, getattr(self, campo))
 
         return reg
 
     def dicValores(self):
         dic = collections.OrderedDict()
-        for campo in self.liCampos:
+        for campo in self.li_fields:
             dic[campo] = getattr(self, campo)
         return dic
 
@@ -602,8 +602,8 @@ class DBFT(DBF):
         """
         self.bof = True
         self.recno = -1
-        self.liCampos = ["ROWID"]
-        self.liCampos.extend([campo.strip() for campo in self.select.split(",")])
+        self.li_fields = ["ROWID"]
+        self.li_fields.extend([campo.strip() for campo in self.select.split(",")])
         resto = ""
         if self.condicion:
             resto += "WHERE %s" % self.condicion
@@ -621,7 +621,7 @@ class DBFT(DBF):
         Lectura de un registro, y asignacion a las variables = campos.
         """
         liValores = self.liRows[numRecno]
-        for numCampo, campo in enumerate(self.liCampos):
+        for numCampo, campo in enumerate(self.li_fields):
             setattr(self, campo, liValores[numCampo])
 
     def rowid(self, numRecno):

@@ -30,8 +30,8 @@ class WCountsCaptures(QTVarios.WDialogo):
         o_columns.nueva("GAME", _("Game"), 520, centered=True)
         o_columns.nueva("CURRENT_MOVE", _("Current move"), 96, centered=True)
         o_columns.nueva("%", _("Success"), 90, centered=True)
-        self.glista = Grid.Grid(self, o_columns, siSelecFilas=True, siSeleccionMultiple=True, altoFila=configuracion.x_pgn_rowheight)
-        f = Controles.TipoLetra(puntos=configuracion.x_pgn_fontpoints)
+        self.glista = Grid.Grid(self, o_columns, siSelecFilas=True, siSeleccionMultiple=True)
+        f = Controles.TipoLetra(puntos=configuracion.x_menu_points)
         self.glista.ponFuente(f)
 
         li_acciones = (
@@ -46,7 +46,7 @@ class WCountsCaptures(QTVarios.WDialogo):
             (_("Remove"), Iconos.Borrar(), self.borrar),
             None,
         )
-        tb = Controles.TBrutina(self, li_acciones)
+        tb = QTVarios.LCTB(self, li_acciones)
 
         ly = Colocacion.V().control(tb).control(self.glista).margen(4)
 
@@ -54,6 +54,7 @@ class WCountsCaptures(QTVarios.WDialogo):
 
         self.register_grid(self.glista)
         self.restore_video(anchoDefecto=self.glista.anchoColumnas() + 20)
+        self.glista.gotop()
 
     def grid_doble_click(self, grid, fila, oColumna):
         self.play()

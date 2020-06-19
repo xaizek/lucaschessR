@@ -46,7 +46,7 @@ def cambiarON_OFF():
 
 
 def envia(quien, dato):
-    log("[envia: %s] : %s [%s]"%(str(quien), str(dato), str(Code.dgtDispatch)))
+    # log("[envia: %s] : %s [%s]"%(str(quien), str(dato), str(Code.dgtDispatch)))
     if Code.dgtDispatch:
         return Code.dgtDispatch(quien, dato)
     return 1

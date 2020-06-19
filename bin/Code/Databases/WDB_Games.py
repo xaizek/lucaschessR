@@ -670,7 +670,7 @@ class WGames(QtWidgets.QWidget):
 
         def rutinaDatos(recno):
             dic = {}
-            for clave in self.dbGames.liCampos:
+            for clave in self.dbGames.li_fields:
                 dic[clave] = self.dbGames.field(recno, clave)
             p = self.dbGames.leePartidaRecno(recno)
             dic["PGN"] = p.pgn()

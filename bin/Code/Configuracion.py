@@ -401,6 +401,9 @@ class Configuracion:
     def file_mate15(self):
         return os.path.join(self.carpeta_results, "Mate15.db")
 
+    def file_coordinates(self):
+        return os.path.join(self.carpeta_results, "Coordinates.db")
+
     def folder_databases(self):
         return self.create_base_folder("Databases")
 
@@ -780,6 +783,9 @@ class Configuracion:
         # with open("../resources/IntFiles/base.board", "wb") as f:
         #      f.write(pickle.dumps(db["BASE"]))
         db.close()
+
+    def size_base(self):
+        return self.dic_conf_boards_pk["BASE"]["x_anchoPieza"]
 
     def resetConfTablero(self, clave, tamDef):
         db = UtilSQL.DictSQL(self.ficheroConfTableros)

@@ -2394,22 +2394,55 @@ class TableroEstatico(Tablero):
 
         Tablero.mousePressEvent(self, event)
 
+
+class TableroEstaticoMensaje(TableroEstatico):
+    def __init__(self, parent, config_board, color_mens, size_factor=None):
+        self.color_mens = "#574b3c" if color_mens is None else color_mens
+        self.size_factor = 1.0 if size_factor is None else size_factor
+        TableroEstatico.__init__(self, parent, config_board)
+
     def rehaz(self):
         Tablero.rehaz(self)
         self.mens = TabTipos.Texto()
-        self.mens.tipoLetra = TabTipos.TipoLetra(puntos=self.anchoCasilla * 2, peso=750)
+        self.mens.tipoLetra = TabTipos.TipoLetra(puntos=self.anchoCasilla * 2 * self.size_factor, peso=750)
         self.mens.position.ancho = self.anchoCasilla * 6
         self.mens.position.alto = self.anchoCasilla * 6
         self.mens.position.orden = 99
-        self.mens.colorTexto = "#574b3c"
+        self.mens.colorTexto = self.color_mens
         self.mens.valor = ""
         self.mens.alineacion = "c"
         self.mens.position.x = (self.ancho - self.mens.position.ancho) / 2
         self.mens.position.y = (self.ancho - self.mens.position.ancho) / 2
         self.mensSC = TabElementos.TextoSC(self.escena, self.mens)
 
+        self.mens2 = TabTipos.Texto()
+        self.mens2.tipoLetra = TabTipos.TipoLetra(puntos=self.anchoCasilla * self.size_factor, peso=750)
+        self.mens2.position.ancho = self.anchoCasilla * 6
+        self.mens2.position.alto = self.anchoCasilla * 6
+        self.mens2.position.orden = 99
+        self.mens2.colorTexto = self.color_mens
+        self.mens2.valor = ""
+        self.mens2.alineacion = "c"
+        self.mens2.position.x = self.mens.position.x + self.anchoCasilla*2
+        self.mens2.position.y = self.mens.position.y
+        self.mensSC2 = TabElementos.TextoSC(self.escena, self.mens2)
+
     def pon_texto(self, texto, opacity):
         self.mens.valor = texto
         self.mensSC.setOpacity(opacity)
         self.mensSC.show()
         self.escena.update()
+
+    def pon_textos(self, texto1, texto2, opacity):
+        self.mens.valor = texto1
+        self.mensSC.setOpacity(opacity)
+        self.mensSC.show()
+        self.mens2.valor = texto2
+        self.mensSC2.setOpacity(opacity)
+        self.mensSC2.show()
+        self.escena.update()
+
+    def remove_pieces(self, st):
+        for a1h8 in st:
+            self.borraPieza(a1h8)
+

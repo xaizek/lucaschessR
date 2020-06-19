@@ -35,9 +35,9 @@ class DBBase:
     def existeTabla(self, tabla):
         cursor = self.conexion.cursor()
         cursor.execute("pragma table_info(%s)" % tabla)
-        liCampos = cursor.fetchall()
+        li_fields = cursor.fetchall()
         cursor.close()
-        return liCampos
+        return li_fields
 
     def dbf(self, ctabla, select, condicion="", orden=""):
         """
@@ -85,13 +85,13 @@ class TablaBase:
     """
 
     def __init__(self, name):
-        self.liCampos = []
+        self.li_fields = []
         self.liIndices = []
         self.name = name
 
     def crearBase(self, cursor):
         sql = "CREATE TABLE %s (" % self.name
-        for x in self.liCampos:
+        for x in self.li_fields:
             sql += x.create().rstrip() + ","
         sql = sql[:-1] + " );"
         cursor.execute(sql)
@@ -102,7 +102,7 @@ class TablaBase:
 
     def nuevoCampo(self, name, tipo, notNull=False, primaryKey=False, autoInc=False):
         campo = Campo(name, tipo, notNull, primaryKey, autoInc)
-        self.liCampos.append(campo)
+        self.li_fields.append(campo)
 
     def nuevoIndice(self, name, campos, siUnico=False):
         indice = Indice(name, campos, siUnico)

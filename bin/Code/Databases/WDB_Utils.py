@@ -29,8 +29,8 @@ class WFiltrar(QtWidgets.QDialog):
         nFiltro = len(liFiltro)
         self.dbSaveNom = dbSaveNom
 
-        liCampos = [(x.cabecera, '"%s"' % x.clave) for x in o_columns.liColumnas if x.clave != "number" and x.clave != "opening"]
-        liCampos.insert(0, ("", None))
+        li_fields = [(x.cabecera, '"%s"' % x.clave) for x in o_columns.liColumnas if x.clave != "number" and x.clave != "opening"]
+        li_fields.insert(0, ("", None))
         liCondicion = [
             ("", None),
             (_("Equal"), "="),
@@ -71,7 +71,7 @@ class WFiltrar(QtWidgets.QDialog):
 
             c_par0 = Controles.CHB(self, "", par0).anchoFijo(20)
             ly.controlc(c_par0, i + 1, 1)
-            c_campo = Controles.CB(self, liCampos, campo)
+            c_campo = Controles.CB(self, li_fields, campo)
             ly.controlc(c_campo, i + 1, 2)
             c_condicion = Controles.CB(self, liCondicion, condicion)
             ly.controlc(c_condicion, i + 1, 3)
@@ -258,8 +258,8 @@ class WFiltrar(QtWidgets.QDialog):
 
 
 class EM_SQL(Controles.EM):
-    def __init__(self, owner, where, liCampos):
-        self.liCampos = liCampos
+    def __init__(self, owner, where, li_fields):
+        self.li_fields = li_fields
         Controles.EM.__init__(self, owner, where, siHTML=False)
 
     def mousePressEvent(self, event):
@@ -267,7 +267,7 @@ class EM_SQL(Controles.EM):
         if event.button() == QtCore.Qt.RightButton:
             menu = QTVarios.LCMenu(self)
             rondo = QTVarios.rondoPuntos()
-            for txt, key in self.liCampos:
+            for txt, key in self.li_fields:
                 menu.opcion(key, txt, rondo.otro())
             resp = menu.lanza()
             if resp:
@@ -281,12 +281,12 @@ class WFiltrarRaw(QTVarios.WDialogo):
         QTVarios.WDialogo.__init__(self, wParent, _("Filter"), Iconos.Filtrar(), "rawfilter")
 
         self.where = ""
-        liCampos = [(x.cabecera, x.key) for x in o_columns.liColumnas if x.key != "number"]
+        li_fields = [(x.cabecera, x.key) for x in o_columns.liColumnas if x.key != "number"]
 
         f = Controles.TipoLetra(puntos=12)  # 0, peso=75 )
 
         lbRaw = Controles.LB(self, "%s:" % _("Raw SQL")).ponFuente(f)
-        self.edRaw = EM_SQL(self, where, liCampos).altoFijo(72).anchoMinimo(512).ponFuente(f)
+        self.edRaw = EM_SQL(self, where, li_fields).altoFijo(72).anchoMinimo(512).ponFuente(f)
 
         lbHelp = Controles.LB(self, _("Right button to select a column of database")).ponFuente(f)
         lyHelp = Colocacion.H().relleno().control(lbHelp).relleno()

@@ -19,7 +19,7 @@ class WRunCounts(QTVarios.WDialogo):
 
         conf_board = self.configuracion.config_board("RUNCOUNTS", 64)
 
-        self.board = Tablero.TableroEstatico(self, conf_board)
+        self.board = Tablero.TableroEstaticoMensaje(self, conf_board, None)
         self.board.crea()
 
         # Rotulo informacion
@@ -39,7 +39,7 @@ class WRunCounts(QTVarios.WDialogo):
 
         self.lb_result = Controles.LB(self).ponTipoLetra(puntos=10, peso=500).anchoFijo(254).altoFijo(32).ponWrap()
         self.lb_info = (
-            Controles.LB(self).ponTipoLetra(puntos=14, peso=500).anchoFijo(254).ponFondoN("#cfb7a7").alinCentrado()
+            Controles.LB(self).ponTipoLetra(puntos=14, peso=500).anchoFijo(254).ponColorFondoN("white", "#496075").alinCentrado()
         )
 
         # Botones
@@ -96,16 +96,6 @@ class WRunCounts(QTVarios.WDialogo):
     def closeEvent(self, event):
         self.save_video()
         event.accept()
-
-    def process_toolbar(self):
-        accion = self.sender().clave
-        if accion in ["terminar", "cancelar"]:
-            self.save_video()
-            self.reject()
-        elif accion == "comprobar":
-            self.check()
-        elif accion == "seguir":
-            self.seguir()
 
     def terminar(self):
         self.save_video()

@@ -1396,8 +1396,8 @@ class WBMT(QTVarios.WDialogo):
 
             if resultado:
                 accion, liGen = resultado
-                liCamposValor = (("NOMBRE", liGen[0].strip()), ("EXTRA", liGen[1]), ("ORDEN", liGen[2]))
-                self.grabaCampos(grid, recno, liCamposValor)
+                li_fieldsValor = (("NOMBRE", liGen[0].strip()), ("EXTRA", liGen[1]), ("ORDEN", liGen[2]))
+                self.grabaCampos(grid, recno, li_fieldsValor)
 
     def releer(self):
         self.dbf.leer()
@@ -1444,10 +1444,10 @@ class WBMT(QTVarios.WDialogo):
                 self.releer()
                 um.final()
 
-    def grabaCampos(self, grid, fila, liCamposValor):
+    def grabaCampos(self, grid, fila, li_fieldsValor):
         dbf = self.dbfT if grid.id == "T" else self.dbf
         reg = dbf.baseRegistro()
-        for campo, valor in liCamposValor:
+        for campo, valor in li_fieldsValor:
             setattr(reg, campo, valor)
         dbf.modificarReg(fila, reg)
         dbf.commit()

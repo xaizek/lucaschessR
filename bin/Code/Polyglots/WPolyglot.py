@@ -41,7 +41,7 @@ class WPolyglot(QTVarios.WDialogo):
 
         self.pol_imports = PolyglotImports.PolyglotImports(self)
 
-        conf_tablero = configuracion.config_board("wpolyglot", 48)
+        conf_tablero = configuracion.config_board("WPOLYGLOT", 48)
         self.tablero = Tablero.Tablero(self, conf_tablero)
         self.tablero.crea()
         self.tablero.set_dispatcher(self.mensajero)

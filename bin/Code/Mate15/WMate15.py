@@ -1,7 +1,7 @@
 from Code import Util
 from Code.QT import Colocacion, Columnas, Controles, Grid, Iconos, QTUtil2, QTVarios
 
-from Code.Mate import Mate15, WRunMate15
+from Code.Mate15 import Mate15, WRunMate15
 
 
 class WMate15(QTVarios.WDialogo):

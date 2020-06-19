@@ -644,6 +644,7 @@ class Menu(QtWidgets.QMenu):
             self.setTitle(titulo)
         if icono:
             self.setIcon(icono)
+
         if is_disabled:
             self.setDisabled(True)
 

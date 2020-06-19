@@ -359,7 +359,15 @@ class WPlayer(QtWidgets.QWidget):
         self.setPlayer(name)
         self.tw_rebuild()
 
+    def test_players_in_db(self):
+        if self.dbGames.has_field("WHITE") and self.dbGames.has_field("BLACK"):
+            return True
+        QTUtil2.message(self, _("This database has no players"))
+        return False
+
     def tw_changeplayer(self):
+        if not self.test_players_in_db():
+            return
         lp = self.listaPlayers()
         if len(lp) == 0:
             self.rereadPlayers()
@@ -380,6 +388,9 @@ class WPlayer(QtWidgets.QWidget):
             self.rereadPlayers()
 
     def tw_rebuild(self):
+        if not self.test_players_in_db():
+            return
+
         self.rebuilding = True
         pb = QTUtil2.BarraProgreso1(self, _("Working..."), formato1="%p%")
         pb.mostrar()
@@ -421,8 +432,8 @@ class WPlayer(QtWidgets.QWidget):
                     result = resultb
                 else:
                     continue
-                xpv = alm.xpv
-                if not xpv:
+                xpv = alm.XPV
+                if not xpv or "|" in xpv:
                     continue
 
                 # openings

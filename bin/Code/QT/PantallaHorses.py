@@ -130,14 +130,11 @@ class WHorsesBase(QTVarios.WDialogo):
 
         # Tool bar
         li_acciones = (
-            (_("Close"), Iconos.MainMenu(), "terminar"),
-            None,
-            (_("Start"), Iconos.Empezar(), "empezar"),
-            (_("Remove"), Iconos.Borrar(), "borrar"),
-            None,
+            (_("Close"), Iconos.MainMenu(), self.terminar), None,
+            (_("Start"), Iconos.Empezar(), self.empezar), None,
+            (_("Remove"), Iconos.Borrar(), self.borrar), None,
         )
-        self.tb = Controles.TB(self, li_acciones)
-        self.pon_toolbar(["terminar", "empezar", "borrar"])
+        self.tb = Controles.TBrutina(self, li_acciones)
 
         # Colocamos
         lyTB = Colocacion.H().control(self.tb).margen(0)
@@ -172,18 +169,10 @@ class WHorsesBase(QTVarios.WDialogo):
         elif col == "HINTS":
             return "%d" % reg.HINTS
 
-    def process_toolbar(self):
-        accion = self.sender().clave
-        if accion == "terminar":
-            self.save_video()
-            self.historico.close()
-            self.reject()
-
-        elif accion == "empezar":
-            self.empezar()
-
-        elif accion == "borrar":
-            self.borrar()
+    def terminar(self):
+        self.save_video()
+        self.historico.close()
+        self.reject()
 
     def borrar(self):
         li = self.ghistorico.recnosSeleccionados()
@@ -192,17 +181,6 @@ class WHorsesBase(QTVarios.WDialogo):
                 self.historico.borrarLista(li)
         self.ghistorico.gotop()
         self.ghistorico.refresh()
-
-    def pon_toolbar(self, li_acciones):
-
-        self.tb.clear()
-        for k in li_acciones:
-            self.tb.dicTB[k].setVisible(True)
-            self.tb.dicTB[k].setEnabled(True)
-            self.tb.addAction(self.tb.dicTB[k])
-
-        self.tb.li_acciones = li_acciones
-        self.tb.update()
 
     def empezar(self):
         w = WHorses(self, self.test, self.procesador, self.titulo, self.icono)
@@ -235,11 +213,11 @@ class WHorses(QTVarios.WDialogo):
 
         # Tool bar
         li_acciones = (
-            (_("Cancel"), Iconos.Cancelar(), "cancelar"),
-            (_("Reinit"), Iconos.Reiniciar(), "reiniciar"),
-            (_("Help"), Iconos.AyudaGR(), "ayuda"),
+            (_("Cancel"), Iconos.Cancelar(), self.cancelar), None,
+            (_("Reinit"), Iconos.Reiniciar(), self.reiniciar), None,
+            (_("Help"), Iconos.AyudaGR(), self.ayuda),
         )
-        self.tb = Controles.TB(self, li_acciones)
+        self.tb = Controles.TBrutina(self, li_acciones)
 
         # Layout
         lyInfo = Colocacion.H().control(self.lbInformacion).relleno().control(self.lbMoves)
@@ -251,9 +229,6 @@ class WHorses(QTVarios.WDialogo):
 
         self.restore_video()
         self.adjustSize()
-
-        liTB = ["cancelar", "reiniciar", "ayuda"]
-        self.pon_toolbar(liTB)
 
         self.reset()
 
@@ -400,15 +375,9 @@ class WHorses(QTVarios.WDialogo):
         self.save_video()
         event.accept()
 
-    def process_toolbar(self):
-        accion = self.sender().clave
-        if accion == "cancelar":
-            self.save_video()
-            self.reject()
-        elif accion == "ayuda":
-            self.ayuda()
-        elif accion == "reiniciar":
-            self.reiniciar()
+    def cancelar(self):
+        self.save_video()
+        self.reject()
 
     def reiniciar(self):
         # Si no esta en la position actual, le lleva a la misma
@@ -436,16 +405,7 @@ class WHorses(QTVarios.WDialogo):
             h = FasterCode.pos_a1(li[x + 1])
             self.tablero.creaFlechaMov(d, h, "2")
         self.nayuda += 1
-
-    def pon_toolbar(self, li_acciones):
-        self.tb.clear()
-        for k in li_acciones:
-            self.tb.dicTB[k].setVisible(True)
-            self.tb.dicTB[k].setEnabled(True)
-            self.tb.addAction(self.tb.dicTB[k])
-
-        self.tb.li_acciones = li_acciones
-        self.tb.update()
+        self.tablero.refresh()
 
 
 def pantallaHorses(procesador, test, titulo, icono):
