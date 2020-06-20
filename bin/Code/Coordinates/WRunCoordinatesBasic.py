@@ -40,9 +40,8 @@ class WRunCoordinatesBasic(QTVarios.WDialogo):
         self.tb = QTVarios.LCTB(self, li_acciones)
         self.show_tb(self.terminar, self.begin)
 
-        separacion = 20
         ly_info = Colocacion.G()
-        ly_info.controld(lb_score_k, 0, 0).controld(self.lb_score, 0, 1)
+        ly_info.controld(lb_score_k, 0, 0).controlc(self.lb_score, 0, 1)
 
         ly_right = Colocacion.V().control(self.tb).relleno().otro(ly_info).relleno()
 
