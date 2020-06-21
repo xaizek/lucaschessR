@@ -19,83 +19,77 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>   // aligned_alloc, malloc
-#include <cstring>   // For std::memset
-#include <iostream>
-#include <thread>
+ #include <cstring>   // For std::memset
+ #include <iostream>
+ #include <thread>
 
-#ifdef USE_MADVISE_HUGEPAGE
-#include <sys/mman.h>
-#endif
+ #include "bitboard.h"
+ #include "misc.h"
+ #include "thread.h"
+ #include "tt.h"
+ #include "uci.h"
 
-#include "bitboard.h"
-#include "misc.h"
-#include "thread.h"
-#include "tt.h"
-#include "uci.h"
+ TranspositionTable TT; // Our global transposition table
 
-TranspositionTable TT; // Our global transposition table
+ /// TTEntry::save populates the TTEntry with a new node's data, possibly
+ /// overwriting an old position. Update is not atomic and can be racy.
 
-/// TTEntry::save populates the TTEntry with a new node's data, possibly
-/// overwriting an old position. Update is not atomic and can be racy.
+ void TTEntry::save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev) {
 
-void TTEntry::save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev) {
-
-  // Preserve any existing move for the same position
+   // Preserve any existing move for the same position
 #ifdef Noir
   if (m || k != key)
-      move16 = (uint16_t)m;
+     move16 = (uint16_t)m;
 
-  // Overwrite less valuable entries
+     // Overwrite less valuable entries
   if (   k != key
       || d - DEPTH_NONE > depth8 - 4
       || b == BOUND_EXACT)
-  {
-      key       =  k;
+     {
+         key       =  k;
 #else
-  if (m || (k >> 48) != key16)
-      move16 = (uint16_t)m;
+   if (m || (k >> 48) != key16)
+       move16 = (uint16_t)m;
 
-  // Overwrite less valuable entries
-  if (  (k >> 48) != key16
-      || d - DEPTH_OFFSET > depth8 - 4
-      || b == BOUND_EXACT)
-  {
+   // Overwrite less valuable entries
+   if (  (k >> 48) != key16
+       || d - DEPTH_OFFSET > depth8 - 4
+       || b == BOUND_EXACT)
+   {
 #ifndef Fortress
 #ifndef Noir
-      assert(d >= DEPTH_OFFSET);
+       assert(d >= DEPTH_OFFSET);
 #endif
 #endif
 
-      key16     = (uint16_t)(k >> 48);
+       key16     = (uint16_t)(k >> 48);
 #endif
-      value16   = (int16_t)v;
-      eval16    = (int16_t)ev;
-      genBound8 = (uint8_t)(TT.generation8 | uint8_t(pv) << 2 | b);
-      depth8    = (uint8_t)(d - DEPTH_OFFSET);
-  }
-}
+       value16   = (int16_t)v;
+       eval16    = (int16_t)ev;
+       genBound8 = (uint8_t)(TT.generation8 | uint8_t(pv) << 2 | b);
+       depth8    = (uint8_t)(d - DEPTH_OFFSET);
+   }
+ }
 
 
-/// TranspositionTable::resize() sets the size of the transposition table,
+ /// TranspositionTable::resize() sets the size of the transposition table,
 /// measured in megabytes. Transposition table consists of a power of 2 number
 /// of clusters and each cluster consists of ClusterSize number of TTEntry.
 
 void TranspositionTable::resize(size_t mbSize) {
-#ifdef USE_MADVISE_HUGEPAGE
-  size_t allocSize;
-#endif
+
   Threads.main()->wait_for_search_finished();
 
+  aligned_ttmem_free(mem);
+#ifdef Noir
   clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
+  table = static_cast<Cluster*>(aligned_ttmem_alloc(clusterCount * sizeof(Cluster), mem));
+#else
+  superClusterCount = mbSize * 1024 * 1024 / (sizeof(Cluster) * ClustersPerSuperCluster);
 
-  free(mem);
-#ifdef USE_MADVISE_HUGEPAGE
-  allocSize = clusterCount * sizeof(Cluster) + CacheLineSize - 1;
+  table = static_cast<Cluster*>(
+      aligned_ttmem_alloc(superClusterCount * ClustersPerSuperCluster * sizeof(Cluster), mem));
 #endif
-  mem = large_page_alloc(clusterCount * sizeof(Cluster) + CacheLineSize - 1);
-
-
   if (!mem)
   {
       std::cerr << "Failed to allocate " << mbSize
@@ -103,45 +97,40 @@ void TranspositionTable::resize(size_t mbSize) {
       exit(EXIT_FAILURE);
   }
 
-#ifdef USE_MADVISE_HUGEPAGE
-  // Request huge pages in case aligned_alloc() didn't already provide them. We
-  // don't care if this call fails, and the call may fail if transparent huge
-  // pages are not enable at all. Note that MADV_HUGEPAGE may not be available
-  // on every platform that supports madvise().
-  madvise(mem, allocSize, MADV_HUGEPAGE);
-#endif
-
-  table = (Cluster*)((uintptr_t(mem) + CacheLineSize - 1) & ~(CacheLineSize - 1));
   clear();
 }
 
 
-/// TranspositionTable::clear() initializes the entire transposition table to zero,
-//  in a multi-threaded way.
+ /// TranspositionTable::clear() initializes the entire transposition table to zero,
+ //  in a multi-threaded way.
 
-void TranspositionTable::clear() {
+ void TranspositionTable::clear() {
 
-  std::vector<std::thread> threads;
+   std::vector<std::thread> threads;
 
-  for (size_t idx = 0; idx < Options["Threads"]; ++idx)
-  {
-      threads.emplace_back([this, idx]() {
+   for (size_t idx = 0; idx < Options["Threads"]; ++idx)
+   {
+       threads.emplace_back([this, idx]() {
 
+
+#ifndef Noir
+          const size_t clusterCount = superClusterCount * ClustersPerSuperCluster;
+#endif
           // Thread binding gives faster search on systems with a first-touch policy
           if (Options["Threads"] > 8)
               WinProcGroup::bindThisThread(idx);
 
           // Each thread will zero its part of the hash table
-          const size_t stride = clusterCount / Options["Threads"],
-                       start  = stride * idx,
+          const size_t stride = size_t(clusterCount / Options["Threads"]),
+                       start  = size_t(stride * idx),
                        len    = idx != Options["Threads"] - 1 ?
                                 stride : clusterCount - start;
 
-          std::memset(&table[start], 0, len * sizeof(Cluster));
-      });
-  }
+           std::memset(&table[start], 0, len * sizeof(Cluster));
+       });
+   }
 
-  for (std::thread& th: threads)
+  for (std::thread& th : threads)
       th.join();
 }
 
@@ -152,9 +141,10 @@ void TranspositionTable::clear() {
 /// minus 8 times its relative age. TTEntry t1 is considered more valuable than
 /// TTEntry t2 if its replace value is greater than that of t2.
 
-TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
 
-  TTEntry* const tte = first_entry(key);
+ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
+
+   TTEntry* const tte = first_entry(key);
 #ifdef Noir
   for (int i = 0; i < ClusterSize; ++i)
       if (!tte[i].key || tte[i].key == key)
@@ -164,41 +154,40 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
           return found = (bool)tte[i].key, &tte[i];
       }
 #else
-  const uint16_t key16 = key >> 48;  // Use the high 16 bits as key inside the cluster
+   const uint16_t key16 = key >> 48;  // Use the high 16 bits as key inside the cluster
 
-  for (int i = 0; i < ClusterSize; ++i)
-      if (!tte[i].key16 || tte[i].key16 == key16)
-      {
-          tte[i].genBound8 = uint8_t(generation8 | (tte[i].genBound8 & 0x7)); // Refresh
+   for (int i = 0; i < ClusterSize; ++i)
+       if (!tte[i].key16 || tte[i].key16 == key16)
+       {
+           tte[i].genBound8 = uint8_t(generation8 | (tte[i].genBound8 & 0x7)); // Refresh
 
-          return found = (bool)tte[i].key16, &tte[i];
-      }
+           return found = (bool)tte[i].key16, &tte[i];
+       }
 #endif
+   // Find an entry to be replaced according to the replacement strategy
+   TTEntry* replace = tte;
+   for (int i = 1; i < ClusterSize; ++i)
+       // Due to our packed storage format for generation and its cyclic
+       // nature we add 263 (256 is the modulus plus 7 to keep the unrelated
+       // lowest three bits from affecting the result) to calculate the entry
+       // age correctly even after generation8 overflows into the next cycle.
+       if (  replace->depth8 - ((263 + generation8 - replace->genBound8) & 0xF8)
+           >   tte[i].depth8 - ((263 + generation8 -   tte[i].genBound8) & 0xF8))
+           replace = &tte[i];
 
-  // Find an entry to be replaced according to the replacement strategy
-  TTEntry* replace = tte;
-  for (int i = 1; i < ClusterSize; ++i)
-      // Due to our packed storage format for generation and its cyclic
-      // nature we add 263 (256 is the modulus plus 7 to keep the unrelated
-      // lowest three bits from affecting the result) to calculate the entry
-      // age correctly even after generation8 overflows into the next cycle.
-      if (  replace->depth8 - ((263 + generation8 - replace->genBound8) & 0xF8)
-          >   tte[i].depth8 - ((263 + generation8 -   tte[i].genBound8) & 0xF8))
-          replace = &tte[i];
-
-  return found = false, replace;
-}
+   return found = false, replace;
+ }
 
 
-/// TranspositionTable::hashfull() returns an approximation of the hashtable
-/// occupation during a search. The hash is x permill full, as per UCI protocol.
+ /// TranspositionTable::hashfull() returns an approximation of the hashtable
+ /// occupation during a search. The hash is x permill full, as per UCI protocol.
 
-int TranspositionTable::hashfull() const {
+ int TranspositionTable::hashfull() const {
 
-  int cnt = 0;
-  for (int i = 0; i < 1000 / ClusterSize; ++i)
-      for (int j = 0; j < ClusterSize; ++j)
-          cnt += (table[i].entry[j].genBound8 & 0xF8) == generation8;
+   int cnt = 0;
+   for (int i = 0; i < 1000; ++i)
+       for (int j = 0; j < ClusterSize; ++j)
+           cnt += (table[i].entry[j].genBound8 & 0xF8) == generation8;
 
-  return cnt * 1000 / (ClusterSize * (1000 / ClusterSize));
-}
+   return cnt / ClusterSize;
+ }

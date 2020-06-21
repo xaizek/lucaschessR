@@ -217,7 +217,7 @@ void mas_label(void)
 
 int pgn_read( void )
 {
-    long int max_tam, line_tam;
+    long int max_tam;
     w_pgn = pgn;
     fen[0] = 0;
     pos_label = 0;

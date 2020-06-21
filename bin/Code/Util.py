@@ -11,8 +11,6 @@ import hashlib
 import shutil
 import time
 import psutil
-import lzma
-
 
 import chardet.universaldetector
 

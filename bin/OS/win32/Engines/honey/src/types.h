@@ -179,8 +179,10 @@ enum Value : int {
   VALUE_INFINITE  = 32001,
   VALUE_NONE      = 32002,
 
-  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
-  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+  VALUE_TB_WIN_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
+  VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY,
+  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
+  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY,
 
 //Code idea below by Ed Schröder
 #if defined (Weakfish)
@@ -243,13 +245,16 @@ enum Value : int {
   #define QVM 100/100
   #define QVE 100/100
 #endif
-
+#ifdef Stockfish
+PawnValueMg   = 124*PVM,   PawnValueEg   = 206*PVE,
+#else
 PawnValueMg   = 128*PVM,   PawnValueEg   = 213*PVE,
+#endif
 KnightValueMg = 781*NVM,   KnightValueEg = 854*NVE,
 BishopValueMg = 825*BVM,   BishopValueEg = 915*BVE,
 RookValueMg   = 1276*RVM,  RookValueEg   = 1380*RVE,
 QueenValueMg  = 2538*QVM,  QueenValueEg  = 2682*QVE,
-
+Tempo = 28,
 #ifdef Noir
 VALUE_TB_WIN    = PawnValueEg,
 #endif
@@ -270,7 +275,12 @@ enum Piece {
   PIECE_NB = 16
 };
 
-extern Value PieceValue[PHASE_NB][PIECE_NB];
+constexpr Value PieceValue[PHASE_NB][PIECE_NB] = {
+  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO },
+  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO }
+};
 
 typedef int Depth;
 
@@ -281,7 +291,7 @@ enum : int {
   DEPTH_QS_RECAPTURES = -5,
 
   DEPTH_NONE   = -6,
-  DEPTH_OFFSET = DEPTH_NONE,
+  DEPTH_OFFSET = DEPTH_NONE
 };
 
 enum Square : int {
@@ -412,7 +422,7 @@ inline Score operator*(Score s, int i) {
 
 /// Multiplication of a Score by a boolean
 inline Score operator*(Score s, bool b) {
-  return Score(int(s) * int(b));
+  return b ? s : SCORE_ZERO;
 }
 
 constexpr Color operator~(Color c) {
@@ -426,11 +436,11 @@ constexpr Square operator~(Square s) {
 constexpr Piece operator~(Piece pc) {
   return Piece(pc ^ 8); // Swap color of piece B_KNIGHT -> W_KNIGHT
 }
-
+#ifndef Stockfish
 inline File map_to_queenside(File f) {
   return std::min(f, File(FILE_H - f)); // Map files ABCDEFGH to files ABCDDCBA
 }
-
+#endif
 constexpr CastlingRights operator&(Color c, CastlingRights cr) {
   return CastlingRights((c == WHITE ? WHITE_CASTLING : BLACK_CASTLING) & cr);
 }
@@ -526,3 +536,5 @@ constexpr bool is_ok(Move m) {
 }
 
 #endif // #ifndef TYPES_H_INCLUDED
+
+#include "tune.h" // Global visibility to tuning setup

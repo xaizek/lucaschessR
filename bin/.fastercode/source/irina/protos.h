@@ -93,4 +93,8 @@ int searchMove( char *desde, char *hasta, char * promotion );
 void getMoveEx( int num, char * info );
 char * toSan(int num, char *sanMove);
 
+// parser.c
+int parse_body( char * fen, char * body, char * resp );
+int parse_pgn( char * pgn, char * resp );
+
 #endif

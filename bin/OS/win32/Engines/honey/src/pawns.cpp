@@ -35,11 +35,12 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
+
+  constexpr Score BlockedStorm[RANK_NB]  = {S( 0, 0), S( 0, 0), S( 76, 78), S(-10, 15), S(-7, 10), S(-4, 6), S(-1, 2)};
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -78,11 +79,11 @@ namespace {
   template<Color Us>
   Score evaluate(const Position& pos, Pawns::Entry* e) {
 
-    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
 #ifdef Sullivan
     Bitboard neighbours, stoppers, support, phalanx;
-    Bitboard lever, leverPush;
+    Bitboard lever, leverPush, blocked;
 #else
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -110,6 +111,8 @@ namespace {
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
 #endif
+    e->blockedCount += popcount(shift<Up>(ourPawns) & (theirPawns | doubleAttackThem));
+
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
     {
@@ -118,12 +121,10 @@ namespace {
         Rank r = relative_rank(Us, s);
 #ifdef Sullivan
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-        opposed    = theirPawns & forward_file_bb(Us, s);
-#else
-        // Flag the pawn
+#endif
+
         opposed    = theirPawns & forward_file_bb(Us, s);
         blocked    = theirPawns & (s + Up);
-#endif
         stoppers   = theirPawns & passed_pawn_span(Us, s);
 
         lever      = theirPawns & PawnAttacks[Us][s];
@@ -132,6 +133,7 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+
 #ifdef Sullivan
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance. Phalanx and isolated
@@ -152,6 +154,7 @@ namespace {
         // (a) there is no stoppers except some levers
         // (b) the only stoppers are the leverPush, but we outnumber them
         // (c) there is only one front stopper which can be levered.
+        //     (Refined in Evaluation::passed)
         passed =   !(stoppers ^ lever)
                 || (   !(stoppers ^ leverPush)
                     && popcount(phalanx) >= popcount(leverPush))
@@ -162,6 +165,8 @@ namespace {
 #endif
                     && (shift<Up>(support) & ~(theirPawns | doubleAttackThem)));
 
+        passed &= !(forward_file_bb(Us, s) & ourPawns);
+
         // Passed pawns will be properly scored later in evaluation when we have
         // full attack info.
         if (passed)
@@ -170,20 +175,26 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-
 #ifdef Sullivan
-            int v =  Connected[r] * (2 + bool(phalanx) - opposed)
+            int v =  Connected[r] * (2 + bool(phalanx) - (opposed)) / (1 + bool(blocked))
+            //int v =  Connected[r] * (2 + bool(phalanx) - opposed)
 #else
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
+            int v =  Connected[r] * (4 + 2 * bool(phalanx) - 2 * bool(opposed) - bool(blocked)) / 2
 #endif
-                   + 21 * popcount(support);
-
+            + 21 * popcount(support);
             score += make_score(v, v * (r - 2) / 4);
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
+        {
+            if (     opposed
+                &&  (ourPawns & forward_file_bb(Them, s))
+                && !(theirPawns & adjacent_files_bb(s)))
+                score -= Doubled;
+            else
+                score -=   Isolated
+                         + WeakUnopposed * !opposed;
+        }
 
         else if (backward)
             score -=   Backward
@@ -215,6 +226,7 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  e->blockedCount = 0;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
@@ -228,15 +240,15 @@ Entry* probe(const Position& pos) {
 template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
-  constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Color Them = ~Us;
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
-  Bitboard ourPawns = b & pos.pieces(Us);
+  Bitboard ourPawns = b & pos.pieces(Us) & ~pawnAttacks[Them];
   Bitboard theirPawns = b & pos.pieces(Them);
 
   Score bonus = make_score(5, 5);
 
-  File center = clamp(file_of(ksq), FILE_B, FILE_G);
+  File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
       b = ourPawns & file_bb(f);
@@ -244,12 +256,15 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
       b = theirPawns & file_bb(f);
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
-
+#ifndef Stockfish
       File d = map_to_queenside(f);
+#else
+      int d = edge_distance(f);
+#endif
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= BlockedStorm[theirRank];
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
@@ -281,7 +296,7 @@ Score Entry::do_king_safety(const Position& pos) {
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);
-  int minPawnDist = pawns ? 8 : 0;
+  int minPawnDist = 6;
 
   if (pawns & PseudoAttacks[KING][ksq])
       minPawnDist = 1;

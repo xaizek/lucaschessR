@@ -57,6 +57,10 @@ class GestorPerson(GestorEntMaq.GestorEntMaq):
 
         self.aperturaStd = Apertura.AperturaPol(1)
 
+        self.set_dispatcher(self.mueve_humano)
+        self.main_window.set_notify(self.mueve_rival_base)
+
+
         self.pensando(True)
 
         self.main_window.ponActivarTutor(False)
