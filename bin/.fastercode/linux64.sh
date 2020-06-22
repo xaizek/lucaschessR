@@ -7,7 +7,7 @@ rm *.o
 
 cd ..
 
-#cat Faster_Irina.pyx Faster_Polyglot.pyx > FasterCode.pyx
+cat Faster_Irina.pyx Faster_Polyglot.pyx > FasterCode.pyx
 
 x=$(pwd)
 export LIBRARY_PATH=$x
