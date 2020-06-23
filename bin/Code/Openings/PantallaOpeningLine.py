@@ -545,30 +545,36 @@ class WLines(QTVarios.WDialogo):
     def importar(self):
         menu = QTVarios.LCMenu(self)
 
-        def haz_menu(frommenu, part):
-            liOp = self.dbop.getOtras(self.configuracion, part)
-            if liOp:
-                otra = frommenu.submenu(_("Other opening lines"), Iconos.OpeningLines())
-                for fichero, titulo in liOp:
-                    otra.opcion(("ol", (fichero, part)), titulo, Iconos.PuntoVerde())
-                frommenu.separador()
+        def haz_menu(frommenu, part, all=True):
+            if all:
+                liOp = self.dbop.getOtras(self.configuracion, part)
+                if liOp:
+                    otra = frommenu.submenu(_("Other opening lines"), Iconos.OpeningLines())
+                    for fichero, titulo in liOp:
+                        otra.opcion(("ol", (fichero, part)), titulo, Iconos.PuntoVerde())
+                    frommenu.separador()
             frommenu.opcion(("pgn", part), _("PGN with variations"), Iconos.Tablero())
             frommenu.separador()
             frommenu.opcion(("polyglot", part), _("Polyglot book"), Iconos.Libros())
             frommenu.separador()
             frommenu.opcion(("summary", part), _("Database summary"), Iconos.Database())
-            frommenu.separador()
-            frommenu.opcion(("voyager2", part), _("Voyager 2"), Iconos.Voyager1())
-            frommenu.separador()
-            frommenu.opcion(("opening", part), _("Opening"), Iconos.Apertura())
+            if all:
+                frommenu.separador()
+                frommenu.opcion(("voyager2", part), _("Voyager 2"), Iconos.Voyager1())
+                frommenu.separador()
+                frommenu.opcion(("opening", part), _("Opening"), Iconos.Apertura())
 
         game = self.partidaActual()
         if len(game) > len(self.partidabase):
+            sub2 = menu.submenu(_("From base position"), Iconos.MoverInicio())
+            haz_menu(sub2, self.partidabase)
+            menu.separador()
             sub1 = menu.submenu(_("From current position"), Iconos.MoverLibre())
             haz_menu(sub1, game)
             menu.separador()
-            sub2 = menu.submenu(_("From base position"), Iconos.MoverInicio())
-            haz_menu(sub2, self.partidabase)
+            sub1 = menu.submenu(_("From all end positions"), Iconos.MoverFinal())
+            haz_menu(sub1, None, all=False)
+            menu.separador()
         else:
             haz_menu(menu, self.partidabase)
 
@@ -576,19 +582,22 @@ class WLines(QTVarios.WDialogo):
         if resp is None:
             return
         tipo, game = resp
-        if tipo == "pgn":
-            self.importarPGN(game)
-        elif tipo == "polyglot":
-            self.importarPolyglot(game)
-        elif tipo == "summary":
-            self.importarSummary(game)
-        elif tipo == "voyager2":
-            self.voyager2(game)
-        elif tipo == "opening":
-            self.importarApertura(game)
-        elif tipo == "ol":
-            fichero, game = game
-            self.importarOtra(fichero, game)
+        if game is None:
+            pass
+        else:
+            if tipo == "pgn":
+                self.importarPGN(game)
+            elif tipo == "polyglot":
+                self.importarPolyglot(game)
+            elif tipo == "summary":
+                self.importarSummary(game)
+            elif tipo == "voyager2":
+                self.voyager2(game)
+            elif tipo == "opening":
+                self.importarApertura(game)
+            elif tipo == "ol":
+                fichero, game = game
+                self.importarOtra(fichero, game)
         self.show_lines()
 
     def importarOtra(self, fichero, game):

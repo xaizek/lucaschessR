@@ -21,7 +21,7 @@ class WRunCaptures(QTVarios.WDialogo):
 
         conf_board = self.configuracion.config_board("RUNCAPTURES", 64)
 
-        self.board = Tablero.TableroEstatico(self, conf_board)
+        self.board = Tablero.TableroEstaticoMensaje(self, conf_board, None)
         self.board.crea()
 
         # Rotulo informacion
@@ -173,11 +173,11 @@ class WRunCaptures(QTVarios.WDialogo):
                 QTUtil.refresh_gui()
                 dif = depth - x
                 factor = 1.0 - dif * 0.1
-                if factor < 0.5:
-                    factor = 0.5
+                if factor < 0.7:
+                    factor = 0.7
 
                 time.sleep(2.6*factor*factor)
-                self.board.pon_texto("", 0)
+                self.board.pon_texto("", 1)
                 QTUtil.refresh_gui()
 
         # Ponemos el toolbar
@@ -228,7 +228,8 @@ class WRunCaptures(QTVarios.WDialogo):
             self.capture.current_depth += 1
             if (self.capture.current_posmove + self.capture.current_depth) >= len(self.capture.game):
                 QTUtil2.message(self, _("Training finished"))
-                self.db_captures.change_capture(self.capture)
+                self.capture.current_posmove = len(self.capture.game)-1
+                self.db_captures.change_count_capture(self.capture)
                 self.terminar()
                 return
             self.lb_result.ponTexto("%s (%d)" % (_("Right, go to the next level of depth"), self.capture.current_depth))

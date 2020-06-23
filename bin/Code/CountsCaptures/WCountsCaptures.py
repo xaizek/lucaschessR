@@ -117,6 +117,8 @@ class WCountsCaptures(QTVarios.WDialogo):
         elif col == "GAME":
             return count_capture.game.titulo("DATE", "EVENT", "WHITE", "BLACK", "RESULT")
         elif col == "CURRENT_MOVE":
+            if count_capture.is_finished():
+                return "%s/%d" % (_("Ended"), len(count_capture.game))
             return "%d/%d" % (count_capture.current_posmove+1, len(count_capture.game))
         elif col == "%":
             return "%.01f%%" % (count_capture.success() * 100.0,)
@@ -134,8 +136,9 @@ class WCountsCaptures(QTVarios.WDialogo):
         recno = self.glista.recno()
         if recno >= 0:
             count_capture = self.db.count_capture(recno)
-            if self.is_captures:
-                w = WRunCaptures.WRunCaptures(self, self.db, count_capture)
-            else:
-                w = WRunCounts.WRunCounts(self, self.db, count_capture)
-            w.exec_()
+            if not count_capture.is_finished():
+                if self.is_captures:
+                    w = WRunCaptures.WRunCaptures(self, self.db, count_capture)
+                else:
+                    w = WRunCounts.WRunCounts(self, self.db, count_capture)
+                w.exec_()

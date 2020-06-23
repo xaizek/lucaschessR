@@ -26,7 +26,7 @@ if current_dir:
 
 sys.path.append(os.path.join(current_dir, "Code"))
 
-isLinux = sys.platform == "linux2"
+isLinux = sys.platform == "linux"
 isWindows = not isLinux
 if isLinux:
     startfile = os.system
@@ -52,7 +52,7 @@ mate_en_dos = 154996
 
 runSound = None
 
-VERSION = "R0.21"
+VERSION = "R0.22"
 DEBUG = False
 DEBUG_ENGINE = False
 

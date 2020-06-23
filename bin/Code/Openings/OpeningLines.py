@@ -11,7 +11,7 @@ from Code import Util
 from Code.SQL import UtilSQL
 from Code import Game
 from Code import Position
-from Code.Databases import DBgames
+from Code.Databases import DBgamesST
 from Code import AperturasStd
 from Code.Engines import EnginesBunch
 from Code.QT import QTUtil2
@@ -1010,7 +1010,7 @@ class Opening:
         bp.ponRotulo(_X(_("Reading %1"), os.path.basename(ficheroSummary)))
         bp.mostrar()
 
-        db_stat = DBgames.TreeSTAT(ficheroSummary)
+        db_stat = DBgamesST.TreeSTAT(ficheroSummary)
 
         if depth == 0:
             depth = 99999

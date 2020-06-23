@@ -156,7 +156,7 @@ class WRunCounts(QTVarios.WDialogo):
             self.count.current_depth += 1
             if (self.count.current_posmove + self.count.current_depth) >= len(self.count.game):
                 QTUtil2.message(self, _("Training finished"))
-                self.db_counts.change_count(self.count)
+                self.db_counts.change_count_capture(self.count)
                 self.terminar()
                 return
             self.lb_result.ponTexto("%s (%d)" % (_("Right, go to the next level of depth"), self.count.current_depth))

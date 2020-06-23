@@ -20,6 +20,9 @@ class CountCapture:
         self.current_depth = 0
         self.tries = []  # pos,depth,success,time
 
+    def is_finished(self):
+        return (self.current_posmove + self.current_depth) >= len(self.game)
+
     def save(self):
         dic = {
             "date": self.date,
