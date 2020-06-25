@@ -241,8 +241,8 @@ class Entrenamientos:
 
         # Cebras ---------------------------------------------------------------------------------------------------
         menu.separador()
-        menu1 = menu.submenu(_("Resources for zebras"), Iconos.Cebra())
-        menu2 = menu1.submenu(_("Check your memory on a chessboard"), Iconos.Memoria())
+        # menu1 = menu.submenu(_("Resources for zebras"), Iconos.Cebra())
+        menu2 = menu.submenu(_("Check your memory on a chessboard"), Iconos.Memoria())
 
         mem = Memoria.Memoria(self.procesador)
         categorias = CompetitionWithTutor.Categorias()
@@ -257,13 +257,13 @@ class Entrenamientos:
 
             xopcion(menu2, -100 - x, txt, cat.icono(), is_disabled=not mem.is_active(x))
 
-        menu1.separador()
+        menu.separador()
 
-        menu2 = menu1.submenu(_("Find all moves"), Iconos.FindAllMoves())
+        menu2 = menu.submenu(_("Find all moves"), Iconos.FindAllMoves())
         xopcion(menu2, "find_all_moves_rival", _("Opponent"), Iconos.PuntoNaranja())
         xopcion(menu2, "find_all_moves_player", _("Player"), Iconos.PuntoAzul())
 
-        menu1.separador()
+        menu.separador()
         self.horsesDef = hd = {
             1: ("N", "Alpha", _("Basic test")),
             2: ("p", "Fantasy", _("Four pawns test")),
@@ -271,7 +271,7 @@ class Entrenamientos:
             4: ("n", "Spatial", _("Basic test") + ": a1"),
             5: ("N", "Cburnett", _("Basic test") + ": e4"),
         }
-        menu2 = menu1.submenu(_("Becoming a knight tamer"), Iconos.Knight())
+        menu2 = menu.submenu(_("Becoming a knight tamer"), Iconos.Knight())
         vicon = Code.todasPiezas.icono
         icl, icn, tit = hd[1]
         menu3 = menu2.submenu(tit, vicon(icl, icn))
@@ -289,44 +289,44 @@ class Entrenamientos:
         icl, icn, tit = hd[3]
         xopcion(menu2, "horses_3", tit, vicon(icl, icn))
 
-        menu1.separador()
-        menu2 = menu1.submenu(_("Moves between two positions"), Iconos.Puente())
+        menu.separador()
+        menu2 = menu.submenu(_("Moves between two positions"), Iconos.Puente())
         rp = QTVarios.rondoPuntos()
         for x in range(1, 11):
             xopcion(menu2, "puente_%d" % x, "%s %d" % (_("Level"), x), rp.otro())
 
-        menu1.separador()
-        xopcion(menu1, "potencia", _("Determine your calculating power"), Iconos.Potencia())
+        menu.separador()
+        xopcion(menu, "potencia", _("Determine your calculating power"), Iconos.Potencia())
 
-        menu1.separador()
-        menu2 = menu1.submenu(_("Learn a game"), Iconos.School())
+        menu.separador()
+        menu2 = menu.submenu(_("Learn a game"), Iconos.School())
         xopcion(menu2, "learnPGN", _("Memorizing their moves"), Iconos.LearnGame())
         menu2.separador()
         xopcion(menu2, "playPGN", _("Playing against"), Iconos.Law())
 
-        menu1.separador()
-        xopcion(menu1, "visualiza", _("The board at a glance"), Iconos.Gafas())
+        menu.separador()
+        xopcion(menu, "visualiza", _("The board at a glance"), Iconos.Gafas())
 
-        menu1.separador()
-        menu2 = menu1.submenu(_("Coordinates"), Iconos.Coordinates())
+        menu.separador()
+        menu2 = menu.submenu(_("Coordinates"), Iconos.Coordinates())
         xopcion(menu2, "coordinates_basic", _("Basic"), Iconos.West())
         menu2.separador()
         xopcion(menu2, "coordinates_blocks", _("By blocks"), Iconos.Blocks())
 
-        menu1.separador()
-        xopcion(menu1, "anotar", _("Writing down moves of a game"), Iconos.Write())
+        menu.separador()
+        xopcion(menu, "anotar", _("Writing down moves of a game"), Iconos.Write())
 
-        menu1.separador()
-        xopcion(menu1, "captures", _("Captures and threats in a game"), Iconos.Captures())
+        menu.separador()
+        xopcion(menu, "captures", _("Captures and threats in a game"), Iconos.Captures())
 
-        menu1.separador()
-        xopcion(menu1, "counts", _("Count moves"), Iconos.Count())
+        menu.separador()
+        xopcion(menu, "counts", _("Count moves"), Iconos.Count())
 
-        menu1.separador()
-        xopcion(menu1, "15mate", _("Mate in 1½"), Iconos.Mate15())
+        menu.separador()
+        xopcion(menu, "15mate", _("Mate in 1½"), Iconos.Mate15())
 
-        menu1.separador()
-        xopcion(menu1, "endings_gtb", _("Endings with Gaviota Tablebases"), Iconos.Finales())
+        menu.separador()
+        xopcion(menu, "endings_gtb", _("Endings with Gaviota Tablebases"), Iconos.Finales())
 
         return menu, dicMenu
 

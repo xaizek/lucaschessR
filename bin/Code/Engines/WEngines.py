@@ -213,7 +213,7 @@ class WEngines(QTVarios.WDialogo):
     def copiar(self):
         fila = self.grid.recno()
         if fila >= 0:
-            me = self.lista_motores[fila].copiar()
+            me = self.lista_motores[fila].copy()
             w = WEngine(self, self.lista_motores, me)
             if w.exec_():
                 self.lista_motores.nuevo(me)

@@ -55,7 +55,7 @@ def lee_linea_mfn():
 def lee_varias_lineas_mfn(nlineas):  # PantallaDailyTest
     lipos = random.sample(range(0, 9999), nlineas)
     lifen = []
-    with open(Code.path_resource("IntFiles", "games.mfn")) as f:
+    with open(Code.path_resource("IntFiles", "games.mfn"), "rt", encoding="utf-8") as f:
         for num, linea in enumerate(f):
             if num in lipos:
                 cabs, pv, move = linea.strip().split("||")

@@ -166,16 +166,21 @@ class WRunCaptures(QTVarios.WDialogo):
         # Mostramos los movimientos según depth
         depth = self.capture.current_depth
         if depth:
+            txt_ant = ""
             for x in range(depth):
                 move = self.capture.game.move(self.capture.current_posmove + x)
                 txt = move.pgnBaseSP()
+                if txt == txt_ant:
+                    self.board.pon_texto("", 1)
+                    QTUtil.refresh_gui()
+                    time.sleep(0.3)
+                txt_ant = txt
                 self.board.pon_texto(txt, 0.9)
                 QTUtil.refresh_gui()
                 dif = depth - x
                 factor = 1.0 - dif * 0.1
                 if factor < 0.7:
                     factor = 0.7
-
                 time.sleep(2.6*factor*factor)
                 self.board.pon_texto("", 1)
                 QTUtil.refresh_gui()

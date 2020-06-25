@@ -83,6 +83,7 @@ class WEdMove(QtWidgets.QWidget):
         self.destino.ponTexto("")
         self.result.ponImagen(self.PM_EMPTY)
         self.habilita()
+        self.origen.setFocus()
 
     def correcta(self):
         self.result.ponImagen(self.PM_OK)
