@@ -189,10 +189,10 @@ class Configuracion:
         self.x_pieces_speed = 100
         self.x_save_tutor_variations = True
 
-        self.x_mouse_shortcuts = False  # predictivo=True
+        self.x_mouse_shortcuts = False
         self.x_show_candidates = False
 
-        self.x_captures_activate = False
+        self.x_captures_activate = True
         self.x_info_activate = False
 
         self.x_default_tutor_active = True
@@ -211,7 +211,7 @@ class Configuracion:
         self.x_position_tool_board = "T"
 
         self.x_director_icon = False
-        self.x_direct_graphics = True
+        self.x_direct_graphics = False
 
         self.colores_nags_defecto()
 

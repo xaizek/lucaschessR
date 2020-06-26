@@ -1082,9 +1082,10 @@ class Gestor:
         self.human_is_playing = True
         self.activaColor(self.game.last_position.is_white)
 
-    def checkmueve_humano(self, from_sq, to_sq, promotion):
+    def checkmueve_humano(self, from_sq, to_sq, promotion, with_premove=False):
         if self.human_is_playing:
-            self.paraHumano()
+            if not with_premove:
+                self.paraHumano()
         else:
             self.sigueHumano()
             return None

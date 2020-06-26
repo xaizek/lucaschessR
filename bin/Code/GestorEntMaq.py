@@ -928,7 +928,7 @@ class GestorEntMaq(Gestor.Gestor):
     def mueve_humano(self, from_sq, to_sq, promotion=None):
         if not self.human_is_playing:
             return self.check_premove(from_sq, to_sq)
-        move = self.checkmueve_humano(from_sq, to_sq, promotion)
+        move = self.checkmueve_humano(from_sq, to_sq, promotion, not self.is_tutor_enabled)
         if not move:
             return False
 
