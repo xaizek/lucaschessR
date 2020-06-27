@@ -22,9 +22,11 @@
 #include <algorithm>
 
 #include "types.h"
-#ifdef Stockfish
-#include "bitboard.h"
-#endif
+
+Value PieceValue[PHASE_NB][PIECE_NB] = {
+  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg },
+  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg }
+};
 
 namespace PSQT {
 
@@ -141,15 +143,14 @@ void init() {
 
   for (Piece pc = W_PAWN; pc <= W_KING; ++pc)
   {
+      PieceValue[MG][~pc] = PieceValue[MG][pc];
+      PieceValue[EG][~pc] = PieceValue[EG][pc];
+
       Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-#ifndef Stockfish
           File f = map_to_queenside(file_of(s));
-#else
-          File f = File(edge_distance(file_of(s)));
-#endif
           psq[ pc][ s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
                                                       : Bonus[pc][rank_of(s)][f]);
           psq[~pc][~s] = -psq[pc][s];

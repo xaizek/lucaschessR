@@ -42,9 +42,9 @@ namespace UCI {
 
 /// 'On change' actions, triggered by an option's value change
 void on_clear_hash(const Option&) { Search::clear(); }
-void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
+void on_hash_size(const Option& o) { TT.resize(o); }
 void on_logger(const Option& o) { start_logger(o); }
-void on_threads(const Option& o) { Threads.set(size_t(o)); }
+void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 #ifdef Add_Features
 void on_book_file1(const Option& o) { polybook1.init(o); }
@@ -73,25 +73,19 @@ bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const 
 
 /// init() initializes the UCI options to their hard-coded default values
 void init(OptionsMap& o) {
-
-#ifdef Noir
     // at most 2^32 clusters.
     constexpr int MaxHashMB = Is64Bit ? 131072 : 2048;
-#else
-    // At most 2^32 superclusters. Supercluster = 8 kB
-    constexpr int MaxHashMB = Is64Bit ? 33554432 : 2048;
-#endif
     o["Debug Log File"]           << Option("", on_logger);
 #ifdef Add_Features
-    o["Use_Book_1"] 	            << Option(false);
-    o["Book_File_1"] 	            << Option("", on_book_file1);
-    o["Best_Move_1"] 	            << Option(false, on_best_book_move1);
+    o["Use_Book_1"] 	          << Option(false);
+    o["Book_File_1"] 	          << Option("", on_book_file1);
+    o["Best_Move_1"] 	          << Option(false, on_best_book_move1);
     o["Book_Depth_1"] 	          << Option(127, 1, 127, on_book_depth1);
-    o["Use_Book_2"] 	            << Option(false);
-    o["Book_File_2"] 	            << Option("", on_book_file2);
-    o["Best_Move_2"] 	            << Option(false, on_best_book_move2);
+    o["Use_Book_2"] 	          << Option(false);
+    o["Book_File_2"] 	          << Option("", on_book_file2);
+    o["Best_Move_2"] 	          << Option(false, on_best_book_move2);
     o["Book_Depth_2"] 	          << Option(127, 1, 127, on_book_depth2);
-    o["Use_Book_3"] 	            << Option(false);
+    o["Use_Book_3"] 	          << Option(false);
     o["Book_File_3"]              << Option("", on_book_file3);
     o["Best_Move_3"]              << Option(true, on_best_book_move3);
     o["Book_Depth_3"]             << Option(127, 1, 127, on_book_depth3);
@@ -120,31 +114,23 @@ void init(OptionsMap& o) {
     o["Move Overhead"]            << Option(30, 0, 5000);
     o["Minimum Thinking Time"]    << Option(20, 0, 5000);
     o["Threads"]                  << Option(1, 1, 512, on_threads);
-    o["Hash"]                     << Option(256, 1, MaxHashMB, on_hash_size);
+    o["Hash"]                     << Option(16, 1, MaxHashMB, on_hash_size);
     o["Ponder"]                   << Option(false);
 #ifdef Add_Features
     o["Adaptive_Play"]            << Option(false); //Adaptive Play change - now simple on/off check box
     o["Variety"]                  << Option(false); // Do not use with Adaptive play
 	  o["7 Man Probing"]            << Option(false);
 	  o["FastPlay"]                 << Option(false);
-	  o["Min Output"]               << Option(true);
-    // Score percentage evalaution output, similair to Lc0 output
-    o["Score Output"]             << Option("Centipawn var ScorPct-GUI var ScorPct var Centipawn"
-                                           ,"Centipawn");
+	  o["Minimal_Output"]           << Option(false);
 #endif
 #ifdef Weakfish
     o["WeakFish"]                 << Option(true);
 #endif
-#if defined (Sullivan) || (Blau)
-    o["Deep Pro Analysis"]        << Option(false);
-    o["Pro Analysis"]             << Option(true);
-    o["Pro Value"]                << Option(26, 0, 63);
+#if defined (Sullivan) || (Blau) || (Fortress)
+    o["Defensive"]                << Option(true);
 #else
-    o["Deep Pro Analysis"]        << Option(false);
-    o["Pro Analysis"]             << Option(false);
-    o["Pro Value"]                << Option( 0, 0, 63);
-#endif
     o["Defensive"]                << Option(false);
+#endif
     o["Clear_Hash"]               << Option(on_clear_hash);
     o["Clean_Search"]             << Option(false);
 #ifdef Add_Features
@@ -157,13 +143,23 @@ void init(OptionsMap& o) {
 #elif (defined Add_Features)
     o["Bench_KNPS"]               << Option (1500, 500, 6000);//used for UCI Play By Elo
 #endif
+    // Score percentage evalaution output, similair to Lc0 output is now the default
+    o["Output"]                   << Option("Centipawn var ScorPct-GUI var ScorPct var Centipawn"
+											                     ,"Centipawn");
 #ifdef Add_Features
     o["Tactical"]                 << Option(0, 0, 8);
+#endif
+#ifdef Add_Features
+    o["Slow Mover"]               << Option(100, 10, 1000);
+#else
+    o["Slow Mover"]               << Option(84, 10, 1000);
+#endif
+#ifdef Add_Features
     o["NPS_Level"]                << Option(0, 0, 60);// Do not use with other reduce strength levels
                                                       //can be used with adaptive play of variety,
                                                       //sleep is auto-on with this play
     o["UCI_LimitStrength"]        << Option(false);
-    o["Sleep"]                    << Option(false);
+    o["UCI_Sleep"]                << Option(false);
 /* Expanded Range (1000 to 2900 Elo) and roughly in sync with CCRL 40/4, anchored to ShalleoBlue at Elo 1712*/
     o["UCI_Elo"]                  << Option(1750, 1000, 2900);
     o["FIDE_Ratings"]             << Option(true);
@@ -176,7 +172,6 @@ void init(OptionsMap& o) {
                                             "var Class_B var Class_C var Class_D var Boris "
                                             "var Novice var None", "None");
 #endif
-    o["Slow Mover"]               << Option(100, 10, 1000);
     o["Nodestime"]                << Option(0, 0, 10000);
     o["UCI_Chess960"]             << Option(false);
     o["UCI_AnalyseMode"]          << Option(false);
@@ -185,9 +180,9 @@ void init(OptionsMap& o) {
     o["Syzygy50MoveRule"]         << Option(true);
     o["SyzygyProbeLimit"]         << Option(7, 0, 7);
 #ifndef Add_Features
-	   //Stockfish method of play by Elo, a very nice implementation.
-	   o["UCI_LimitStrength"]        << Option(false);
-	   o["UCI_Elo"]                  << Option(1350, 1350, 2850);
+	//Stockfish method of play by Elo, a very nice implementation.
+	o["UCI_LimitStrength"]        << Option(false);
+	o["UCI_Elo"]                  << Option(1350, 1350, 2850);
 #endif
 }
 

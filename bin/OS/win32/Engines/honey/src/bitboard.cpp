@@ -30,15 +30,7 @@ uint8_t PopCnt16[1 << 16];
 uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
 
 Bitboard SquareBB[SQUARE_NB];
-Bitboard FileBB[FILE_NB];
-Bitboard RankBB[RANK_NB];
-Bitboard ForwardRanksBB[COLOR_NB][RANK_NB];
-Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-Bitboard DistanceRingBB[SQUARE_NB][8];
-Bitboard ForwardFileBB[COLOR_NB][SQUARE_NB];
-Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
-Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
 
@@ -46,15 +38,8 @@ Magic RookMagics[SQUARE_NB];
 Magic BishopMagics[SQUARE_NB];
 
 namespace {
+
 #ifdef Add_Features  //Niklas Fiekas fast magics
-
-  // De Bruijn sequences. See chessprogramming.wikispaces.com/BitScan
-  const uint64_t DeBruijn64 = 0x3F79D71B4CB0A89ULL;
-  const uint32_t DeBruijn32 = 0x783A9B23;
-
-  int MSBTable[256];            // To implement software msb()
-  Square BSFTable[SQUARE_NB];   // To implement software bitscan
-
 Bitboard AttackTable[HasPext ? 107648 : 88772] = { 0 };
 
 struct MagicInit {
@@ -197,28 +182,9 @@ MagicInit RookMagicInit[SQUARE_NB] = {
 };
 
 Bitboard relevant_occupancies(Direction directions[], Square s);
-  void init_magics(MagicInit init[], Magic magics[], Direction directions[], unsigned shift);
 
-  // bsf_index() returns the index into BSFTable[] to look up the bitscan. Uses
-  // Matt Taylor's folding for 32 bit case, extended to 64 bit by Kim Walisch.
-
-#ifdef Add_Features
-  unsigned bsf_index(Bitboard b) {
-    b ^= b - 1;
-    return Is64Bit ? (b * DeBruijn64) >> 58
-                   : ((unsigned(b) ^ unsigned(b >> 32)) * DeBruijn32) >> 26;
-  }
-
-
-  // popcount16() counts the non-zero bits using SWAR-Popcount algorithm
-
-  unsigned popcount16(unsigned u) {
-    u -= (u >> 1) & 0x5555U;
-    u = ((u >> 2) & 0x3333U) + (u & 0x3333U);
-    u = ((u >> 4) + u) & 0x0F0FU;
-    return (u * 0x0101U) >> 8;
-  }
-#endif
+template<PieceType Pt>
+void init_magics(MagicInit init[], Magic magics[], Direction directions[]);
 #else
 Bitboard RookTable[0x19000];  // To store rook attacks
 Bitboard BishopTable[0x1480]; // To store bishop attacks
@@ -240,81 +206,21 @@ const std::string Bitboards::pretty(Bitboard b) {
   {
       for (File f = FILE_A; f <= FILE_H; ++f)
           s += b & make_square(f, r) ? "| X " : "|   ";
-      s += "| " + std::to_string(1 + r) + "\n+---+---+---+---+---+---+---+---+\n";
+
+      s += "|\n+---+---+---+---+---+---+---+---+\n";
   }
-  s += "  a   b   c   d   e   f   g   h\n";
 
   return s;
 }
 
 
-#ifdef Add_Features
 /// Bitboards::init() initializes various bitboard tables. It is called at
 /// startup and relies on global objects to be already zero-initialized.
 
 void Bitboards::init() {
 
   for (unsigned i = 0; i < (1 << 16); ++i)
-      PopCnt16[i] = (uint8_t) popcount16(i);
-
-  for (Square s = SQ_A1; s <= SQ_H8; ++s)
-  {
-      SquareBB[s] = 1ULL << s;
-      BSFTable[bsf_index(SquareBB[s])] = s;
-  }
-
-  for (Bitboard b = 2; b < 256; ++b)
-      MSBTable[b] = MSBTable[b - 1] + !more_than_one(b);
-
-  for (File f = FILE_A; f <= FILE_H; ++f)
-      FileBB[f] = f > FILE_A ? FileBB[f - 1] << 1 : FileABB;
-
-  for (Rank r = RANK_1; r <= RANK_8; ++r)
-      RankBB[r] = r > RANK_1 ? RankBB[r - 1] << 8 : Rank1BB;
-
-  for (Rank r = RANK_1; r < RANK_8; ++r)
-      ForwardRanksBB[WHITE][r] = ~(ForwardRanksBB[BLACK][r + 1] = ForwardRanksBB[BLACK][r] | RankBB[r]);
-
-  for (Color c : {WHITE, BLACK})
-      for (Square s = SQ_A1; s <= SQ_H8; ++s)
-      {
-          ForwardFileBB [c][s] = ForwardRanksBB[c][rank_of(s)] & FileBB[file_of(s)];
-          PawnAttackSpan[c][s] = ForwardRanksBB[c][rank_of(s)] & adjacent_files_bb(s);
-          PassedPawnMask[c][s] = ForwardFileBB [c][s] | PawnAttackSpan[c][s];
-      }
-
-  for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
-      for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
-          {
-              SquareDistance[s1][s2] = std::max(distance<File>(s1, s2), distance<Rank>(s1, s2));
-              DistanceRingBB[s1][SquareDistance[s1][s2]] |= s2;
-          }
-
-  int steps[][5] = { {}, { 7, 9 }, { 6, 10, 15, 17 }, {}, {}, {}, { 1, 7, 8, 9 } };
-
-  for (Color c : {WHITE, BLACK})
-      for (PieceType pt : { PAWN, KNIGHT, KING })
-          for (Square s = SQ_A1; s <= SQ_H8; ++s)
-              for (int i = 0; steps[pt][i]; ++i)
-              {
-                  Square to = s + Direction(c == WHITE ? steps[pt][i] : -steps[pt][i]);
-
-                  if (is_ok(to) && distance(s, to) < 3)
-                  {
-                      if (pt == PAWN)
-                          PawnAttacks[c][s] |= to;
-                      else
-                          PseudoAttacks[pt][s] |= to;
-                  }
-              }
-#else
-/// Bitboards::init() initializes various bitboard tables. It is called at
-/// startup and relies on global objects to be already zero-initialized.
-
-void Bitboards::init() {
-
-  for (unsigned i = 0; i < (1 << 16); ++i)
-      PopCnt16[i] = uint8_t(std::bitset<16>(i).count());
+      PopCnt16[i] = std::bitset<16>(i).count();
 
   for (Square s = SQ_A1; s <= SQ_H8; ++s)
       SquareBB[s] = (1ULL << s);
@@ -322,7 +228,29 @@ void Bitboards::init() {
   for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
       for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
           SquareDistance[s1][s2] = std::max(distance<File>(s1, s2), distance<Rank>(s1, s2));
-#endif
+
+  for (Square s = SQ_A1; s <= SQ_H8; ++s)
+  {
+      PawnAttacks[WHITE][s] = pawn_attacks_bb<WHITE>(square_bb(s));
+      PawnAttacks[BLACK][s] = pawn_attacks_bb<BLACK>(square_bb(s));
+  }
+
+  // Helper returning the target bitboard of a step from a square
+  auto landing_square_bb = [&](Square s, int step)
+  {
+      Square to = Square(s + step);
+      return is_ok(to) && distance(s, to) <= 2 ? square_bb(to) : Bitboard(0);
+  };
+
+  for (Square s = SQ_A1; s <= SQ_H8; ++s)
+  {
+      for (int step : {-9, -8, -7, -1, 1, 7, 8, 9} )
+         PseudoAttacks[KING][s] |= landing_square_bb(s, step);
+
+      for (int step : {-17, -15, -10, -6, 6, 10, 15, 17} )
+         PseudoAttacks[KNIGHT][s] |= landing_square_bb(s, step);
+  }
+
   Direction RookDirections[] = { NORTH, EAST, SOUTH, WEST };
   Direction BishopDirections[] = { NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST };
 
@@ -345,32 +273,23 @@ void Bitboards::init() {
 
     }
 
-  init_magics(RookMagicInit, RookMagics, RookDirections, 12);
-  init_magics(BishopMagicInit, BishopMagics, BishopDirections, 9);
+    init_magics<ROOK>(RookMagicInit, RookMagics, RookDirections);
+    init_magics<BISHOP>(BishopMagicInit, BishopMagics, BishopDirections);
 #else
     init_magics(RookTable, RookMagics, RookDirections);
     init_magics(BishopTable, BishopMagics, BishopDirections);
 #endif
 
-for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
-{
-    PawnAttacks[WHITE][s1] = pawn_attacks_bb<WHITE>(square_bb(s1));
-    PawnAttacks[BLACK][s1] = pawn_attacks_bb<BLACK>(square_bb(s1));
+  for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
+  {
+      PseudoAttacks[QUEEN][s1]  = PseudoAttacks[BISHOP][s1] = attacks_bb<BISHOP>(s1, 0);
+      PseudoAttacks[QUEEN][s1] |= PseudoAttacks[  ROOK][s1] = attacks_bb<  ROOK>(s1, 0);
 
-    for (int step : {-9, -8, -7, -1, 1, 7, 8, 9} )
-       PseudoAttacks[KING][s1] |= safe_destination(s1, step);
-
-    for (int step : {-17, -15, -10, -6, 6, 10, 15, 17} )
-       PseudoAttacks[KNIGHT][s1] |= safe_destination(s1, step);
-
-    PseudoAttacks[QUEEN][s1]  = PseudoAttacks[BISHOP][s1] = attacks_bb<BISHOP>(s1, 0);
-    PseudoAttacks[QUEEN][s1] |= PseudoAttacks[  ROOK][s1] = attacks_bb<  ROOK>(s1, 0);
-
-    for (PieceType pt : { BISHOP, ROOK })
-        for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
-            if (PseudoAttacks[pt][s1] & s2)
-                LineBB[s1][s2] = (attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0)) | s1 | s2;
-}
+      for (PieceType pt : { BISHOP, ROOK })
+          for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
+              if (PseudoAttacks[pt][s1] & s2)
+                  LineBB[s1][s2] = (attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0)) | s1 | s2;
+  }
 }
 
 
@@ -378,16 +297,20 @@ namespace {
 
   Bitboard sliding_attack(Direction directions[], Square sq, Bitboard occupied) {
 
-    Bitboard attacks = 0;
+    Bitboard attack = 0;
 
     for (int i = 0; i < 4; ++i)
-    {
-        Square s = sq;
-        while(safe_destination(s, directions[i]) && !(occupied & s))
-            attacks |= (s += directions[i]);
-    }
+        for (Square s = sq + directions[i];
+             is_ok(s) && distance(s, s - directions[i]) == 1;
+             s += directions[i])
+        {
+            attack |= s;
 
-    return attacks;
+            if (occupied & s)
+                break;
+        }
+
+    return attack;
 }
 #ifdef Add_Features  //Niklas Fiekas fast magics
 Bitboard relevant_occupancies(Direction directions[], Square s) {
@@ -402,9 +325,9 @@ Bitboard relevant_occupancies(Direction directions[], Square s) {
   // called "fancy" approach.
 
 #ifdef Add_Features  //Niklas Fiekas fast magics
-
-void init_magics(MagicInit init[], Magic magics[], Direction directions[], unsigned shift) {
-
+template<PieceType Pt>
+void init_magics(MagicInit init[], Magic magics[], Direction directions[])
+{
     for (Square s = SQ_A1; s <= SQ_H8; ++s)
     {
         Magic& m = magics[s];
@@ -413,13 +336,17 @@ void init_magics(MagicInit init[], Magic magics[], Direction directions[], unsig
         m.attacks = AttackTable + init[s].offset;
 
         Bitboard b = 0;
-        do {
-            unsigned idx = HasPext ? pext(b, m.mask) : (m.magic * b) >> (64 - shift);
+        do
+        {
+            unsigned idx = m.index<Pt>(b);
             Bitboard attack = sliding_attack(directions, s, b);
             assert(!m.attacks[idx] || m.attacks[idx] == attack);
             m.attacks[idx] = attack;
             b = (b - m.mask) & m.mask;
-        } while (b);
+
+        }
+        while (b);
+
     }
 }
 }

@@ -1,4 +1,3 @@
-
 ### ==========================================================================
 ### Copyright Notice and License Information
 ### ==========================================================================
@@ -24,6 +23,34 @@
 ### Section 1. General Configuration
 ### ==========================================================================
 
+### Note: 4 new bench positions were added on 10/17/2019.
+###       Bluefish and Honey benchmarks were modified on 11/19/2019
+###
+### Bench signatures (total nodes searched using bench)
+### Based on commits through 01/20/2020:
+### ======================================================
+### Black-Diamond-XI.bench:Nodes searched  : 9307126
+### Black-Diamond-XI.bench:Nodes/second    : 1847751
+### Blue-Honey-FD-XI.bench:Nodes searched  : 10167923
+### Blue-Honey-FD-XI.bench:Nodes/second    : 1865331
+### Blue-Honey-XI.bench:Nodes searched  : 4503961
+### Blue-Honey-XI.bench:Nodes/second    : 1870415
+### Bluefish-FD-XI.bench:Nodes searched  : 11194740
+### Bluefish-FD-XI.bench:Nodes/second    : 1906136
+### Bluefish-XI.bench:Nodes searched  : 5681412
+### Bluefish-XI.bench:Nodes/second    : 1900773
+### Honey-FD-XI.bench:Nodes searched  : 10870206
+### Honey-FD-XI.bench:Nodes/second    : 1907723
+### Honey-XI.bench:Nodes searched  : 4731324
+### Honey-XI.bench:Nodes/second    : 1892529
+### Stockfish-FD-XI.bench:Nodes searched  : 10599640
+### Stockfish-FD-XI.bench:Nodes/second    : 1950255
+### Stockfish-XI.bench:Nodes searched  : 5156767
+### Stockfish-XI.bench:Nodes/second    : 1951842
+### Weakfish-XI.bench:Nodes searched  : 6999755
+### Weakfish-XI.bench:Nodes/second    : 2730013
+### ======================================================
+
 DATE=$(shell date +"%m%d%y")
 DATE2=$(shell date +"%m%d")
 
@@ -31,7 +58,7 @@ DATE2=$(shell date +"%m%d")
 ### 3r4/3r4/2p1k3/p1pbPp1p/Pp1p1PpP/1P1P2R1/2P4R/2K1Q3 w - - 0 6, bm Rxg4
 ### Fortress Detection code by Joe Ellis:
 ### https://github.com/jhellis3/Stockfish/tree/game_cycle
-###	FORT = yes
+###	FORTRESS_DETECT = yes
 
 ### HONEY=yes
 
@@ -48,12 +75,13 @@ DATE2=$(shell date +"%m%d")
 
 ### Release versions , enter yes and release version below foor releases
 RELEASEVER = yes
-RELVERSION = XI-r2
+RELVERSION = XI
+
 
 ### TEST versions, enter yes and labels below to build named test exe's
 TEST = no
 TESTv1 = $(DATE2)
-TESTv2 = NO_PROF
+TESTv2 =
 ifeq ($(TEST),yes)
 	CXXFLAGS += -DTest
 endif
@@ -79,7 +107,7 @@ endif
 ifeq ($(RASPBERRY),Pi)
 	CXXFLAGS += -DPi
 endif
-ifeq ($(FORT),yes)
+ifeq ($(FORTRESS_DETECT),yes)
     CXXFLAGS += -DFortress
 	SUF=-FD
 endif
@@ -99,11 +127,7 @@ ifeq ($(HONEY),yes)
 			endif
 		endif
 		ifeq ($(TEST),yes)
-		        ifeq ($(COMP),mingw)
-			        EXE = $(NAME)-$(TESTv1)-$(TESTv2).exe
-		        else
-			        EXE = $(NAME)-$(TESTv1)-$(TESTv2)
-                        endif
+			EXE = $(NAME)-$(TESTv1)-$(TESTv2)
 		endif
 	endif
 	ifeq ($(RELEASEVER),yes)
@@ -131,26 +155,16 @@ ifneq ($(HONEY),yes)
 			PRE=Weak
 		else
 			PRE=Stock
-			STOCKFISH = yes
 			CXXFLAGS += -DStockfish
 		endif
 	NAME=$(PRE)fish$(SUF)
 endif
 	ifeq ($(RELEASEVER),no)
-                ifeq ($(TEST),no)
-		  ifeq ($(COMP),mingw)
-			  EXE = $(NAME)-dev-$(DATE).exe
-		  else
-			  EXE = $(NAME)-dev-$(DATE)
-    		  endif
-                endif
-		ifeq ($(TEST),yes)
-		  ifeq ($(COMP),mingw)
-			  EXE = $(NAME)-$(TESTv1)-$(TESTv2).exe
-                  else
-			  EXE = $(NAME)-$(TESTv1)-$(TESTv2)
-                  endif
-                endif
+		ifeq ($(COMP),mingw)
+			EXE = $(NAME)-$(DATE).exe
+		else
+			EXE = $(NAME)-$(DATE)
+		endif
 	endif
 	ifeq ($(RELEASEVER),yes)
 		CXXFLAGS += -DReleaseVer
@@ -168,41 +182,23 @@ PREFIX = /opt/local
 BINDIR = $(PREFIX)/bin
 
 ### Built-in benchmark for pgo-builds
-ifeq  ($(WEAKFISH),yes)
-PGOBENCH  = ./$(EXE) bench 16 1 8
+ifeq ($(WEAKFISH),yes)
+	PGOBENCH = ./$(EXE) bench 16 1 5
+	PGOBENCH2 = ./$(EXE) bench 16 2 3
+else
+	PGOBENCH = ./$(EXE) bench 16 1 10
+	PGOBENCH2 = ./$(EXE) bench 16 2 8
 endif
-ifeq  ($(NOIR),yes)
-PGOBENCH  = ./$(EXE) bench 16 1 10
-PGOBENCH2 = ./$(EXE) bench 16 2 5
-endif
-ifeq  ($(STOCKFISH),yes)
-PGOBENCH  = ./$(EXE) bench 16 1 14
-PGOBENCH2 = ./$(EXE) bench 16 2 7
-endif
-ifeq  ($(HONEY),yes)
-PGOBENCH  = ./$(EXE) bench 32 1 18
-PGOBENCH2 = ./$(EXE) bench 16 2 10
-endif
-ifeq  ($(BLUEFISH),yes)
-PGOBENCH  = ./$(EXE) bench 16 1 14
-PGOBENCH2 = ./$(EXE) bench 16 2 7
-endif
-ifeq  ($(FORT),yes)
-PGOBENCH  = ./$(EXE) bench 16 1 10
-PGOBENCH2 =
-endif
-
 ### Object files
 ifeq ($(FILES),with_c_book)
 	OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
-	search.o thread.o timeman.o tt.o uci.o ucioption.o polybook.o tune.o syzygy/tbprobe.o
+	search.o thread.o timeman.o tt.o uci.o ucioption.o polybook.o syzygy/tbprobe.o
 else
 	OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 		material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
-		search.o thread.o timeman.o tt.o uci.o ucioption.o tune.o syzygy/tbprobe.o
+		search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
 endif
-
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
 ifeq ($(KERNEL),Linux)
@@ -243,7 +239,6 @@ sse = no
 pext = no
 native = no
 
-threadripper = no
 ### 2.2 Architecture specific
 
 ### native
@@ -275,8 +270,6 @@ ifeq ($(ARCH),x86-64)
 	bits = 64
 	prefetch = yes
 	sse = yes
-
-	threadripper = no
 endif
 
 ifeq ($(ARCH),x86-64-modern)
@@ -285,19 +278,7 @@ ifeq ($(ARCH),x86-64-modern)
 	prefetch = yes
 	popcnt = yes
 	sse = yes
-	threadripper = no
 endif
-
-ifeq ($(ARCH),x86-64-amd)
-	arch = x86_64
-	bits = 64
-	prefetch = yes
-	popcnt = yes
-
-	threadripper = yes
-	sse = yes
-endif
-
 
 ifeq ($(ARCH),x86-64-bmi2)
 	arch = x86_64
@@ -306,22 +287,11 @@ ifeq ($(ARCH),x86-64-bmi2)
 	popcnt = yes
 	sse = yes
 	pext = yes
-
-	threadripper = no
 endif
 
 ifeq ($(ARCH),armv7)
 	arch = armv7
 	prefetch = yes
-endif
-
-ifeq ($(ARCH),armv7-a)
-	arch = any
-endif
-
-ifeq ($(ARCH),armv8-a)
-	arch = any
-	bits = 64
 endif
 
 ifeq ($(ARCH),ppc-32)
@@ -376,6 +346,7 @@ endif
 
 ifeq ($(COMP),mingw)
 	comp=mingw
+
 	ifeq ($(KERNEL),Linux)
 		ifeq ($(bits),64)
 			ifeq ($(shell which x86_64-w64-mingw32-c++-posix),)
@@ -426,28 +397,6 @@ ifeq ($(COMP),clang)
 	endif
 endif
 
-### Using NDK pass the path to the NDK using NDK=/path_to_ndk when invoking the makefile
-ifeq ($(COMP),ndk)
-	comp=clang
-	ifeq ($(KERNEL),Linux)
-		HOST=linux-x86_64
-	endif
-	ifeq ($(KERNEL),Darwin)
-		HOST=darwin-x86_64
-	endif
-	CXX=$(NDK)/toolchains/llvm/prebuilt/$(HOST)/bin/clang++
-
-	ifeq ($(ARCH),armv7-a)
-		CXXFLAGS += -target armv7a-linux-androideabi21
-	endif
-	ifeq ($(ARCH),armv8-a)
-		CXXFLAGS += -target aarch64-linux-android21
-	endif
-
-	CXXFLAGS += -pedantic -Wextra -Wshadow
-	LDFLAGS += -static-libstdc++
-endif
-
 ifeq ($(comp),icc)
 	profile_make = icc-profile-make
 	profile_use = icc-profile-use
@@ -481,12 +430,10 @@ endif
 ifneq ($(comp),mingw)
 	# On Android Bionic's C library comes with its own pthread implementation bundled in
 	ifneq ($(OS),Android)
-	ifneq ($(COMP),ndk)
 		# Haiku has pthreads in its libroot, so only link it in on other platforms
 		ifneq ($(KERNEL),Haiku)
 			LDFLAGS += -lpthread
 		endif
-	endif
 	endif
 endif
 
@@ -547,15 +494,6 @@ ifeq ($(popcnt),yes)
 	endif
 endif
 
-### 3.6a tr -AMD -LargePages
-ifeq ($(threadripper),yes)
-	CXXFLAGS += --param l1-cache-line-size=2048 -l2-cache-size=16384 -l3-cache-size=131072
-	### since we do not use native with a Threadripper to avoid bmi2
-	ifeq ($(comp),$(filter $(comp),gcc clang mingw))
-		CXXFLAGS += -msse4.1 -msse4a -mbmi
-	endif
-endif
-
 ### 3.7 pext
 ifeq ($(pext),yes)
 	CXXFLAGS += -DUSE_PEXT
@@ -598,28 +536,9 @@ ifeq ($(OS), Android)
 	CXXFLAGS += -fPIE
 	LDFLAGS += -fPIE -pie
 endif
-ifeq ($(ARCH), $(filter $(ARCH), armv7-a armv8-a))
-	CXXFLAGS += -fPIE
-	LDFLAGS += -fPIE -pie
-endif
 ### 3.10 madvise + transparent huge pages
 ifeq ($(KERNEL),Linux)
-	ifneq ($(ARCH), $(filter $(ARCH), armv7-a armv8-a))
-		CXXFLAGS += -DUSE_MADVISE_HUGEPAGE
-	endif
-endif
-
-### strip executable
-ifeq ($(COMP), ndk)
-	ifeq ($(ARCH),armv7-a)
-		SUB_DIR=arm-linux-androideabi
-	endif
-	ifeq ($(ARCH),armv8-a)
-		SUB_DIR=aarch64-linux-android
-	endif
-	STRIP=$(NDK)/toolchains/llvm/prebuilt/$(HOST)/$(SUB_DIR)/bin/strip
-else
-	STRIP=strip
+	CXXFLAGS += -DUSE_MADVISE_HUGEPAGE
 endif
 ### ==========================================================================
 ### Section 4. Public targets
@@ -671,7 +590,6 @@ help:
 	@echo "Advanced examples, for experienced users: "
 	@echo ""
 	@echo "make build ARCH=x86-64 COMP=clang"
-	@echo "make build ARCH=armv8-a COMP=ndk NDK=~/android-ndk-r21"
 	@echo "make profile-build ARCH=x86-64-bmi2 COMP=gcc COMPCXX=g++-4.8"
 	@echo ""
 
@@ -680,14 +598,16 @@ all: | $(directory)
 $(directory):
 	mkdir -p $@
 
-
-.PHONY: help build profile-build strip install clean objclean profileclean \
+.PHONY: all help build profile-build strip install clean objclean profileclean help \
         config-sanity icc-profile-use icc-profile-make gcc-profile-use gcc-profile-make \
         clang-profile-use clang-profile-make
 
 build: config-sanity
 	@$(MAKE) ARCH=$(ARCH) COMP=$(COMP) all
-	@$(STRIP) $(EXE)
+	@strip $(EXE)
+#	@cp $(EXE) /Users/michaelbyrne/cluster.mfb
+#	@$(EXE) bench >/dev/null
+#	@wait
 	@rm -f *.o syzygy/*.o
 
 profile-build: config-sanity objclean profileclean
@@ -696,8 +616,8 @@ profile-build: config-sanity objclean profileclean
 	@$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_make)
 	@echo ""
 	@echo "Step 2/4. Running benchmark for pgo-build ..."
-	@$(PGOBENCH)  >/dev/null  && wait
-	@$(PGOBENCH2) >/dev/null  && wait
+	@$(PGOBENCH) &> /dev/null && wait
+	@$(PGOBENCH2) &> /dev/null && wait
 	@echo ""
 	@echo "Step 3/4. Building optimized executable ..."
 	@$(MAKE) ARCH=$(ARCH) COMP=$(COMP) objclean
@@ -705,14 +625,9 @@ profile-build: config-sanity objclean profileclean
 	@echo ""
 	@echo "Step 4/4. Deleting profile data ..."
 	@$(MAKE) ARCH=$(ARCH) COMP=$(COMP) profileclean
-ifeq ($(COMP),mingw)
 	strip $(EXE)
-else
-	strip $(EXE)
-endif
-
 #	@cp $(EXE) /Users/michaelbyrne/cluster.mfb
-	$(EXE) bench >/dev/null 2> $(EXE).bench && wait
+	$(EXE) bench > /dev/null 2> $(EXE).bench && wait
 	rm -f *.o syzygy/*.o llvm-profdata
 #	touch * syzygy/*
 #	cp $(EXE) /opt/picochess/engines/armv7l
@@ -723,7 +638,7 @@ endif
 	@echo ""
 
 strip:
-	$(STRIP) $(EXE)
+	strip $(EXE)
 
 install:
 	-mkdir -p -m 755 $(BINDIR)
@@ -821,52 +736,12 @@ icc-profile-make:
 	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir' \
 	all
 
+icc-profile-use:
+	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
+	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir' \
+	all
+
 .depend:
 	-@$(CXX) $(DEPENDFLAGS) -MM $(OBJS:.o=.cpp) > $@ 2> /dev/null
 
 -include .depend
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-### Based on commits through 06/14/2020:
-### ======================================================
-### Black-Diamond-XI-r2.exe.bench:Nodes searched  : 3314750
-### Black-Diamond-XI-r2.exe.bench:Nodes/second    : 2462667
-### Bluefish-FD-XI-r2.exe.bench:Nodes searched  : 11067264
-### Bluefish-FD-XI-r2.exe.bench:Nodes/second    : 2511862
-### Bluefish-XI-r2.exe.bench:Nodes searched  : 5491437
-### Bluefish-XI-r2.exe.bench:Nodes/second    : 2451534
-### Blue-Honey-FD-XI-r2.exe.bench:Nodes searched  : 9809476
-### Blue-Honey-FD-XI-r2.exe.bench:Nodes/second    : 2479645
-### Blue-Honey-XI-r2.exe.bench:Nodes searched  : 4692394
-### Blue-Honey-XI-r2.exe.bench:Nodes/second    : 2259217
-### Honey-FD-XI-r2.exe.bench:Nodes searched  : 9222368
-### Honey-FD-XI-r2.exe.bench:Nodes/second    : 2511538
-### Honey-XI-r2.exe.bench:Nodes searched  : 5111194
-### Honey-XI-r2.exe.bench:Nodes/second    : 2452588
-### Stockfish-FD-XI-r2.exe.bench:Nodes searched  : 11663009
-### Stockfish-FD-XI-r2.exe.bench:Nodes/second    : 2580882
-### Stockfish-XI-r2.exe.bench:Nodes searched  : 4757174
-### Stockfish-XI-r2.exe.bench:Nodes/second    : 2548031
-### Weakfish-XI-r2.exe.bench:Nodes searched  : 8328904
-### Weakfish-XI-r2.exe.bench:Nodes/second    : 3473271
-### ======================================================
