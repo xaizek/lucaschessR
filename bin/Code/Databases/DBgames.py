@@ -274,7 +274,7 @@ class DBgames:
             self.rowidReader = None
 
     def rotulo(self):
-        return Util.path_rel(self.nom_fichero)
+        return Util.relative_path(self.nom_fichero)
 
     def depthStat(self):
         return self.db_stat.depth if self.db_stat else 0

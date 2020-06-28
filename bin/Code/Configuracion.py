@@ -312,7 +312,7 @@ class Configuracion:
         return self.x_pgn_headerbackground if self.x_pgn_headerbackground else "#EDEDE4"
 
     def carpeta_gaviota_defecto(self):
-        return os.path.relpath(Code.path_resource("Gaviota"))
+        return Util.relative_path(Code.path_resource("Gaviota"))
 
     def carpeta_gaviota(self):
         if not Util.exist_file(os.path.join(self.x_carpeta_gaviota, "kbbk.gtb.cp4")):
@@ -369,7 +369,7 @@ class Configuracion:
         return folder if os.path.isdir(folder) else self.folderBaseOpenings
 
     def set_folder_openings(self, new_folder):
-        new_folder = os.path.relpath(os.path.realpath(new_folder))
+        new_folder = Util.relative_path(os.path.realpath(new_folder))
         dic = self.leeVariables("OPENING_LINES")
         dic["FOLDER"] = new_folder
         self.escVariables("OPENING_LINES", dic)
@@ -780,7 +780,7 @@ class Configuracion:
             with open(Code.path_resource("IntFiles", "basepk.board"), "rb") as f:
                 var = pickle.loads(f.read())
                 db["BASE"] = self.dic_conf_boards_pk["BASE"] = var
-        # with open("../resources/IntFiles/base.board", "wb") as f:
+        # with open("../resources/IntFiles/basepk.board", "wb") as f:
         #      f.write(pickle.dumps(db["BASE"]))
         db.close()
 

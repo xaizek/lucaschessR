@@ -396,7 +396,7 @@ class Entrenamientos:
                 elif resp.startswith("ep_"):
                     um = self.procesador.unMomento()
                     entreno = os.path.realpath(resp[3:])
-                    titentreno = os.path.relpath(entreno, Code.folder_root)
+                    titentreno = Util.relative_path(entreno, Code.folder_root)
                     # if "/" in entreno:
                     #     dicTraining = TrListas.dicTraining()
                     #     titentreno = ""

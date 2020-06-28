@@ -97,7 +97,7 @@ class WOpeningLines(QTVarios.WDialogo):
         self.glista.gotop()
 
     def getTitulo(self):
-        return "%s [%s]" % (_("Opening lines"), os.path.relpath(self.listaOpenings.folder))
+        return "%s [%s]" % (_("Opening lines"), Util.relative_path(self.listaOpenings.folder))
 
     def tr_(self, tipo):
         recno = self.glista.recno()
@@ -178,7 +178,7 @@ class WOpeningLines(QTVarios.WDialogo):
             else:
                 path = os.path.join(base, resp)
 
-            path = os.path.relpath(path)
+            path = Util.relative_path(path)
             self.configuracion.set_folder_openings(path)
             self.configuracion.graba()
             self.listaOpenings = OpeningLines.ListaOpenings(self.configuracion)

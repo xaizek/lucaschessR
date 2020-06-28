@@ -608,7 +608,7 @@ class WEntMaquina(QTVarios.WDialogo):
         self.btAjustarRival.setVisible(si_multi)
         self.cbAjustarRival.setEnabled(si_multi)
 
-        self.lb_path_engine.ponTexto(os.path.relpath(self.rival.path_exe))
+        self.lb_path_engine.ponTexto(Util.relative_path(self.rival.path_exe))
         self.tab_advanced_active = False
 
     def cambiada_tab(self, num):

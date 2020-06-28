@@ -494,7 +494,7 @@ class GestorEntPos(Gestor.Gestor):
         d["MENU"] = name_tactic
         d["FILESW"] = "%s:100" % os.path.basename(nom_fns)
 
-        nom_dir = os.path.relpath(os.path.realpath(nom_dir))
+        nom_dir = Util.relative_path(os.path.realpath(nom_dir))
 
         Util.dic2ini(nom_ini, dicIni)
 

@@ -62,6 +62,7 @@ class WMate15(QTVarios.WDialogo):
         self.db.create_new()
         self.glista.refresh()
         self.glista.gotop()
+        self.play()
 
     def borrar(self):
         li = self.glista.recnosSeleccionados()

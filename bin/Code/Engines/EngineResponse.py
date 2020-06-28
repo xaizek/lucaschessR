@@ -491,7 +491,7 @@ class MultiEngineResponse:
         return dClaves
 
     def is_stable(self, centipawns, num_depths):
-        li_depths = self.dicDepth.keys()
+        li_depths = list(self.dicDepth.keys())
         if len(li_depths) > 40:
             return True
         if len(li_depths) <= num_depths:

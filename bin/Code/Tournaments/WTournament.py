@@ -511,7 +511,7 @@ class WTournament(QTVarios.WDialogo):
         # tipo, key, rotulo, valor
         self.liEnActual.append((_("Engine"), me.name))
         self.liEnActual.append((_("Author"), me.autor))
-        self.liEnActual.append((_("File"), os.path.relpath(me.path_exe)))
+        self.liEnActual.append((_("File"), Util.relative_path(me.path_exe)))
         self.liEnActual.append((_("Information"), me.id_info.replace("\n", " - ")))
         self.liEnActual.append(("ELO", me.elo))
         self.liEnActual.append((_("Maximum depth"), me.depth))

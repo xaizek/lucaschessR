@@ -36,7 +36,7 @@ else:
 dgt = None
 dgtDispatch = None
 
-configuracion = None  # Actualizado en configuracion tras lee()
+configuracion = None
 procesador = None
 
 todasPiezas = None
@@ -52,7 +52,7 @@ mate_en_dos = 154996
 
 runSound = None
 
-VERSION = "R0.24"
+VERSION = "R0.25"
 DEBUG = False
 DEBUG_ENGINE = False
 

@@ -109,7 +109,7 @@ class WEngines(QTVarios.WDialogo):
         liGen.append((config, ""))
 
         for num in range(1, 11):
-            liGen.append((_("Argument %d") % num + ":", ""))
+            liGen.append(("%s:" %(_("Argument %d") % num), ""))
         liGen.append(separador)
         resultado = FormLayout.fedit(liGen, title=_("Command"), parent=self, anchoMinimo=600, icon=Iconos.Terminal())
         if resultado:
@@ -134,7 +134,7 @@ class WEngines(QTVarios.WDialogo):
             # Editamos
             w = WEngine(self, self.lista_motores, me)
             if w.exec_():
-                self.lista_motores.nuevo(me)
+                self.lista_motores.append(me)
                 self.grid.refresh()
                 self.grid.gobottom(0)
                 self.grabar()
@@ -277,7 +277,7 @@ class WEngine(QtWidgets.QDialog):
         lbElo = Controles.LB(self, "ELO: ")
         self.sbElo = Controles.SB(self, engine.elo, 0, 4000)
 
-        lbExe = Controles.LB(self, "%s: %s" % (_("File"), os.path.relpath(engine.path_exe)))
+        lbExe = Controles.LB(self, "%s: %s" % (_("File"), Util.relative_path(engine.path_exe)))
 
         if siTorneo:
             lbDepth = Controles.LB(self, _("Maximum depth") + ": ")

@@ -322,7 +322,7 @@ class TurnOnLightsOneLine(TurnOnLights):
         self.name = "oneline"
         title = _("In one line")
         folder = None
-        self.fns = Util.path_rel(Code.path_resource("Trainings", "Tactics by UNED chess school", "Interception-blocade.fns"))
+        self.fns = Util.relative_path(Code.path_resource("Trainings", "Tactics by UNED chess school", "Interception-blocade.fns"))
         self.calculation_mode = True
         self.auto_day = False
         self.last_date = self.hoy()

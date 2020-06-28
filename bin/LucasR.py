@@ -2,7 +2,7 @@
 # Author : Lucas Monge, lukasmonk@gmail.com
 # Web : http://lucaschess.pythonanywhere.com/
 # Blog : http://lucaschess.blogspot.com
-# Licence : GPL
+# Licence : GPL 3.0
 # ==============================================================================
 import sys
 
@@ -14,7 +14,6 @@ Translate.install()
 n_args = len(sys.argv)
 if n_args == 1:
     import Code.Init
-
     Code.Init.init()
 
 elif n_args >= 2:

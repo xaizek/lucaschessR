@@ -242,7 +242,7 @@ def stodext(txt):
 
 
 def primera_mayuscula(txt):
-    return txt[0].upper() + txt[1:].lower()
+    return txt[0].upper() + txt[1:].lower() if len(txt) > 0 else ""
 
 
 def microsegundos_rnd():
@@ -764,7 +764,7 @@ def path_split(path):
     return path.split(os.sep)
 
 
-def path_real(*args):
+def relative_path(*args):
     n_args = len(args)
     if n_args == 1:
         path = args[0]
@@ -773,11 +773,10 @@ def path_real(*args):
         if n_args > 2:
             for x in range(2, n_args):
                 path = os.path.join(path, args[x])
-    return os.path.realpath(path)
-
-
-def path_rel(*args):
-    return os.path.relpath(path_real(*args))
+    try:
+        return os.path.relpath(path)
+    except ValueError:
+        return path
 
 
 def memory_python():

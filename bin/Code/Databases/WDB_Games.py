@@ -929,7 +929,7 @@ class WOptionsDatabase(QtWidgets.QDialog):
 
         ly_name = Colocacion.H().control(lb_name).control(self.ed_name)
 
-        folder = os.path.dirname(Util.path_real(d_str("FILEPATH")))
+        folder = os.path.dirname(Util.relative_path(d_str("FILEPATH")))
         folder = folder[len(configuracion.folder_databases()):]
         if folder.strip():
             folder = folder.strip(os.sep)

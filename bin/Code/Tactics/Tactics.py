@@ -193,7 +193,7 @@ class Tactic:
         self.tactics = tactics
         self.name = name
         self.tipo = tipo
-        self.path_db = Util.path_rel(folder_user, "%s%s.tdb" % (self.tactics.name, tipo))
+        self.path_db = Util.relative_path(folder_user, "%s%s.tdb" % (self.tactics.name, tipo))
 
         # Default values ##########################################################################################
         # Max number of puzzles in each block

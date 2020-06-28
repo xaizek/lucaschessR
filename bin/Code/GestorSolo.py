@@ -376,7 +376,7 @@ class GestorSolo(Gestor.Gestor):
             menuR = menu.submenu(_("Save"), Iconos.Grabar())
             rpath = self.ultimoFichero
             if os.curdir[:1] == rpath[:1]:
-                rpath = os.path.relpath(rpath)
+                rpath = Util.relative_path(rpath)
                 if rpath.count("..") > 0:
                     rpath = self.ultimoFichero
             menuR.opcion("save", "%s: %s" % (_("Save"), rpath), Iconos.Grabar())

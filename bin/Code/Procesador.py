@@ -787,7 +787,7 @@ class Procesador:
             return
 
         if accion == "R":
-            self.configuracion.set_last_database(os.path.relpath(dbpath))
+            self.configuracion.set_last_database(Util.relative_path(dbpath))
             w = PantallaDatabase.WBDatabase(self.main_window, self, dbpath, temporary, False)
             if self.main_window:
                 if w.exec_():

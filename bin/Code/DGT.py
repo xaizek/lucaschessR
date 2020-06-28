@@ -189,9 +189,9 @@ def writeDebug(activar):
 
 def writePosition(cposicion):
     if Code.dgt:
-        log( "Enviado a la DGT" + cposicion )
+        # log( "Enviado a la DGT" + cposicion )
         dgt = Code.dgt
-        dgt._DGTDLL_WritePosition(cposicion)
+        dgt._DGTDLL_WritePosition(cposicion.decode())
 
 
 def writeClocks(wclock, bclock):

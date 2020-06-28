@@ -1,4 +1,5 @@
 import os
+import platform
 
 import Code
 
@@ -168,7 +169,7 @@ def read_engines(folder_engines):
 
     mas("gambitfruit", "Ryan Benitez, Thomas Gaksch and Fabien Letouzey", "Beta 4bx", "https://github.com/lazydroid/gambit-fruit", "gfruit.exe", 2750)
 
-    is64 = "PROGRAMFILES(X86)" in os.environ
+    is64 = platform.machine().endswith("64")
     t32_64 = "64" if is64 else "32"
 
     cm = mas("honey", "Michael Byrne", f"XI {t32_64}bit", "https://github.com/MichaelB7/Stockfish/tree/honey", f"Honey-XI_x{t32_64}.exe", 3300)
