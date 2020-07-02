@@ -1,4 +1,3 @@
-import atexit
 import os
 import sqlite3
 import time
@@ -68,8 +67,6 @@ class DBgames:
         self.db_stat = DBgamesST.TreeSTAT(self.nom_fichero + ".st1", summary_depth)
 
         self.li_row_ids = []
-
-        atexit.register(self.close)
 
         self.rowidReader = UtilSQL.RowidReader(self.nom_fichero, "Games")
 

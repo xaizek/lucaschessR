@@ -126,7 +126,8 @@ def opciones(parent, configuracion):
     form.separador()
     form.checkbox(_("Enable information panel by default"), configuracion.x_info_activate)
     form.separador()
-    form.checkbox(_X(_("Enable %1"), _("DGT board")), configuracion.x_dgt)
+    liDB = [(_("None"), ""), (_("DGT"), "DGT"), (_("Novag"), "NOVAG")]
+    form.combobox(_("Digital board"), liDB, configuracion.x_digital_board)
     form.separador()
     form.checkbox(_("Show configuracion icon"), configuracion.x_opacity_tool_board > 6)
     liPos = [(_("Bottom"), "B"), (_("Top"), "T")]
@@ -299,7 +300,7 @@ def opciones(parent, configuracion):
             configuracion.x_captures_activate,
             # configuracion.x_capture_option,
             configuracion.x_info_activate,
-            siDGT,
+            dboard,
             toolIcon,
             configuracion.x_position_tool_board,
             configuracion.x_director_icon,
@@ -307,10 +308,10 @@ def opciones(parent, configuracion):
         ) = liB
         configuracion.x_opacity_tool_board = 10 if toolIcon else 1
         configuracion.x_pieces_speed = drap[rapidezMovPiezas]
-        if configuracion.x_dgt != siDGT:
-            if siDGT:
+        if configuracion.x_digital_board != dboard:
+            if dboard:
                 DGT.ponON()
-            configuracion.x_dgt = siDGT
+            configuracion.x_digital_board = dboard
 
         perf.bad_lostp, perf.very_bad_lostp, perf.bad_factor, perf.good_depth, perf.very_good_depth = liPR
         perf.very_bad_factor = perf.bad_factor * 4

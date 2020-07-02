@@ -1116,9 +1116,9 @@ class Gestor:
             return None
 
     def compruebaDGT(self):
-        if self.configuracion.x_dgt:
+        if self.configuracion.x_digital_board:
             if not DGT.activarSegunON_OFF(self.dgt):  # Error
-                QTUtil2.message_error(self.main_window, _("Error, could not detect the DGT board driver."))
+                QTUtil2.message_error(self.main_window, _("Error, could not detect the %s board driver.") % self.configuracion.x_digital_board)
 
     def dgt(self, quien, a1h8):
         if self.tablero.mensajero and self.tablero.siActivasPiezas:
@@ -1179,10 +1179,9 @@ class Gestor:
         menu.separador()
 
         # DGT
-        if self.configuracion.x_dgt:
-            menu.opcion(
-                "dgt", (_("Disable %1") if DGT.siON() else _("Enable %1")).replace("%1", _("DGT board")), Iconos.DGT()
-            )
+        dboard = self.configuracion.x_digital_board
+        if dboard:
+            menu.opcion("dgt", _("Disable %s board") % dboard if DGT.siON() else _("Enable %s board") % dboard, Iconos.DGT())
             menu.separador()
 
         # Ciega - Mostrar todas - Ocultar blancas - Ocultar negras
@@ -1821,13 +1820,23 @@ class Gestor:
         num_moves, nj, fila, is_white = self.jugadaActual()
         if num_moves:
             self.game.is_finished()
+            gm = self.game.copia(nj)
+            gm.set_unknown()
             if fila == 0 and columna.clave == "NUMERO":
-                fen = self.game.first_position.fen()
+                posicion = self.game.first_position
             else:
                 move = self.game.move(nj)
-                fen = move.position.fen()
+                posicion = move.position
+            dic = {
+                "GAME": gm.save(),
+                "SICAMBIORIVAL": True,
+                "EXIT_WHEN_FINISHED": True,
+                "SIBLANCAS": posicion.is_white
+            }
+            fich = Util.relative_path(self.configuracion.ficheroTemporal(".pkd"))
+            Util.save_pickle(fich, dic)
 
-            XRun.run_lucas("-play", fen)
+            XRun.run_lucas("-play", fich)
 
     def showPV(self, pv, nArrows):
         if not pv:

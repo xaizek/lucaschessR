@@ -1,6 +1,5 @@
 import os
 import FasterCode
-from PySide2 import QtCore
 
 import Code
 from Code import Analisis
@@ -13,20 +12,18 @@ from Code import Move
 from Code import Game
 from Code import Personalidades
 from Code.QT import Iconos
-from Code.QT import Motores
-from Code.QT import PantallaEntMaq
 from Code.QT import QTUtil
 from Code.QT import QTUtil2
 from Code.QT import QTVarios
 from Code import Tutor
 from Code import Util
 from Code import Adjourns
-from Code.Engines import EngineResponse
+from Code.Engines import EngineResponse, SelectEngines, PlayAgainstEngine
 
 from Code.Constantes import *
 
 
-class GestorEntMaq(Gestor.Gestor):
+class GestorPlayAgainstEngine(Gestor.Gestor):
     reinicio = None
     cache = None
     is_analyzing = False
@@ -117,7 +114,7 @@ class GestorEntMaq(Gestor.Gestor):
             self.bookRdepth = dic_var.get("BOOKRDEPTH", 0)
             self.bookR.polyglot()
             self.bookRR = dic_var.get("BOOKRR", "mp")
-        elif dic_var["RIVAL"].get("TIPO", None) in (Motores.MICGM, Motores.MICPER):
+        elif dic_var["RIVAL"].get("TIPO", None) in (SelectEngines.MICGM, SelectEngines.MICPER):
             if self.conf_engine.book:
                 self.bookR = Books.Libro("P", self.conf_engine.book, self.conf_engine.book, True)
                 self.bookR.polyglot()
@@ -155,7 +152,7 @@ class GestorEntMaq(Gestor.Gestor):
         dr = dic_var["RIVAL"]
         rival = dr["CM"]
 
-        if dr["TYPE"] == Motores.ELO:
+        if dr["TYPE"] == SelectEngines.ELO:
             r_t = 0
             r_p = rival.fixed_depth
             self.nAjustarFuerza = ADJUST_BETTER
@@ -351,7 +348,7 @@ class GestorEntMaq(Gestor.Gestor):
                     self.main_window,
                     _X(_("%1 has won on time."), self.xrival.name) + "\n\n" + _("Add time and keep playing?"),
                 ):
-                    minX = PantallaEntMaq.dameMinutosExtra(self.main_window)
+                    minX = PlayAgainstEngine.dameMinutosExtra(self.main_window)
                     if minX:
                         ot.ponSegExtra(minX * 60)
                         return
@@ -1172,7 +1169,7 @@ class GestorEntMaq(Gestor.Gestor):
         self.ponAyudas(self.ayudas)
 
     def cambioRival(self):
-        dic = PantallaEntMaq.cambioRival(self.main_window, self.configuracion, self.reinicio)
+        dic = PlayAgainstEngine.cambioRival(self.main_window, self.configuracion, self.reinicio)
 
         if dic:
             dr = dic["RIVAL"]

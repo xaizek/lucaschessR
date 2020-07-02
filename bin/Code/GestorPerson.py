@@ -1,11 +1,11 @@
 from Code import Apertura
-from Code import GestorEntMaq
+from Code import GestorPlayAgainstEngine
 from Code.QT import Iconos
 from Code import Util
 from Code.Constantes import *
 
 
-class GestorPerson(GestorEntMaq.GestorEntMaq):
+class GestorPerson(GestorPlayAgainstEngine.GestorPlayAgainstEngine):
     def inicio(self, dic_var):
         self.base_inicio(dic_var)
         self.siguiente_jugada()

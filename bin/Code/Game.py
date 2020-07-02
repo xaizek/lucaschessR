@@ -61,6 +61,8 @@ class Game:
 
     def set_unknown(self):
         self.set_termination(TERMINATION_UNKNOWN, RESULT_UNKNOWN)
+        if self.get_tag("RESULT"):
+            self.add_tag("RESULT", RESULT_UNKNOWN)
 
     @property
     def last_position(self):
@@ -477,8 +479,10 @@ class Game:
         return False
 
     def resultado(self):
-        if self.result is RESULT_UNKNOWN:
-            self.result = self.get_tag("RESULT")
+        if self.result == RESULT_UNKNOWN:
+            x = self.get_tag("RESULT")
+            if x:
+                self.result = x
         return self.result
 
     def siEstaTerminada(self):

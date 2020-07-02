@@ -104,7 +104,7 @@ def activar():
         "C:/Program Files/Common Files/DGT Projects/",
     ):
         try:
-            path_dll = os.path.join(path, "DGTEBDLL.dll")
+            path_dll = os.path.join(path, "DGTEBDLL.dll" if Code.configuracion.x_digital_board == "DGT" else "UCB_DLL.dll")
             if os.path.isfile(path_dll):
                 dgt = ctypes.WinDLL(path_dll)
                 break
@@ -191,7 +191,7 @@ def writePosition(cposicion):
     if Code.dgt:
         # log( "Enviado a la DGT" + cposicion )
         dgt = Code.dgt
-        dgt._DGTDLL_WritePosition(cposicion.decode())
+        dgt._DGTDLL_WritePosition(cposicion.encode())
 
 
 def writeClocks(wclock, bclock):

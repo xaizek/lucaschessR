@@ -203,7 +203,7 @@ class Configuracion:
         self.x_fide = 1600
         self.x_lichess = 1600
 
-        self.x_dgt = False
+        self.x_digital_board = ""
 
         self.x_menu_play = MENU_PLAY_BOTH
 
@@ -220,7 +220,7 @@ class Configuracion:
         self.x_pgn_selbackground = None
         self.x_pgn_headerbackground = None
 
-        self.x_pgn_width = 283
+        self.x_pgn_width = 350
         self.x_pgn_fontpoints = 10
         self.x_pgn_rowheight = 28
         self.x_pgn_withfigurines = True

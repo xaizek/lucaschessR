@@ -8,7 +8,7 @@ from Code import Gestor
 from Code.QT import Controles
 from Code.QT import Iconos
 from Code.Openings import PantallaOpenings
-from Code.QT import PantallaEntMaq
+from Code.Engines import PlayAgainstEngine
 from Code.QT import PantallaSolo
 from Code.QT import QTUtil
 from Code.QT import QTUtil2
@@ -651,7 +651,7 @@ class GestorSolo(Gestor.Gestor):
         else:
             dicBase = self.configuracion.leeVariables("ENG_GESTORSOLO")
 
-        dic = self.dicRival = PantallaEntMaq.cambioRival(
+        dic = self.dicRival = PlayAgainstEngine.cambioRival(
             self.main_window, self.configuracion, dicBase, siGestorSolo=True
         )
 

@@ -104,12 +104,14 @@ class WBDatabase(QTVarios.WDialogo):
 
     def tw_aceptar(self):
         self.game, recno = self.wgames.current_game()
+        self.dbGames.close()
         if self.game:
             self.accept()
         else:
             self.reject()
 
     def tw_cancelar(self):
+        self.dbGames.close()
         self.game = None
         self.reject()
 
@@ -160,13 +162,13 @@ class WBDatabase(QTVarios.WDialogo):
         self.wgames.grid.save_video(dic)
         self.dbGames.guardaConfig("dic_grid", dic)
 
-        self.dbGames.close()
-
     def reinit(self):
         self.salvar()
+        self.dbGames.close()
         self.reiniciar = True
         self.accept()
 
     def reinit_sinsalvar(self):
+        self.dbGames.close()
         self.reiniciar = True
         self.accept()

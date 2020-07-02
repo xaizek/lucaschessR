@@ -11,7 +11,7 @@ from Code.QT import QTVarios
 INTERNO, EXTERNO, MICGM, MICPER, FIXED, IRINA, ELO = range(7)
 
 
-class Motores:
+class SelectEngines:
     def __init__(self, configuracion):
         self.configuracion = configuracion
         self.dicIconos = {
@@ -174,7 +174,7 @@ class Motores:
                     break
             if not rival:
                 tipo = INTERNO
-                clave = self.configuracion.rivalInicial
+                clave = self.configuracion.x_rival_inicial
 
         if tipo == MICGM:
             for cm in self.liMotoresGM:
@@ -183,7 +183,7 @@ class Motores:
                     break
             if not rival:
                 tipo = INTERNO
-                clave = self.configuracion.rivalInicial
+                clave = self.configuracion.x_rival_Inicial
 
         if tipo == MICPER:
             liMotores = EnginesMicElo.all_engines()
@@ -194,7 +194,7 @@ class Motores:
                     break
             if not rival:
                 tipo = INTERNO
-                clave = self.configuracion.rivalInicial
+                clave = self.configuracion.x_rival_Inicial
 
         if tipo == INTERNO:
             for cm in self.liMotoresInternos:

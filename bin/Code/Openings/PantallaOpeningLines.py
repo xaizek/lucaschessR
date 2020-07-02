@@ -4,7 +4,7 @@ import os.path
 from PySide2 import QtWidgets
 
 import Code
-from Code import Game
+from Code import Game, Util
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles

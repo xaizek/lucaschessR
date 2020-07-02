@@ -11,9 +11,8 @@ from Code.QT import Colocacion
 from Code.QT import Controles
 from Code.QT import FormLayout
 from Code.QT import Iconos
-from Code.QT import Motores
 from Code.Openings import PantallaOpenings
-from Code.Engines import WEngines
+from Code.Engines import WEngines, SelectEngines
 from Code.QT import PantallaTutor
 from Code.QT import QTUtil
 from Code.QT import QTUtil2
@@ -25,7 +24,7 @@ from Code.QT import Delegados
 from Code.Constantes import *
 
 
-class WEntMaquina(QTVarios.WDialogo):
+class WPlayAgainstEngine(QTVarios.WDialogo):
     def __init__(self, procesador, titulo):
 
         QTVarios.WDialogo.__init__(self, procesador.main_window, titulo, Iconos.Libre(), "entMaquina")
@@ -39,7 +38,7 @@ class WEntMaquina(QTVarios.WDialogo):
 
         self.personalidades = Personalidades.Personalidades(self, self.configuracion)
 
-        self.motores = Motores.Motores(self.configuracion)
+        self.motores = SelectEngines.SelectEngines(self.configuracion)
 
         # Toolbar
         li_acciones = [
@@ -118,7 +117,7 @@ class WEntMaquina(QTVarios.WDialogo):
 
         # ## Rival
         self.rival = self.procesador.XTutor().confMotor
-        self.rivalTipo = Motores.INTERNO
+        self.rivalTipo = SelectEngines.INTERNO
         self.btRival = Controles.PB(self, "", self.cambiaRival, plano=False).ponFuente(font).altoFijo(48)
 
         lbTiempoSegundosR = Controles.LB2P(self, _("Fixed time in seconds")).ponFuente(font)
@@ -554,10 +553,10 @@ class WEntMaquina(QTVarios.WDialogo):
         resp = self.motores.menu(self)
         if resp:
             tp, cm = resp
-            if tp == Motores.EXTERNO and cm is None:
+            if tp == SelectEngines.EXTERNO and cm is None:
                 self.motoresExternos()
                 return
-            elif tp == Motores.MICPER:
+            elif tp == SelectEngines.MICPER:
                 cm = WEngines.select_engine_entmaq(self)
                 if not cm:
                     return
@@ -573,29 +572,29 @@ class WEntMaquina(QTVarios.WDialogo):
         limpia_time_depth = True
         hide_time_depth = False
 
-        if self.rivalTipo == Motores.IRINA:
+        if self.rivalTipo == SelectEngines.IRINA:
             hide_time_depth = False
 
-        elif self.rivalTipo == Motores.FIXED:
+        elif self.rivalTipo == SelectEngines.FIXED:
             hide_time_depth = True
 
-        elif self.rivalTipo == Motores.ELO:
+        elif self.rivalTipo == SelectEngines.ELO:
             self.edRtiempo.ponFloat(0.0)
             self.edRdepth.ponInt(self.rival.fixed_depth)
             limpia_time_depth = False
             hide_time_depth = True
 
-        elif self.rivalTipo == Motores.MICGM:
+        elif self.rivalTipo == SelectEngines.MICGM:
             hide_time_depth = True
 
-        elif self.rivalTipo == Motores.MICPER:
+        elif self.rivalTipo == SelectEngines.MICPER:
             hide_time_depth = True
 
-        elif self.rivalTipo == Motores.INTERNO:
+        elif self.rivalTipo == SelectEngines.INTERNO:
             si_multi = self.rival.has_multipv()
             limpia_time_depth = False
 
-        elif self.rivalTipo == Motores.EXTERNO:
+        elif self.rivalTipo == SelectEngines.EXTERNO:
             si_multi = self.rival.has_multipv()
 
         if limpia_time_depth:
@@ -797,7 +796,7 @@ class WEntMaquina(QTVarios.WDialogo):
 
         dr = dic.get("RIVAL", {})
         engine = dr.get("ENGINE", self.configuracion.x_rival_inicial)
-        tipo = dr.get("TYPE", Motores.INTERNO)
+        tipo = dr.get("TYPE", SelectEngines.INTERNO)
         self.rivalTipo, self.rival = self.motores.busca(tipo, engine)
         if dr.get("LIUCI"):
             self.rival.liUCI = dr.get("LIUCI")
@@ -939,7 +938,7 @@ class WEntMaquina(QTVarios.WDialogo):
 
 
 def entrenamientoMaquina(procesador, titulo):
-    w = WEntMaquina(procesador, titulo)
+    w = WPlayAgainstEngine(procesador, titulo)
     if w.exec_():
         return w.dic
     else:
@@ -974,7 +973,7 @@ class WCambioRival(QtWidgets.QDialog):
         self.rbNegras = Controles.RB(self, _("Black"))
 
         # Motores
-        self.motores = Motores.Motores(configuracion)
+        self.motores = SelectEngines.SelectEngines(configuracion)
 
         liDepths = [("--", 0)]
         for x in range(1, 31):
@@ -982,7 +981,7 @@ class WCambioRival(QtWidgets.QDialog):
 
         # # Rival
         self.rival = configuracion.x_rival_inicial
-        self.rivalTipo = Motores.INTERNO
+        self.rivalTipo = SelectEngines.INTERNO
         self.btRival = Controles.PB(self, "", self.cambiaRival, plano=False)
         self.edRtiempo = Controles.ED(self).tipoFloat().anchoMaximo(50)
         self.cbRdepth = Controles.CB(self, liDepths, 0).capturaCambiado(self.cambiadoDepth)
@@ -1035,7 +1034,7 @@ class WCambioRival(QtWidgets.QDialog):
         resp = self.motores.menu(self)
         if resp:
             tp, cm = resp
-            if tp == Motores.EXTERNO and cm is None:
+            if tp == SelectEngines.EXTERNO and cm is None:
                 self.motoresExternos()
                 return
             self.rivalTipo = tp
@@ -1096,7 +1095,7 @@ class WCambioRival(QtWidgets.QDialog):
 
         dr = dic.get("RIVAL", {})
         engine = dr.get("MOTOR", self.configuracion.tutor.clave)
-        tipo = dr.get("TIPO", Motores.INTERNO)
+        tipo = dr.get("TIPO", SelectEngines.INTERNO)
         self.rivalTipo, self.rival = self.motores.busca(tipo, engine)
         self.ponRival()
 

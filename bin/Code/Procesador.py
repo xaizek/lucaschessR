@@ -8,7 +8,7 @@ from Code import Util
 from Code import AperturasStd
 from Code import Routes
 from Code import Update
-from Code.Engines import EngineManager, WEngines
+from Code.Engines import EngineManager, WEngines, PlayAgainstEngine
 from Code.Constantes import *
 from Code import Albums
 from Code import CPU
@@ -17,7 +17,7 @@ from Code import Position
 from Code import Entrenamientos
 from Code import GestorAlbum
 from Code import GestorElo
-from Code import GestorEntMaq
+from Code import GestorPlayAgainstEngine
 from Code import GestorEntPos
 from Code import GestorEverest
 from Code import GestorFideFics
@@ -45,7 +45,6 @@ from Code.Openings import PantallaOpenings, PantallaOpeningLine, PantallaOpening
 from Code.QT import PantallaBMT
 from Code.QT import PantallaColores
 from Code.QT import PantallaConfig
-from Code.QT import PantallaEntMaq
 from Code.QT import PantallaEverest
 from Code.QT import PantallaRoutes
 from Code.QT import PantallaSTS
@@ -184,9 +183,8 @@ class Procesador:
                     self.externBMT(comando)
                     return
                 elif comando == "-play":
-                    fen = sys.argv[2]
-                    self.juegaExterno(fen)
-
+                    fich_tmp = sys.argv[2]
+                    self.juegaExterno(fich_tmp)
                     return
 
             else:
@@ -535,7 +533,7 @@ class Procesador:
                 dic = Adjourns.Adjourns().get(key)
                 Adjourns.Adjourns().remove(key)
                 if tp == GT_AGAINST_ENGINE:
-                    self.gestor = GestorEntMaq.GestorEntMaq(self)
+                    self.gestor = GestorPlayAgainstEngine.GestorPlayAgainstEngine(self)
                     self.gestor.run_adjourn(dic)
                 elif tp == GT_ALBUM:
                     self.gestor = GestorAlbum.GestorAlbum(self)
@@ -814,14 +812,14 @@ class Procesador:
         PantallaSTS.sts(self, self.main_window)
 
     def libre(self):
-        dic = PantallaEntMaq.entrenamientoMaquina(self, _("Play against an engine"))
+        dic = PlayAgainstEngine.entrenamientoMaquina(self, _("Play against an engine"))
         if dic:
             self.entrenaMaquina(dic)
 
     def entrenaMaquina(self, dic):
         # self.game_type = GT_AGAINST_ENGINE
         # self.state = ST_PLAYING
-        self.gestor = GestorEntMaq.GestorEntMaq(self)
+        self.gestor = GestorPlayAgainstEngine.GestorPlayAgainstEngine(self)
         side = dic["SIDE"]
         if side == "R":
             side = "B" if random.randint(1, 2) == 1 else "N"
@@ -928,13 +926,9 @@ class Procesador:
             w.exec_()
             self.polyglot_factory()
 
-    def juegaExterno(self, fen):
+    def juegaExterno(self, fich_tmp):
         self.gestor = GestorSolo.GestorSolo(self)
-        dic = {}
-        dic["FEN"] = fen
-        dic["SICAMBIORIVAL"] = True
-        dic["EXIT_WHEN_FINISHED"] = True
-        dic["SIBLANCAS"] = " w " in fen
+        dic = Util.restore_pickle(fich_tmp)
         self.gestor.inicio(dic)
 
     def jugarSolo(self):

@@ -215,7 +215,7 @@ class GestorVariantes(Gestor.Gestor):
         else:
             dicBase = self.configuracion.leeVariables("ENG_VARIANTES")
 
-        import Code.QT.PantallaEntMaq as PantallaEntMaq
+        import Code.Engines.PlayAgainstEngine as PantallaEntMaq
 
         dic = self.dicRival = PantallaEntMaq.cambioRival(
             self.main_window, self.configuracion, dicBase, siGestorSolo=True
