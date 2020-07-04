@@ -16,7 +16,7 @@ from Code.QT import QTUtil2
 from Code.QT import QTVarios
 from Code.QT import TabElementos
 from Code.QT import TabTipos
-from Code import Sonido
+from Code.Sound import Sound
 from Code import TrListas
 from Code import Util
 
@@ -120,7 +120,7 @@ class MesaSonido(QtWidgets.QGraphicsView):
         for x in (self.txtActual, self.txtDuracion, self.txtFinal, self.txtInicio):
             x.ponCentesimas(centesimas)
             if centesimas == 0:
-                x.set_pos_initial()
+                x.posInicial()
         self.escena.update()
 
     def ponCentesimasActual(self, centesimas):
@@ -172,7 +172,7 @@ class WEdicionSonido(QTVarios.WDialogo):
 
         # MesaSonido
         self.mesa = MesaSonido(self)
-        self.taller = Sonido.TallerSonido(wav)
+        self.taller = Sound.TallerSonido(wav)
 
         self.mesa.ponCentesimas(self.taller.centesimas)
 
@@ -481,9 +481,9 @@ class WSonidos(QTVarios.WDialogo):
                     if wav is None:
                         t = 0
                     else:
-                        ts = Sonido.TallerSonido(wav)
+                        ts = Sound.TallerSonido(wav)
                         t = ts.centesimas
-                return "%02d:%02d:%02d" % Sonido.msc(t)
+                return "%02d:%02d:%02d" % Sound.msc(t)
 
         else:
             return li[1]
@@ -493,7 +493,7 @@ class WSonidos(QTVarios.WDialogo):
         if li[0]:
             wav = self.db[li[0]]
             if wav is not None:
-                ts = Sonido.TallerSonido(wav)
+                ts = Sound.TallerSonido(wav)
                 ts.playInicio(0, ts.centesimas)
                 self.siPlay = True
                 while self.siPlay:
@@ -663,7 +663,7 @@ class WSonidosGuion(QTVarios.WDialogo):
         clave = oColumna.clave
         reg = self.liSonidos[fila]
         if clave == "DURACION":
-            return "%02d:%02d:%02d" % Sonido.msc(reg.centesimas)
+            return "%02d:%02d:%02d" % Sound.msc(reg.centesimas)
         elif clave == "NOMBRE":
             return reg.name
 
@@ -671,7 +671,7 @@ class WSonidosGuion(QTVarios.WDialogo):
         if self.grid.recno() >= 0:
             reg = self.db[self.grid.recno()]
             wav = reg.wav
-            ts = Sonido.TallerSonido(wav)
+            ts = Sound.TallerSonido(wav)
             ts.playInicio(0, ts.centesimas)
             self.siPlay = True
             while self.siPlay:

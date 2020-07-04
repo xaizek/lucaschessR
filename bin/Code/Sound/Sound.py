@@ -97,9 +97,7 @@ class TallerSonido:
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 2
         self.RATE = 22050
-        self.stream = self.p.open(
-            format=self.FORMAT, channels=self.CHANNELS, rate=self.RATE, input=True, frames_per_buffer=self.CHUNK
-        )
+        self.stream = self.p.open(format=self.FORMAT, channels=self.CHANNELS, rate=self.RATE, input=True, frames_per_buffer=self.CHUNK)
         self.datos = []
 
     def micGraba(self):
@@ -109,7 +107,7 @@ class TallerSonido:
         self.stream.stop_stream()
         self.stream.close()
         self.p.terminate()
-        resp = "".join(self.datos)
+        resp = b"".join(self.datos)
         tx = audioop.lin2alaw(resp, 2)
         frames = audioop.alaw2lin(tx, 2)
         io = BytesIO()
@@ -158,12 +156,7 @@ class TallerSonido:
         p = self.p = pyaudio.PyAudio()
 
         # open stream
-        self.stream = p.open(
-            format=p.get_format_from_width(wf.getsampwidth()),
-            channels=wf.getnchannels(),
-            rate=wf.getframerate(),
-            output=True,
-        )
+        self.stream = p.open(format=p.get_format_from_width(wf.getsampwidth()), channels=wf.getnchannels(), rate=wf.getframerate(), output=True)
 
     def play(self):
         if self.posFrame >= self.maxFrame:
@@ -224,13 +217,10 @@ class Replay:
         self.io.push(orden.bloqueEnvio())
 
     def terminar(self):
-        try:
-            orden = Orden()
-            orden.key = TERMINAR
-            self.push(orden)
-            self.io.close()
-        except:
-            pass
+        orden = Orden()
+        orden.key = TERMINAR
+        self.push(orden)
+        self.io.stop()
 
     def playClave(self, key, siEspera):
         orden = Orden()
@@ -372,28 +362,37 @@ class RunReplay:
         return orden
 
 
-class IO(QtCore.QThread):
+class IO(QtCore.QObject):
     def __init__(self):
-        QtCore.QThread.__init__(self)
+        super().__init__()
         self.ipc = []
-        self.mutex = QtCore.QMutex()
         self.continuar = True
 
     def push(self, orden):
-        self.mutex.lock()
         self.ipc.append(orden)
-        self.mutex.unlock()
 
-    def orden_acabar(self):
-        for orden in self.ipc:
-            if orden["__CLAVE__"] in (STOP, PLAY_SINESPERA, TERMINAR):
-                return True
-        return False
+    def siguiente(self):
+        if not self.continuar:
+            return
+        orden = self.pop()
+        if orden:
+            orden = self.xreplay.procesa(self, orden)
+        if self.ipc:
+            self.siguiente()
+        else:
+            QtCore.QTimer.singleShot(100, self.siguiente)
+
+    def start(self):
+        self.ipc = []
+        self.continuar = True
+        self.xreplay = RunReplay()
+        self.siguiente()
+
+    def stop(self):
+        self.continuar = False
 
     def pop(self):
-        self.mutex.lock()
         dv = self.ipc.pop(0) if self.ipc else None
-        self.mutex.unlock()
         if not dv:
             return None
 
@@ -402,22 +401,8 @@ class IO(QtCore.QThread):
         orden.dv = dv
         return orden
 
-    def close(self):
-        if self.continuar:
-            self.continuar = False
-        self.wait()
-
-    def run(self):
-        xreplay = RunReplay()
-        orden = None
-        while self.continuar:
-            if orden:
-                if orden.key == TERMINAR:
-                    break
-                orden = xreplay.procesa(self, orden)
-                if orden:
-                    continue
-            orden = self.pop()
-            if orden is None:
-                self.msleep(500)
-        self.continuar = False
+    def orden_acabar(self):
+        for orden in self.ipc:
+            if orden["__CLAVE__"] in (STOP, PLAY_SINESPERA, TERMINAR):
+                return True
+        return False

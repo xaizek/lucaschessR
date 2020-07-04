@@ -447,10 +447,10 @@ class WEntrenarBMT(QTVarios.WDialogo):
         else:
             is_white = clave != "NEGRAS"
 
-        siEmpiezaConNegras = game.siEmpiezaConNegras
+        if_starts_with_black = game.if_starts_with_black
 
         lj = len(game)
-        if siEmpiezaConNegras:
+        if if_starts_with_black:
             lj += 1
         ultFila = (lj - 1) / 2
         siUltBlancas = lj % 2 == 1
@@ -462,7 +462,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
             pos = fila * 2
             if not is_white:
                 pos += 1
-            if fila < 0 or (fila == 0 and pos == 0 and siEmpiezaConNegras):
+            if fila < 0 or (fila == 0 and pos == 0 and if_starts_with_black):
                 self.ponteAlPrincipio()
                 return
         elif tipo == GO_FORWARD:
@@ -483,7 +483,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
         if fila < 0 or fila > ultFila:
             self.refresh()
             return
-        if fila == 0 and is_white and siEmpiezaConNegras:
+        if fila == 0 and is_white and if_starts_with_black:
             is_white = False
 
         self.pgnColocate(fila, is_white)
@@ -798,7 +798,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
         pos = fila * 2
         if not is_white:
             pos += 1
-        if self.game.siEmpiezaConNegras:
+        if self.game.if_starts_with_black:
             pos -= 1
         tam_lj = len(self.game)
         if tam_lj == 0:

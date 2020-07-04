@@ -42,7 +42,7 @@ class Pelicula:
         self.gestor = gestor
         self.procesador = gestor.procesador
         self.main_window = gestor.main_window
-        self.siEmpiezaConNegras = gestor.game.siEmpiezaConNegras
+        self.if_starts_with_black = gestor.game.if_starts_with_black
         self.tablero = gestor.tablero
         self.segundos = segundos
         self.siInicio = siInicio
@@ -91,7 +91,7 @@ class Pelicula:
 
         move = self.li_moves[self.current_position]
         num = self.current_position
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             num += 1
         fila = int(num / 2)
         self.main_window.pgnColocate(fila, move.position_before.is_white)

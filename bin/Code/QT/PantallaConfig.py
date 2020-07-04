@@ -126,7 +126,7 @@ def opciones(parent, configuracion):
     form.separador()
     form.checkbox(_("Enable information panel by default"), configuracion.x_info_activate)
     form.separador()
-    liDB = [(_("None"), ""), (_("DGT"), "DGT"), (_("Novag") + " - %s" % _("developed by Graham O'Neill"), "NOVAG")]
+    liDB = [(_("None"), ""), (_("DGT"), "DGT"), (_("Novag UCB") + " - %s" % _("developed by Graham O'Neill"), "Novag UCB")]
     form.combobox(_("Digital board"), liDB, configuracion.x_digital_board)
     form.separador()
     form.checkbox(_("Show configuracion icon"), configuracion.x_opacity_tool_board > 6)

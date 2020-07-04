@@ -958,7 +958,7 @@ def analyse_game(gestor):
     li_moves = []
     lni = Util.ListaNumerosImpresion(alm.num_moves)
     num_move = int(game.primeraJugada())
-    is_white = not game.siEmpiezaConNegras
+    is_white = not game.if_starts_with_black
     for nRaw in range(game.num_moves()):
         must_save = lni.siEsta(num_move)
         if must_save:

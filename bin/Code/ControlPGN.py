@@ -15,7 +15,7 @@ class ControlPGN:
     def numDatos(self):
         if self.gestor.game:
             n = len(self.gestor.game)
-            if self.gestor.game.siEmpiezaConNegras:
+            if self.gestor.game.if_starts_with_black:
                 n += 1
             if n % 2 == 1:
                 n += 1
@@ -30,10 +30,10 @@ class ControlPGN:
         tam_lj = len(lj)
 
         if clave == "BLANCAS":
-            if self.gestor.game.siEmpiezaConNegras:
+            if self.gestor.game.if_starts_with_black:
                 pos -= 1
         else:
-            if not self.gestor.game.siEmpiezaConNegras:
+            if not self.gestor.game.if_starts_with_black:
                 pos += 1
 
         if 0 <= pos <= (tam_lj - 1):
@@ -83,16 +83,16 @@ class ControlPGN:
         return li_resp
 
     def mueve(self, fila, is_white):
-        siEmpiezaConNegras = self.gestor.game.siEmpiezaConNegras
+        if_starts_with_black = self.gestor.game.if_starts_with_black
 
-        if fila == 0 and is_white and siEmpiezaConNegras:
+        if fila == 0 and is_white and if_starts_with_black:
             return
 
         lj = self.gestor.game.li_moves
         pos = fila * 2
         if not is_white:
             pos += 1
-        if siEmpiezaConNegras:
+        if if_starts_with_black:
             pos -= 1
 
         tam_lj = len(lj)
@@ -123,7 +123,7 @@ class ControlPGN:
         pos = fila * 2
         if not is_white:
             pos += 1
-        if self.gestor.game.siEmpiezaConNegras:
+        if self.gestor.game.if_starts_with_black:
             pos -= 1
         tam_lj = len(self.gestor.game)
         if tam_lj == 0:

@@ -758,7 +758,7 @@ class WPGN(QtWidgets.QWidget):
         n = len(self.game)
         if not n:
             return 0
-        if self.game.siEmpiezaConNegras:
+        if self.game.if_starts_with_black:
             n += 1
         if n % 2:
             n += 1
@@ -769,7 +769,7 @@ class WPGN(QtWidgets.QWidget):
         if col == "NUMERO":
             return str(self.game.first_position.num_moves + fila)
 
-        siIniBlack = self.game.siEmpiezaConNegras
+        siIniBlack = self.game.if_starts_with_black
         nJug = len(self.game)
         if fila == 0:
             w = None if siIniBlack else 0

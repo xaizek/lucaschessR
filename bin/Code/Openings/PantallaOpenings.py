@@ -416,7 +416,7 @@ class AperturasPersonales(QTVarios.WDialogo):
     def __init__(self, procesador, owner=None):
 
         self.procesador = procesador
-        self.ficheroDatos = procesador.configuracion.ficheroPersAperturas
+        self.ficheroDatos = procesador.configuracion.file_pers_openings()
         self.lista = self.leer()
 
         if owner is None:
@@ -536,16 +536,23 @@ class AperturasPersonales(QTVarios.WDialogo):
 
         self.procesador.procesador = self.procesador  # ya que editaVariante espera un gestor
 
-        resp = Variantes.editaVariante(self.procesador, self.procesador, fen, pgn, titulo=name, is_white_bottom=True)
+        if pgn:
+            ok, game = Game.pgn_game(pgn)
+            if not ok:
+                game = Game.Game()
+        else:
+            game = Game.Game()
+
+        resp = Variantes.editaVariante(self.procesador, game, titulo=name, is_white_bottom=True)
 
         if resp:
-            pgn, a1h8 = resp
+            game = resp
 
             reg = {}
             reg["NOMBRE"] = name
             reg["ECO"] = eco
-            reg["PGN"] = pgn
-            reg["A1H8"] = a1h8
+            reg["PGN"] = game.pgnBaseRAW()
+            reg["A1H8"] = game.pv()
             reg["ESTANDAR"] = estandar
 
             if fila is None:

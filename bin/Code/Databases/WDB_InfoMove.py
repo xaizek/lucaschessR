@@ -170,7 +170,7 @@ class WInfomove(QtWidgets.QWidget):
         style_number = "color:teal; font-weight: bold;"
         style_moves = "color:black;"
         style_select = "color:navy;font-weight: bold;"
-        if p.siEmpiezaConNegras:
+        if p.if_starts_with_black:
             pgn += '<span style="%s">%d...</span>' % (style_number, numJugada)
             numJugada += 1
             salta = 1

@@ -265,8 +265,8 @@ class TiempoSC(BloqueSC):
     def texto(self):
         t = self.calcCentesimas()
         cent = t % 100
-        t /= 100
-        mins = t / 60
+        t //= 100
+        mins = t // 60
         t -= mins * 60
         seg = t
         return "%02d:%02d:%02d" % (mins, seg, cent)

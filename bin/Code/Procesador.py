@@ -48,7 +48,7 @@ from Code.QT import PantallaConfig
 from Code.QT import PantallaEverest
 from Code.QT import PantallaRoutes
 from Code.QT import PantallaSTS
-from Code.QT import PantallaSonido
+from Code.Sound import PantallaSonido
 from Code.QT import PantallaSingularM
 from Code.QT import PantallaUsuarios
 from Code.QT import PantallaWashing
@@ -211,6 +211,7 @@ class Procesador:
         self.pararMotores()
 
     def inicio(self):
+        Code.runSound.close()
         if self.gestor:
             del self.gestor
             self.gestor = None
@@ -574,8 +575,7 @@ class Procesador:
         menu1.opcion(self.cambiaColores, _("General"), Iconos.Vista())
         menu.separador()
 
-        menu1 = menu.submenu(_("Sound"), Iconos.SoundTool())
-        menu1.opcion(self.sonidos, _("Custom sounds"), Iconos.S_Play())
+        menu.opcion(self.sonidos, _("Custom sounds"), Iconos.SoundTool())
         menu.separador()
         menu.opcion(self.setPassword, _("Set password"), Iconos.Password())
 

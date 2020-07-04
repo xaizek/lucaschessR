@@ -3,7 +3,7 @@ import sys
 import Code
 from Code import Util
 from Code import Procesador
-from Code import Sonido
+from Code.Sound import Sound
 from Code.QT import Gui
 
 from Code.Constantes import *
@@ -18,7 +18,7 @@ def init():
 
     main_procesador = Procesador.Procesador()
     main_procesador.set_version(Code.VERSION)
-    run_sound = Sonido.RunSound()
+    run_sound = Sound.RunSound()
     resp = Gui.run_gui(main_procesador)
     run_sound.close()
     main_procesador.pararMotores()

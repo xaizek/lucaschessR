@@ -410,7 +410,7 @@ def numColorMinimum(tol):
 
 
 def compruebaUweEasy(configuracion, name):
-    file = os.path.join(configuracion.carpeta, "%s.tol" % name)
+    file = os.path.join(configuracion.carpeta_results, "%s.tol" % name)
     if Util.exist_file(file):
         return
     folderDest = configuracion.carpetaTemporal()

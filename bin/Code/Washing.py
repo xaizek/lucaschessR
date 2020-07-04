@@ -306,7 +306,7 @@ class DBWashing:
     def __init__(self, configuracion):
         self.configuracion = configuracion
         self.filename = "washing.wsm"
-        self.file = os.path.join(configuracion.carpeta, self.filename)
+        self.file = os.path.join(configuracion.carpeta_results, self.filename)
         self.washing = self.restore()
 
     def new(self, tactic):

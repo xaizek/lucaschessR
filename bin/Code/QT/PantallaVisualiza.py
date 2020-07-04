@@ -31,7 +31,7 @@ class WControl(QTVarios.WDialogo):
 
         self.path_bloque = path_bloque
 
-        fichero = os.path.join(self.configuracion.carpeta, os.path.basename(path_bloque) + "db")
+        fichero = os.path.join(self.configuracion.carpeta_results, os.path.basename(path_bloque) + "db")
         self.historico = UtilSQL.DictSQL(fichero)
         self.li_histo = self.calcListaHistorico()
 

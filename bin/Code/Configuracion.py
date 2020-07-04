@@ -488,6 +488,9 @@ class Configuracion:
         if not Util.exist_file(self.ficheroRecursos):
             Util.file_copy(Code.path_resource("IntFiles", "recursos.dbl"), self.ficheroRecursos)
 
+        if not Util.exist_file(self.file_sounds()):
+            Util.file_copy(Code.path_resource("IntFiles", "sounds.pkd"), self.file_sounds())
+
         self.folderBaseOpenings = os.path.join(self.carpeta, "OpeningLines")
         Util.create_folder(self.folderBaseOpenings)
 

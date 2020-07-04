@@ -121,6 +121,7 @@ class Gestor:
         self.game.add_tag("Date", "%d-%02d-%02d" % (hoy.year, hoy.month, hoy.day))
 
     def ponFinJuego(self):
+        self.runSound.close()
         if len(self.game):
             self.state = ST_ENDGAME
             self.disable_all()
@@ -575,10 +576,10 @@ class Gestor:
         else:
             is_white = key != "NEGRAS"
 
-        siEmpiezaConNegras = game.siEmpiezaConNegras
+        if_starts_with_black = game.if_starts_with_black
 
         lj = len(game)
-        if siEmpiezaConNegras:
+        if if_starts_with_black:
             lj += 1
         ultFila = (lj - 1) / 2
         siUltBlancas = lj % 2 == 1
@@ -590,7 +591,7 @@ class Gestor:
             pos = fila * 2
             if not is_white:
                 pos += 1
-            if fila < 0 or (fila == 0 and pos == 0 and siEmpiezaConNegras):
+            if fila < 0 or (fila == 0 and pos == 0 and if_starts_with_black):
                 self.ponteAlPrincipio()
                 return
         elif tipo == GO_FORWARD:
@@ -611,14 +612,14 @@ class Gestor:
         if fila < 0 or fila > ultFila:
             self.refresh()
             return
-        if fila == 0 and is_white and siEmpiezaConNegras:
+        if fila == 0 and is_white and if_starts_with_black:
             is_white = False
 
         self.main_window.pgnColocate(fila, is_white)
         self.pgnMueve(fila, is_white)
 
     def ponteEnJugada(self, numJugada):
-        fila = (numJugada + 1) / 2 if self.game.siEmpiezaConNegras else numJugada / 2
+        fila = (numJugada + 1) / 2 if self.game.if_starts_with_black else numJugada / 2
         move = self.game.move(numJugada)
         is_white = move.position_before.is_white
         self.main_window.pgnColocate(fila, is_white)
@@ -667,7 +668,7 @@ class Gestor:
         game = self.game
         fila, columna = self.main_window.pgnPosActual()
         is_white = columna.clave != "NEGRAS"
-        siEmpiezaConNegras = game.siEmpiezaConNegras
+        if_starts_with_black = game.if_starts_with_black
 
         num_moves = len(game)
         if num_moves == 0:
@@ -675,7 +676,7 @@ class Gestor:
         nj = fila * 2
         if not is_white:
             nj += 1
-        if siEmpiezaConNegras:
+        if if_starts_with_black:
             nj -= 1
         return num_moves, nj, fila, is_white
 
@@ -786,7 +787,7 @@ class Gestor:
         pos = fila * 2
         if not is_white:
             pos += 1
-        if self.game.siEmpiezaConNegras:
+        if self.game.if_starts_with_black:
             pos -= 1
         tam_lj = len(self.game)
         siUltimo = (pos + 1) >= tam_lj
@@ -815,7 +816,7 @@ class Gestor:
         pos = fila * 2
         if not is_white:
             pos += 1
-        if self.game.siEmpiezaConNegras:
+        if self.game.if_starts_with_black:
             pos -= 1
         tam_lj = len(self.game)
         if 0 <= pos < tam_lj:
@@ -852,7 +853,7 @@ class Gestor:
         pos = fila * 2
         if not is_white:
             pos += 1
-        if self.game.siEmpiezaConNegras:
+        if self.game.if_starts_with_black:
             pos -= 1
         tam_lj = len(self.game)
         if tam_lj == 0:

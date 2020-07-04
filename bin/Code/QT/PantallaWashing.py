@@ -212,7 +212,7 @@ class WWashing(QTVarios.WDialogo):
                 fich = name = liResp[0]
                 if name.lower()[-4:] != ".wsm":
                     fich += ".wsm"
-                path = os.path.join(self.configuracion.carpeta, fich)
+                path = os.path.join(self.configuracion.carpeta_results, fich)
                 ok = True
                 if Util.exist_file(path):
                     ok = QTUtil2.pregunta(
@@ -225,7 +225,7 @@ class WWashing(QTVarios.WDialogo):
                     shutil.copy(self.dbwashing.file, path)
         elif resp == "restorefrom":
             li = []
-            for fich in os.listdir(self.configuracion.carpeta):
+            for fich in os.listdir(self.configuracion.carpeta_results):
                 if fich.endswith(".wsm") and fich != self.dbwashing.filename:
                     li.append(fich[:-4])
             if not li:
@@ -239,7 +239,7 @@ class WWashing(QTVarios.WDialogo):
                 if QTUtil2.pregunta(
                     self, "%s\n%s" % (_("Current data will be removed and overwritten."), _("Are you sure?"))
                 ):
-                    shutil.copy(os.path.join(self.configuracion.carpeta, resp + ".wsm"), self.dbwashing.file)
+                    shutil.copy(os.path.join(self.configuracion.carpeta_results, resp + ".wsm"), self.dbwashing.file)
                     self.wreload = True
                     self.save_video()
                     self.accept()

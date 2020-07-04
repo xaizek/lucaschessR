@@ -1066,9 +1066,9 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
 
     def add_move(self, move, siNuestra):
         self.game.add_move(move)
+        self.beepExtendido(siNuestra)
 
         self.ponFlechaSC(move.from_sq, move.to_sq)
-        self.beepExtendido(siNuestra)
 
         self.ponAyudasEM()
 

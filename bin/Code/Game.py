@@ -73,7 +73,7 @@ class Game:
         return position.copia()
 
     @property
-    def siEmpiezaConNegras(self):
+    def if_starts_with_black(self):
         return not self.first_position.is_white
 
     def save(self, with_litags=True):
@@ -254,7 +254,7 @@ class Game:
 
     def numJugadaPGN(self, njug):
         primera = int(self.first_position.num_moves)
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             njug += 1
         return primera + njug / 2
 
@@ -353,7 +353,7 @@ class Game:
             if self.first_comment:
                 resp = "{%s} " % self.first_comment
             numJugada = self.primeraJugada()
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             resp += "%d... " % numJugada
             numJugada += 1
             salta = 1
@@ -418,7 +418,7 @@ class Game:
             resp = ""
         if numJugada is None:
             numJugada = self.primeraJugada()
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             resp += "%d... " % numJugada
             numJugada += 1
             salta = 1
@@ -446,7 +446,7 @@ class Game:
             liResp.append("{%s}" % self.first_comment)
         if numJugada is None:
             numJugada = self.primeraJugada()
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             liResp.append('<span style="color:navy">%d...</span>' % numJugada)
             numJugada += 1
             salta = 1
@@ -542,7 +542,7 @@ class Game:
         resp = ""
         if numJugada is None:
             numJugada = self.primeraJugada()
-        if self.siEmpiezaConNegras:
+        if self.if_starts_with_black:
             resp += "%d... " % numJugada
             numJugada += 1
             salta = 1
