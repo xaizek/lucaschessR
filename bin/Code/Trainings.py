@@ -302,7 +302,7 @@ class Entrenamientos:
         menu2 = menu.submenu(_("Learn a game"), Iconos.School())
         xopcion(menu2, "learnPGN", _("Memorizing their moves"), Iconos.LearnGame())
         menu2.separador()
-        xopcion(menu2, "playPGN", _("Playing against"), Iconos.Law())
+        xopcion(menu2, "playGame", _("Playing against"), Iconos.Law())
 
         menu.separador()
         xopcion(menu, "visualiza", _("The board at a glance"), Iconos.Gafas())
@@ -444,8 +444,8 @@ class Entrenamientos:
                 elif resp == "learnPGN":
                     self.learnPGN()
 
-                elif resp == "playPGN":
-                    self.procesador.playPGN()
+                elif resp == "playGame":
+                    self.procesador.play_game()
 
                 elif resp.startswith("map_"):
                     nada, mapa = resp.split("_")

@@ -23,6 +23,7 @@ from Code.QT import PantallaSavePGN
 from Code.QT import PantallaAnalisisParam
 from Code.QT import GridEditCols
 from Code.QT import Delegados
+from Code.QT import PantallaPlayGame
 
 
 class WGames(QtWidgets.QWidget):
@@ -100,6 +101,9 @@ class WGames(QtWidgets.QWidget):
                 None,
                 (_("Export"), Iconos.Export8(), self.tw_export),
                 None,
+                (_("Train"), Iconos.TrainStatic(), self.tw_train),
+                None,
+
             ]
 
         self.tbWork = QTVarios.LCTB(self, liAccionesWork)
@@ -109,6 +113,33 @@ class WGames(QtWidgets.QWidget):
         layout = Colocacion.V().otro(lyTB).control(self.grid).control(self.status).margen(1)
 
         self.setLayout(layout)
+
+    def tw_train(self):
+        menu = QTVarios.LCMenu(self)
+        menu.opcion(self.tw_play_against, _("Play against a game"), Iconos.Law())
+        if self.dbGames.has_positions():
+            menu.separador()
+            menu.opcion(self.tw_uti_tactic, _("Create tactics training"), Iconos.Tacticas())
+        resp = menu.lanza()
+        if resp:
+            resp()
+
+    def tw_play_against(self):
+        li = self.grid.recnosSeleccionados()
+        if li:
+            recno = li[0]
+            game = self.dbGames.leePartidaRecno(recno)
+            h = hash(game.xpv())
+            dbPlay = PantallaPlayGame.DBPlayGame(self.configuracion.file_play_game())
+            recplay = dbPlay.recnoHash(h)
+            if recplay is None:
+                reg = {"GAME": game.save()}
+                dbPlay.appendHash(h, reg)
+                recplay = dbPlay.recnoHash(h)
+            dbPlay.close()
+
+            self.wb_database.tw_terminar()
+            self.procesador.play_game_show(recplay)
 
     def lista_columnas(self):
         dcabs = self.dbGames.recuperaConfig("dcabs", DBgames.drots.copy())
@@ -156,12 +187,6 @@ class WGames(QtWidgets.QWidget):
         if si_cambios:
             self.dbGames.reset_cache()
             self.grid.releerColumnas()
-
-    def limpiaColumnas(self):
-        for col in self.grid.o_columns.liColumnas:
-            cab = col.cabecera
-            if cab[-1] in "+-":
-                col.cabecera = col.antigua
 
     def setdbGames(self, dbGames):
         self.dbGames = dbGames
@@ -654,14 +679,11 @@ class WGames(QtWidgets.QWidget):
 
     def tw_utilities(self):
         menu = QTVarios.LCMenu(self)
+        menu.opcion(self.tw_massive_analysis, _("Mass analysis"), Iconos.Analizar())
+        menu.separador()
         menu.opcion(self.tw_polyglot, _("Create a polyglot book"), Iconos.Book())
         menu.separador()
         menu.opcion(self.tw_pack, _("Pack database"), Iconos.Pack())
-        menu.separador()
-        menu.opcion(self.tw_massive_analysis, _("Mass analysis"), Iconos.Analizar())
-        if self.dbGames.has_positions():
-            menu.separador()
-            menu.opcion(self.tw_uti_tactic, _("Create tactics training"), Iconos.Tacticas())
         resp = menu.lanza()
         if resp:
             resp()
@@ -682,32 +704,6 @@ class WGames(QtWidgets.QWidget):
             liRegistros = range(self.dbGames.reccount())
 
         WDB_Utils.crearTactic(self.procesador, self, liRegistros, rutinaDatos)
-    # def tw_train(self):
-    #     menu = QTVarios.LCMenu(self)
-    #     menu.opcion(self.tw_play_against, _("Play against a game"), Iconos.Law())
-    #     menu.separador()
-    #     resp = menu.lanza()
-    #     if resp:
-    #         resp()
-
-    # def tw_play_against(self):
-    #     li = self.grid.recnosSeleccionados()
-    #     if li:
-    #         game = self.dbGames.leePartidaRecno(li[0])
-    #         h = hash(game.xpv())
-    #         dbPlay = PantallaPlayPGN.PlayPGNs(self.configuracion.ficheroPlayPGN)
-    #         recplay = dbPlay.recnoHash(h)
-    #         if recplay is None:
-    #             dic = Util.SymbolDict()
-    #             for tag, value in game.li_tags:
-    #                 dic[tag] = value
-    #             dic["GAME"] = game.save()
-    #             dbPlay.appendHash(h, dic)
-    #             recplay = dbPlay.recnoHash(h)
-    #         dbPlay.close()
-    #
-    #         self.tw_terminar()
-    #         self.procesador.playPGNshow(recplay)
 
     def tw_pack(self):
         um = QTUtil2.unMomento(self)

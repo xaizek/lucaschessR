@@ -12,7 +12,7 @@ class GestorAlbum(Gestor.Gestor):
         self.siguiente_jugada()
 
     def base_inicio(self, album, cromo):
-        self.reinicio = {"ALBUM": album, "CROMO": cromo, "SIBLANCAS": cromo.is_white}
+        self.reinicio = {"ALBUM": album, "CROMO": cromo, "ISWHITE": cromo.is_white}
 
         is_white = cromo.is_white
 

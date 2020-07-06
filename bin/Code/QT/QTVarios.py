@@ -769,24 +769,20 @@ class MensajeFide(QtWidgets.QDialog):
 
 def select_pgn(wowner):
     configuracion = Code.configuracion
-    path = QTUtil2.leeFichero(wowner, configuracion.x_save_pgn, "pgn")
+    path = QTUtil2.leeFichero(wowner, configuracion.pgn_folder(), "pgn")
     if path:
         carpeta, fichero = os.path.split(path)
-        if configuracion.x_save_pgn != carpeta:
-            configuracion.x_save_pgn = carpeta
-            configuracion.graba()
+        configuracion.save_pgn_folder(carpeta)
     return path
 
 
 def select_pgns(wowner):
     configuracion = Code.configuracion
-    files = QTUtil2.leeFicheros(wowner, configuracion.x_save_pgn, "pgn")
+    files = QTUtil2.leeFicheros(wowner, configuracion.pgn_folder(), "pgn")
     if files:
         path = files[0]
         carpeta, fichero = os.path.split(path)
-        if configuracion.x_save_pgn != carpeta:
-            configuracion.x_save_pgn = carpeta
-            configuracion.graba()
+        configuracion.save_pgn_folder(carpeta)
     return files
 
 

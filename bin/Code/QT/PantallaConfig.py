@@ -194,14 +194,14 @@ def opciones(parent, configuracion):
 
     # Salvado automatico #############################################################################################
     form.separador()
-    form.file(_("Autosave to a PGN file"), "pgn", True, configuracion.x_salvar_pgn)
-    form.checkbox(_("Won games"), configuracion.x_salvar_ganados)
-    form.checkbox(_("Lost/Drawn games"), configuracion.x_salvar_perdidos)
-    form.checkbox(_("Unfinished games"), configuracion.x_salvar_abandonados)
+    form.file(_("Autosave to a PGN file"), "pgn", True, configuracion.pgn_folder())
+    form.checkbox(_("Won games"), configuracion.x_save_won)
+    form.checkbox(_("Lost/Drawn games"), configuracion.x_save_lost)
+    form.checkbox(_("Unfinished games"), configuracion.x_save_unfinished)
     form.separador()
     form.checkbox(_("Save as variation tutor's suggestion"), configuracion.x_save_tutor_variations)
     form.separador()
-    form.file(_("Autosave to a CSV file moves played"), "csv", True, configuracion.x_salvar_csv)
+    form.file(_("Autosave to a CSV file moves played"), "csv", True, configuracion.x_save_csv)
 
     form.add_tab(_("Autosave"))
 
@@ -317,14 +317,14 @@ def opciones(parent, configuracion):
         perf.very_bad_factor = perf.bad_factor * 4
 
         (
-            configuracion.x_salvar_pgn,
-            configuracion.x_salvar_ganados,
-            configuracion.x_salvar_perdidos,
-            configuracion.x_salvar_abandonados,
+            configuracion.x_save_pgn,
+            configuracion.x_save_won,
+            configuracion.x_save_lost,
+            configuracion.x_save_unfinished,
             configuracion.x_save_tutor_variations,
-            configuracion.x_salvar_csv,
+            configuracion.x_save_csv,
         ) = liSA
-        configuracion.x_salvar_csv = Util.dirRelativo(configuracion.x_salvar_csv)
+        configuracion.x_save_csv = Util.dirRelativo(configuracion.x_save_csv)
 
         return True
     else:

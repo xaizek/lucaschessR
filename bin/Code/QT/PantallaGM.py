@@ -430,7 +430,7 @@ class WGM(QTVarios.WDialogo):
         if dic:
             gm = dic["GM"]
             modo = dic.get("MODO", "estandar")
-            is_white = dic["IS_WHITE"]
+            is_white = dic["ISWHITE"]
             siJuez = dic["SIJUEZ"]
             showevals = dic.get("SHOWEVALS", False)
             engine = dic["ENGINE"]

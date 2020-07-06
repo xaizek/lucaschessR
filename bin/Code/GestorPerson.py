@@ -1,5 +1,5 @@
 from Code import Apertura
-from Code import GestorPlayAgainstEngine
+from Code.Engines import GestorPlayAgainstEngine
 from Code.QT import Iconos
 from Code import Util
 from Code.Constantes import *
@@ -24,7 +24,7 @@ class GestorPerson(GestorPlayAgainstEngine.GestorPlayAgainstEngine):
         self.summary = {}  # numJugada : "a"ccepted, "s"ame, "r"ejected, dif points, time used
         self.with_summary = dic_var.get("SUMMARY", False)
 
-        is_white = dic_var["SIBLANCAS"]
+        is_white = dic_var["ISWHITE"]
         self.is_human_side_white = is_white
         self.is_engine_side_white = not is_white
 

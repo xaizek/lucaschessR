@@ -77,8 +77,7 @@ def read_engines(folder_engines):
     cm = mas("rodentII", "Pawel Koziol", "0.9.64", "http://www.pkoziol.cal24.pl/rodent/rodent.htm", "rodentII", 2912)
     cm.ordenUCI("Hash", "64")
 
-    cm = mas("mccain", "Michael Byrne", "X3", "https://github.com/MichaelB7/Stockfish/releases", "McCain-X3_x64_linux", 3300)
-    cm.ordenUCI("Contempt", "0")
+    cm = mas("honey", "Michael Byrne", f"XI-r3 64bit", "https://github.com/MichaelB7/Stockfish/tree/honey", f"Honey-XI-r3", 3300)
     cm.ordenUCI("Hash", "64")
     cm.ponMultiPV(20, 256)
 

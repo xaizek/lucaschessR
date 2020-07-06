@@ -8,16 +8,15 @@ from Code import Util
 from Code import AperturasStd
 from Code import Routes
 from Code import Update
-from Code.Engines import EngineManager, WEngines, PlayAgainstEngine
+from Code.Engines import EngineManager, WEngines, PlayAgainstEngine, GestorPlayAgainstEngine
 from Code.Constantes import *
 from Code import Albums
 from Code import CPU
 from Code import Configuracion
 from Code import Position
-from Code import Entrenamientos
+from Code import Trainings
 from Code import GestorAlbum
 from Code import GestorElo
-from Code import GestorPlayAgainstEngine
 from Code import GestorEntPos
 from Code import GestorEverest
 from Code import GestorFideFics
@@ -32,7 +31,7 @@ from Code import GestorSolo
 from Code import GestorPartida
 from Code import Presentacion
 from Code import GestorWashing
-from Code import GestorPlayPGN
+from Code import GestorPlayGame
 from Code import GestorAnotar
 from Code import Adjourns
 from Code.QT import WCompetitionWithTutor, BasicMenus
@@ -53,7 +52,7 @@ from Code.QT import PantallaSingularM
 from Code.QT import PantallaUsuarios
 from Code.QT import PantallaWashing
 from Code.QT import PantallaWorkMap
-from Code.QT import PantallaPlayPGN
+from Code.QT import PantallaPlayGame
 from Code.QT import Piezas
 from Code.QT import QTUtil
 from Code.QT import QTUtil2
@@ -151,7 +150,7 @@ class Procesador:
 
         self.tablero = self.main_window.tablero
 
-        self.entrenamientos = Entrenamientos.Entrenamientos(self)
+        self.entrenamientos = Trainings.Entrenamientos(self)
 
         if self.configuracion.x_check_for_update:
             Update.test_update(self.version, self)
@@ -166,13 +165,13 @@ class Procesador:
                 if comandoL.endswith(".pgn"):
                     aplazamiento = {}
                     aplazamiento["TIPOJUEGO"] = GT_AGAINST_PGN
-                    aplazamiento["SIBLANCAS"] = True  # Compatibilidad
+                    aplazamiento["ISWHITE"] = True  # Compatibilidad
                     self.juegaAplazada(aplazamiento)
                     return
                 elif comandoL.endswith(".lcsb"):
                     aplazamiento = {}
                     aplazamiento["TIPOJUEGO"] = GT_ALONE
-                    aplazamiento["SIBLANCAS"] = True  # Compatibilidad
+                    aplazamiento["ISWHITE"] = True  # Compatibilidad
                     self.juegaAplazada(aplazamiento)
                     return
                 elif comandoL.endswith(".lcdb"):
@@ -247,7 +246,7 @@ class Procesador:
         self.cpu = CPU.CPU(self.main_window)
 
         tipoJuego = aplazamiento["TIPOJUEGO"]
-        is_white = aplazamiento["SIBLANCAS"]
+        is_white = aplazamiento["ISWHITE"]
 
         if tipoJuego == GT_COMPETITION_WITH_TUTOR:
             categoria = self.configuracion.rival.categorias.segun_clave(aplazamiento["CATEGORIA"])
@@ -368,7 +367,7 @@ class Procesador:
             return
 
         dic = {}
-        dic["SIBLANCAS"] = is_white
+        dic["ISWHITE"] = is_white
         dic["RIVAL"] = rival
 
         dic["SITIEMPO"] = siTiempo and minutos > 0
@@ -812,7 +811,7 @@ class Procesador:
         PantallaSTS.sts(self, self.main_window)
 
     def libre(self):
-        dic = PlayAgainstEngine.entrenamientoMaquina(self, _("Play against an engine"))
+        dic = PlayAgainstEngine.play_against_engine(self, _("Play against an engine"))
         if dic:
             self.entrenaMaquina(dic)
 
@@ -823,7 +822,7 @@ class Procesador:
         side = dic["SIDE"]
         if side == "R":
             side = "B" if random.randint(1, 2) == 1 else "N"
-        dic["SIBLANCAS"] = side == "B"
+        dic["ISWHITE"] = side == "B"
         self.gestor.inicio(dic)
 
     def read_pgn(self, fichero_pgn):
@@ -927,9 +926,19 @@ class Procesador:
             self.polyglot_factory()
 
     def juegaExterno(self, fich_tmp):
-        self.gestor = GestorSolo.GestorSolo(self)
-        dic = Util.restore_pickle(fich_tmp)
-        self.gestor.inicio(dic)
+        dic_sended = Util.restore_pickle(fich_tmp)
+        fich = Util.relative_path(self.configuracion.ficheroTemporal(".pkd"))
+
+        dic = PlayAgainstEngine.play_position(self, _("Play a position"), dic_sended["ISWHITE"])
+        if dic is None:
+            self.run_action(TB_QUIT)
+        else:
+            side = dic["SIDE"]
+            if side == "R":
+                side = "B" if random.randint(1, 2) == 1 else "N"
+            dic["ISWHITE"] = side == "B"
+            self.gestor = GestorPlayAgainstEngine.GestorPlayAgainstEngine(self)
+            self.gestor.play_position(dic, dic_sended["GAME"])
 
     def jugarSolo(self):
         self.gestor = GestorSolo.GestorSolo(self)
@@ -972,22 +981,22 @@ class Procesador:
         if PantallaEverest.show_expedition(self.main_window, self.configuracion, recno):
             self.playEverest(recno)
 
-    def playPGN(self):
-        w = PantallaPlayPGN.WPlayBase(self)
+    def play_game(self):
+        w = PantallaPlayGame.WPlayGameBase(self)
         if w.exec_():
             recno = w.recno
             if recno is not None:
                 is_white = w.is_white
-                self.gestor = GestorPlayPGN.GestorUnJuego(self)
+                self.gestor = GestorPlayGame.GestorPlayGame(self)
                 self.gestor.inicio(recno, is_white)
 
-    def playPGNshow(self, recno):
-        db = PantallaPlayPGN.PlayPGNs(self.configuracion.ficheroPlayPGN)
-        w = PantallaPlayPGN.WPlay1(self.main_window, self.configuracion, db, recno)
+    def play_game_show(self, recno):
+        db = PantallaPlayGame.DBPlayGame(self.configuracion.file_play_game())
+        w = PantallaPlayGame.WPlay1(self.main_window, self.configuracion, db, recno)
         if w.exec_():
             if w.recno is not None:
                 is_white = w.is_white
-                self.gestor = GestorPlayPGN.GestorUnJuego(self)
+                self.gestor = GestorPlayGame.GestorPlayGame(self)
                 self.gestor.inicio(w.recno, is_white)
         db.close()
 
@@ -1112,7 +1121,7 @@ class Procesador:
     def selectOneFNS(self, owner=None):
         if owner is None:
             owner = self.main_window
-        return Entrenamientos.selectOneFNS(owner, self)
+        return Trainings.selectOneFNS(owner, self)
 
     def gaviota_endings(self):
         WEndingsGTB.train_gtb(self)

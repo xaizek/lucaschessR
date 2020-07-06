@@ -31,7 +31,7 @@ class Tutor:
         self.siEntrenando = siEntrenando
         self.list_rm = None  # necesario
 
-        self.x_salvar_csv = gestor.configuracion.x_salvar_csv
+        self.x_save_csv = gestor.configuracion.x_save_csv
 
         self.is_moving_time = False
 
@@ -59,7 +59,7 @@ class Tutor:
             me.final()
 
         # Estadisticas
-        if self.x_salvar_csv:
+        if self.x_save_csv:
             self.guardaEstadisticas()
 
         # Comparamos la puntuacion del usuario con la del tutor
@@ -411,8 +411,8 @@ class Tutor:
         tutor_tiempo = self.gestorTutor.motorTiempoJugada
 
         try:
-            if not os.path.isfile(self.x_salvar_csv):
-                f = open(self.x_salvar_csv, "wt", encoding="utf-8", errors="ignore")
+            if not os.path.isfile(self.x_save_csv):
+                f = open(self.x_save_csv, "wt", encoding="utf-8", errors="ignore")
                 ntutor = _("Tutor").replace('"', "").replace(";", "")
                 player = _("Player").replace('"', "").replace(";", "")
                 puntos = _("points")
@@ -431,7 +431,7 @@ class Tutor:
                 )
                 f.write(txt)
             else:
-                f = open(self.x_salvar_csv, "at", encoding="utf-8", errors="ignore")
+                f = open(self.x_save_csv, "at", encoding="utf-8", errors="ignore")
 
             f.write(
                 '%s;%s;"%s";"%s";%d;%d;"%s";%d;%d;"%s";%d\n'

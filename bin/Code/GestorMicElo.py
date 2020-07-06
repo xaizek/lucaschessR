@@ -119,7 +119,7 @@ class GestorMicElo(Gestor.Gestor):
         self.puestoResultado = False  # Problema doble asignacion de ptos Thomas
 
         if aplazamiento:
-            is_white = aplazamiento["SIBLANCAS"]
+            is_white = aplazamiento["ISWHITE"]
         else:
             is_white = self.determinaColor(datosMotor)
 
@@ -272,7 +272,7 @@ class GestorMicElo(Gestor.Gestor):
         if len(self.game) and QTUtil2.pregunta(self.main_window, _("Do you want to adjourn the game?")):
             aplazamiento = {}
             aplazamiento["TIPOJUEGO"] = self.game_type
-            aplazamiento["SIBLANCAS"] = self.is_human_side_white
+            aplazamiento["ISWHITE"] = self.is_human_side_white
             aplazamiento["JUGADAS"] = self.game.save()
 
             aplazamiento["BASEELO"] = self.datosMotor.baseElo

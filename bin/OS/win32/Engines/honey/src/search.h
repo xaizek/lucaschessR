@@ -50,6 +50,7 @@ struct Stack {
   Value staticEval;
   int statScore;
   int moveCount;
+  bool inCheck;
 };
 
 
@@ -92,7 +93,7 @@ struct LimitsType {
   }
 
   bool use_time_management() const {
-    return !(mate | movetime | depth | nodes | perft | infinite);
+    return time[WHITE] || time[BLACK];
   }
 
   std::vector<Move> searchmoves;

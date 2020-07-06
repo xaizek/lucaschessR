@@ -179,7 +179,7 @@ class Configuracion:
         self.x_id = Util.new_id()
         self.x_player = ""
         self.x_save_folder = ""
-        self.x_save_pgn = ""
+        self.x_save_pgn_folder = ""
         self.x_save_lcsb = ""
         self.x_translator = ""
         self.x_style = "Fusion"
@@ -242,12 +242,11 @@ class Configuracion:
 
         self.x_cursor_thinking = True
 
-        self.x_salvar_ganados = False
-        self.x_salvar_perdidos = False
-        self.x_salvar_abandonados = False
-        self.x_salvar_pgn = ""
+        self.x_save_won = False
+        self.x_save_lost = False
+        self.x_save_unfinished = False
 
-        self.x_salvar_csv = ""
+        self.x_save_csv = ""
 
         self.x_rival_inicial = "rocinante" if Code.isLinux else "irina"
 
@@ -425,6 +424,9 @@ class Configuracion:
     def file_param_analysis(self):
         return self.opj_config("paranalisis.pkd")
 
+    def file_play_game(self):
+        return "%s/PlayGame.db" % self.carpeta_results
+
     def set_folders(self):
 
         self.fichero = os.path.join(self.carpeta_config, "lk.pk2")
@@ -461,7 +463,6 @@ class Configuracion:
         self.ficheroTrainings = "%s/trainings.pk" % self.carpeta_results
         self.ficheroHorses = "%s/horses.db" % self.carpeta_results
         self.ficheroLearnPGN = "%s/LearnPGN.db" % self.carpeta_results
-        self.ficheroPlayPGN = "%s/PlayPGN.db" % self.carpeta_results
         self.ficheroAlbumes = "%s/albumes.pkd" % self.carpeta_results
         self.ficheroPuntuaciones = "%s/hpoints.pkd" % self.carpeta_results
         self.ficheroAnotar = "%s/anotar.db" % self.carpeta_config
@@ -506,20 +507,19 @@ class Configuracion:
         self.x_id = Util.new_id()
         self.x_player = name
         self.x_save_folder = ""
-        self.x_save_pgn = ""
+        self.x_save_pgn_folder = ""
         self.x_save_lcsb = ""
 
-        self.x_salvar_ganados = False
-        self.x_salvar_perdidos = False
-        self.x_salvar_abandonados = False
-        self.x_salvar_pgn = ""
+        self.x_save_won = False
+        self.x_save_lost = False
+        self.x_save_unfinished = False
 
         self.x_captures_activate = False
         self.x_info_activate = False
         self.x_mouse_shortcuts = False
         self.x_show_candidates = False
 
-        self.x_salvar_csv = ""
+        self.x_save_csv = ""
 
         self.rival = self.buscaRival(self.x_rival_inicial)
 
@@ -833,3 +833,14 @@ class Configuracion:
         dic = db[clave]
         db.close()
         return dic
+
+    def pgn_folder(self):
+        resp = self.x_save_pgn_folder
+        if not resp:
+            resp = self.carpeta
+        return resp
+
+    def save_pgn_folder(self, new_folder):
+        if self.x_save_pgn_folder != new_folder:
+            self.x_save_pgn_folder = new_folder
+            self.graba()

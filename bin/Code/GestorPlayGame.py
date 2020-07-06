@@ -7,14 +7,14 @@ from Code import Game
 from Code import Gestor
 from Code.QT import PantallaJuicio
 from Code.QT import QTUtil2
-from Code.QT import PantallaPlayPGN
+from Code.QT import PantallaPlayGame
 from Code.Constantes import *
 
 
-class GestorUnJuego(Gestor.Gestor):
+class GestorPlayGame(Gestor.Gestor):
     def inicio(self, recno, is_white):
 
-        db = PantallaPlayPGN.PlayPGNs(self.configuracion.ficheroPlayPGN)
+        db = PantallaPlayGame.DBPlayGame(self.configuracion.file_play_game())
         reg = db.leeRegistro(recno)
         partidaObj = Game.Game()
         partidaObj.restore(reg["GAME"])
@@ -71,7 +71,7 @@ class GestorUnJuego(Gestor.Gestor):
     def run_action(self, key):
         if key == TB_CLOSE:
             self.procesador.inicio()
-            self.procesador.playPGNshow(self.recno)
+            self.procesador.play_game_show(self.recno)
 
         elif key == TB_CANCEL:
             self.cancelar()
@@ -322,7 +322,7 @@ class GestorUnJuego(Gestor.Gestor):
         self.guardar()
 
     def guardar(self):
-        db = PantallaPlayPGN.PlayPGNs(self.configuracion.ficheroPlayPGN)
+        db = PantallaPlayGame.DBPlayGame(self.configuracion.file_play_game())
         reg = db.leeRegistro(self.recno)
 
         dicIntento = {

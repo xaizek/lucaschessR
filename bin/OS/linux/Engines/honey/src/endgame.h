@@ -22,10 +22,10 @@
 #ifndef ENDGAME_H_INCLUDED
 #define ENDGAME_H_INCLUDED
 
-#include <unordered_map>
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 
 #include "position.h"
@@ -58,8 +58,9 @@ enum EndgameCode {
   KBPKB,   // KBP vs KB
   KBPPKB,  // KBPP vs KB
   KBPKN,   // KBP vs KN
+#if defined (Sullivan) || (Blau) || (Noir)
   KNPK,    // KNP vs K
-  KNPKB,   // KNP vs KB
+#endif
   KPKP     // KP vs KP
 };
 

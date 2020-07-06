@@ -339,7 +339,7 @@ class GestorElo(Gestor.Gestor):
         if len(self.game) > 0 and QTUtil2.pregunta(self.main_window, _("Do you want to adjourn the game?")):
             self.state = ST_ENDGAME
             dic = {
-                "SIBLANCAS": self.is_human_side_white,
+                "ISWHITE": self.is_human_side_white,
                 "GAME_SAVE": self.game.save(),
                 "CLAVE": self.datosMotor.clave,
                 "DEPTH": self.datosMotor.depth,
@@ -363,7 +363,7 @@ class GestorElo(Gestor.Gestor):
         engine.ppierde = dic["PPIERDE"]
         engine.ptablas = dic["PTABLAS"]
         self.base_inicio(engine)
-        self.is_human_side_white = dic["SIBLANCAS"]
+        self.is_human_side_white = dic["ISWHITE"]
 
         self.game.restore(dic["GAME_SAVE"])
         self.goto_end()

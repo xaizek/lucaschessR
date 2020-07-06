@@ -9,9 +9,10 @@ from Code.QT import QTVarios
 from Code import TrListas
 from Code import Util
 from Code.SQL import UtilSQL
+from Code.Databases import PantallaDatabase
 
 
-class PlayPGNs(UtilSQL.DictSQL):
+class DBPlayGame(UtilSQL.DictSQL):
     def __init__(self, fichero):
         UtilSQL.DictSQL.__init__(self, fichero)
         self.regKeys = self.keys(True, True)
@@ -61,11 +62,10 @@ class PlayPGNs(UtilSQL.DictSQL):
             return r.get(k, "")
 
         date = x("DATE").replace(".?", "").replace("?", "")
-
         return "%s-%s : %s %s %s" % (x("WHITE"), x("BLACK"), date, x("EVENT"), x("SITE"))
 
 
-class WPlayBase(QTVarios.WDialogo):
+class WPlayGameBase(QTVarios.WDialogo):
     def __init__(self, procesador):
 
         titulo = _("Play against a game")
@@ -75,7 +75,7 @@ class WPlayBase(QTVarios.WDialogo):
         self.configuracion = procesador.configuracion
         self.recno = None
 
-        self.db = PlayPGNs(self.configuracion.ficheroPlayPGN)
+        self.db = DBPlayGame(self.configuracion.file_play_game())
 
         # Historico
         o_columns = Columnas.ListaColumnas()
@@ -95,10 +95,10 @@ class WPlayBase(QTVarios.WDialogo):
         li_acciones = (
             (_("Close"), Iconos.MainMenu(), self.terminar),
             None,
-            (_("Play"), Iconos.Empezar(), self.empezar),
-            (_("New"), Iconos.Nuevo(), self.nuevo),
+            (_("Play"), Iconos.Empezar(), self.play),
+            (_("New"), Iconos.Nuevo(), self.new),
             None,
-            (_("Remove"), Iconos.Borrar(), self.borrar),
+            (_("Remove"), Iconos.Borrar(), self.remove),
             None,
         )
         self.tb = QTVarios.LCTB(self, li_acciones)
@@ -115,7 +115,7 @@ class WPlayBase(QTVarios.WDialogo):
         self.grid.gotop()
 
     def grid_doble_click(self, grid, fila, columna):
-        self.empezar()
+        self.play()
 
     def grid_num_datos(self, grid):
         return len(self.db)
@@ -136,15 +136,31 @@ class WPlayBase(QTVarios.WDialogo):
         self.save_video()
         self.db.close()
 
-    def nuevo(self):
-        game = self.procesador.select_1_pgn(self)
+    def new(self):
+        menu = QTVarios.LCMenu(self)
+        if not QTVarios.lista_db(self.configuracion, True).is_empty():
+            menu.opcion("db", _("Game in a database"), Iconos.Database())
+            menu.separador()
+        menu.opcion("pgn", _("Game in a pgn"), Iconos.Filtrar())
+        menu.separador()
+        resp = menu.lanza()
+        game = None
+        if resp == "pgn":
+            game = self.procesador.select_1_pgn(self)
+        elif resp == "db":
+            db = QTVarios.select_db(self, self.configuracion, True, False)
+            if db:
+                w = PantallaDatabase.WBDatabase(self, self.procesador, db, False, True)
+                resp = w.exec_()
+                if resp:
+                    game = w.game
         if game and len(game) > 0:
             reg = {"GAME": game.save()}
             self.db.append(reg)
             self.grid.refresh()
             self.grid.gotop()
 
-    def borrar(self):
+    def remove(self):
         li = self.grid.recnosSeleccionados()
         if len(li) > 0:
             if QTUtil2.pregunta(self, _("Do you want to delete all selected records?")):
@@ -152,7 +168,7 @@ class WPlayBase(QTVarios.WDialogo):
         self.grid.gotop()
         self.grid.refresh()
 
-    def empezar(self):
+    def play(self):
         li = self.grid.recnosSeleccionados()
         if len(li) > 0:
             recno = li[0]
@@ -177,9 +193,7 @@ class WPlay1(QTVarios.WDialogo):
         self.game = Game.Game()
         self.game.restore(self.registro["GAME"])
 
-        self.lbRotulo = (
-            Controles.LB(self, self.db.rotulo(recno)).ponTipoLetra(puntos=12).ponColorFondoN("#076C9F", "#EFEFEF")
-        )
+        self.lbRotulo = Controles.LB(self, self.db.rotulo(recno)).ponTipoLetra(puntos=12).ponColorFondoN("#076C9F", "#EFEFEF")
 
         self.liIntentos = self.registro.get("LIINTENTOS", [])
 
@@ -192,14 +206,7 @@ class WPlay1(QTVarios.WDialogo):
         self.grid.setMinimumWidth(self.grid.anchoColumnas() + 20)
 
         # Tool bar
-        li_acciones = (
-            (_("Close"), Iconos.MainMenu(), self.terminar),
-            None,
-            (_("Train"), Iconos.Entrenar(), self.empezar),
-            None,
-            (_("Remove"), Iconos.Borrar(), self.borrar),
-            None,
-        )
+        li_acciones = ((_("Close"), Iconos.MainMenu(), self.terminar), None, (_("Train"), Iconos.Entrenar(), self.empezar), None, (_("Remove"), Iconos.Borrar(), self.borrar), None)
         self.tb = QTVarios.LCTB(self, li_acciones)
 
         # Colocamos

@@ -31,7 +31,6 @@
 
 #include <windows.h>
 
-
 // The needed Windows API for processor groups could be missed from old Windows
 // versions, so instead of calling them directly (forcing the linker to resolve
 // the calls at compile time), try to load them at runtime. To do this we need
@@ -50,6 +49,11 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 #include <sstream>
 #include <vector>
 
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <stdlib.h>
+#include <sys/mman.h>
+#endif
+
 #include "misc.h"
 #include "thread.h"
 #include "uci.h"
@@ -62,22 +66,26 @@ using namespace std;
 
 namespace {
 
+size_t memtest = 0; //lp mem test
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
 
 #if (defined Add_Features && ReleaseVer)
-const string Version = "XI ";
+const string Version = "XI-r3 ";
 #else
 const string Version = "";
 #endif
 
 
-#ifdef Fortress
+#ifdef Fortress  // will need to remove
 const string Suffix = "FD ";
 #else
 const string Suffix = "";
 #endif
 
+//#ifdef Sullivan
+//const string Name = "Honey ";
+//#endif
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
 /// can toggle the logging of std::cout and std:cin at runtime whilst preserving
@@ -143,6 +151,102 @@ public:
 
 } // namespace
 
+#ifdef Blau
+const std::string splash() {
+
+     stringstream sp;
+
+     sp << FontColor::engine;
+     sp << "\n\n\n";
+     sp <<  "    ######                                       #    # ~~~ ~~~ ~~~ ~~ ~~~ ~~~ #     # ###            #####     \n";
+     sp <<  "    #     # #      #    # ###### ###### #  ####  #    # ~~~ ~~ /''*._ ~~~~ ~~ ~ #   #   #     #####  #     #    \n";
+     sp <<  "    #     # #      #    # #      #      # #      #    # ~~ .-*'`    `*-.._.-'\\ ~ # #    #     #    #       #    \n";
+     sp <<  "    ######  #      #    # #####  #####  #  ####  ###### ~ < * ) ) )   ,     ( ~~~ #     # ### #    #  #####     \n";
+     sp <<  "    #     # #      #    # #      #      #      # #    # ~~ `*-._`._(__.--*'`.) ~ # #    #     #####        #    \n";
+     sp <<  "    #     # #      #    # #      #      # #    # #    #  ~~~ ~~ ~~~ ~~~ ~~ ~~~  #   #   #     #   #  #     #    \n";
+     sp <<  "    ######  ######  ####  ###### #      #  ####  #    # ~~ ~~~ ~~ ~~~ ~~~ ~~ ~ #     # ###    #    #  #####     \n\n";
+
+  return sp.str();
+}
+#endif
+
+#ifdef Noir
+const std::string splash() {
+
+     stringstream sp;
+
+     sp << FontColor::engine << "\n\n\n";
+     sp <<  "    ######                       #     #   #     ######                                #####   #     # ###            #####     \n";
+     sp <<  "    #     # #        ##    ####  #    #   ###    #     # #   ##   #    #  ####  #    # #    #   #   #   #     #####  #     #    \n";
+     sp <<  "    #     # #       #  #  #    # #   #   #####   #     # #  #  #  ##  ## #    # ##   # #    #    # #    #     #    #       #    \n";
+     sp <<  "    ######  #      #    # #      ####   #######  #     # # #    # # ## # #    # # #  # #    #     #     # ### #    #  #####     \n";
+     sp <<  "    #     # #      ###### #      #  #    #####   #     # # ###### #    # #    # #  # # #    #    # #    #     #####        #    \n";
+     sp <<  "    #     # #      #    # #    # #   #    ###    #     # # #    # #    # #    # #   ## #    #   #   #   #     #   #  #     #    \n";
+     sp <<  "    ######  ###### #    #  ####  #    #    #     ######  # #    # #    #  ####  #    # #####   #     # ###    #    #  #####     \n\n";
+
+
+  return sp.str();
+}
+#endif
+
+#ifdef Stockfish
+const std::string splash() {
+
+     stringstream sp;
+
+     sp << FontColor::engine << "\n\n\n";
+     sp <<  "    ######                                             #    #       .-'`````'-.   #     # ###            #####    \n";
+     sp <<  "    #     # #####  ####   ####  #    # ###### #  ####  #    #  (\\  /   \\   /   \\   #   #   #     #####  #     #    \n";
+     sp <<  "    #         #   #    # #    # #   #  #      # #      #    #  ) \\/   (@) (@)   \\   # #    #     #    #       #    \n";
+     sp <<  "     #####    #   #    # #      ####   #####  #  ####  ###### (__(       W       )   #     # ### #    #  #####     \n";
+     sp <<  "          #   #   #    # #      #  #   #      #      # #    #    (  V v V V v V  )  # #    #     #####        #    \n";
+     sp <<  "    #     #   #   #    # #    # #   #  #      # #    # #    #     \\  A A A A A  /  #   #   #     #   #  #     #    \n";
+     sp <<  "     #####    #    ####   ####  #    # #      #  ####  #    #      \\/\\-.,,,.-/\\/  #     # ###    #    #  #####     \n\n";
+
+  return sp.str();
+}
+#endif
+
+#ifdef Sullivan
+
+const std::string splash() {
+
+     stringstream sp;
+
+     sp << FontColor::engine << "\n\n\n";
+     sp <<  "                                           __         __                                     \n";
+     sp <<  "    #     #                      #     #  /  \\.-'''-./  \\  #     # ###            #####     \n";
+     sp <<  "    #     #  ####  #    # ######  #   #   \\    \\   /    /   #   #   #     #####  #     #    \n";
+     sp <<  "    #     # #    # ##   # #        # #     (   o   o   )     # #    #     #    #       #    \n";
+     sp <<  "    ####### #    # # #  # #####     #      |     w     |      #     # ### #    #  #####     \n";
+     sp <<  "    #     # #    # #  # # #         #      \\  .-'''-.  /     # #    #     #####        #   \n";
+     sp <<  "    #     # #    # #   ## #         #       '-\\__Y__/-'     #   #   #     #   #  #     #   \n";
+     sp <<  "    #     #  ####  #    # ######    #          `---`       #     # ###    #    #  #####    \n\n";
+
+  return sp.str();
+}
+#endif
+#ifdef Weakfish
+
+const std::string splash() {
+
+     stringstream sp;
+
+     sp << FontColor::engine << "\n\n";
+     sp <<  "                                                           |\\/\\/\\/|                                     \n";
+     sp <<  "    #      #                                      #    #   |      |  #     # ###             #####      \n";
+     sp <<  "    #      # ######   ##   #    # ###### #  ####  #    #   |  / \\ |   #   #   #      #####  #     #    \n";
+     sp <<  "    #      # #       #  #  #   #  #      # #      #    #   | (-)(-)    # #    #      #    #       #    \n";
+     sp <<  "    #   #  # #####  #    # ####   #####  #  ####  ######  c      _)     #     #  ### #    #  #####     \n";
+     sp <<  "    #   #  # #      ###### #  #   #      #      # #    #   | ,___|     # #    #      #####        #    \n";
+     sp <<  "    #   #  # #      #    # #   #  #      # #    # #    #   |   /      #   #   #      #   #  #     #    \n";
+     sp <<  "    ### ###  ###### #    # #    # #      #  ####  #    #  /____\\     #     # ###     #    #  #####     \n\n";
+
+  return sp.str();
+}
+#endif
+
+
 /// engine_info() returns the full name of the current Honey version. This
 /// will be either "Honey <Tag> Mmm-dd-yy" (where Mmm-dd-yy is the date when
 /// the program was compiled) or "Honey <Version>", depending on whether
@@ -154,58 +258,51 @@ const string engine_info(bool to_uci) {
     string month, day, year;
     stringstream ss, date(__DATE__); // From compiler, format is "Sep 21 2008"
 
-#ifdef Sullivan
 #ifdef Blau
-    ss << "Blue Honey " << Version << Suffix << setfill('0');
-#else
-    ss << "Honey " << Version << Suffix << setfill('0');
-#endif
-#elif defined (Blau)
-    ss << "Bluefish " << Version << Suffix << setfill('0');
-#elif defined (Weakfish)
-	ss << "Weakfish " << Version << Suffix << setfill('0');
-#elif defined (Noir)
-	ss << "Black Diamond " << Version << Suffix << setfill('0');
-#else
-    ss << "Stockfish " << Version << Suffix << setfill('0');
+    ss <<  "    Bluefish " << Version << Suffix << setfill('0');
+#elif Sullivan
+    ss <<  "    Honey "         << Version << Suffix << setfill('0') ;
+#elif Noir
+	  ss <<  "    Black Diamond " << Version << Suffix << setfill('0');
+#elif Stockfish
+    ss <<  "    Stockfish "     << Version << Suffix << setfill('0');
+#elif Weakfish
+    ss <<  "    Weakfish "      << Version << Suffix << setfill('0');
 #endif
 #if (defined Sullivan && defined Test)
 	if (Version.empty())
 	{
 		date >> month >> day;
-		ss << setw(2) << (1 + months.find(month) / 4) <<setw(2) << day  << "-" << "";
+		ss << setw(2) << (1 + months.find(month) / 4) <<setw(2) << day  << "-" << " ";
 	}
 
 #else
     if (Version.empty())
     {
         date >> month >> day >> year;
-		ss << setw(2) << (1 + months.find(month) / 4) <<setw(2) << day << year.substr(2) << "";
+        ss << setw(2) << (1 + months.find(month) / 4) <<setw(2) << day << year.substr(2) << " ";
     }
 #endif
-#if defined (Sullivan) || (Weakfish)
-    ss	<< (to_uci  ? "\nid author ": " by ")
-            << "M. Byrne and scores of others...";
+#ifdef Sullivan
+      ss	<< (to_uci  ? "\nid author ": "by ") << "M. Byrne and scores of others...\n" << FontColor::reset ;
 #else
-//     ss << (Is64Bit ? " 64" : "") // 95% of systems are 64 bit
-//     << (HasPext ? " BMI2" : (HasPopCnt ? " POPCNT" : "")) // may disrupt some GUIs due to length
-	   ss << (to_uci  ? "\nid author ": " by ")
-       << "T. Romstad, M. Costalba, J. Kiiski, G. Linscott";
+       ss << (to_uci  ? "\nid author ": " by ")
+          << "T. Romstad, M. Costalba, J. Kiiski, G. Linscott\n" << FontColor::reset ;
 #endif
 #ifdef Pi
-	ss << (to_uci  ? "":"\nCompiled for Picochess by Scally");
+	   ss << (to_uci  ? "":"\nCompiled for Picochess by Scally\n") << FontColor::reset ;
 #endif
   return ss.str();
 }
 
-// By S Nicolet, slightly modified here
+
 /// compiler_info() returns a string trying to describe the compiler we use
 
 const std::string compiler_info() {
 
-  #define STRINGIFY2(x) #x
-  #define STRINGIFY(x) STRINGIFY2(x)
-  #define VER_STRING(major, minor, patch) STRINGIFY(major) "." STRINGIFY(minor) "." STRINGIFY(patch)
+  #define stringify2(x) #x
+  #define stringify(x) stringify2(x)
+  #define make_version_string(major, minor, patch) stringify(major) "." stringify(minor) "." stringify(patch)
 
 /// Predefined macros hell:
 ///
@@ -219,20 +316,20 @@ const std::string compiler_info() {
 
   #ifdef __clang__
      compiler += "clang++ ";
-     compiler += VER_STRING(__clang_major__, __clang_minor__, __clang_patchlevel__);
+     compiler += make_version_string(__clang_major__, __clang_minor__, __clang_patchlevel__);
   #elif __INTEL_COMPILER
      compiler += "Intel compiler ";
      compiler += "(version ";
-     compiler += STRINGIFY(__INTEL_COMPILER) " update " STRINGIFY(__INTEL_COMPILER_UPDATE);
+     compiler += stringify(__INTEL_COMPILER) " update " stringify(__INTEL_COMPILER_UPDATE);
      compiler += ")";
   #elif _MSC_VER
      compiler += "MSVC ";
      compiler += "(version ";
-     compiler += STRINGIFY(_MSC_FULL_VER) "." STRINGIFY(_MSC_BUILD);
+     compiler += stringify(_MSC_FULL_VER) "." stringify(_MSC_BUILD);
      compiler += ")";
   #elif __GNUC__
      compiler += "g++ (GNUC) ";
-     compiler += VER_STRING(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+     compiler += make_version_string(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
   #else
      compiler += "Unknown compiler ";
      compiler += "(unknown version)";
@@ -257,14 +354,14 @@ const std::string compiler_info() {
   #else
      compiler += " on unknown system";
   #endif
-/*  // for add'l info if needed
+
   compiler += "\n __VERSION__ macro expands to: ";
   #ifdef __VERSION__
      compiler += __VERSION__;
   #else
      compiler += "(undefined macro)";
   #endif
-  compiler += "\n";*/
+  compiler += "\n";
 
 	return compiler;
 }
@@ -336,23 +433,135 @@ void prefetch(void* addr) {
 #endif
 
 
-/// large_page_alloc() is a version of malloc() which tries to return
-/// a block of memory aligned on large pages on systems which support
-/// them. On other systems this is just a normal malloc() call.
+/// aligned_ttmem_alloc() will return suitably aligned memory, and if possible use large pages.
+/// The returned pointer is the aligned one, while the mem argument is the one that needs
+/// to be passed to free. With c++17 some of this functionality could be simplified.
 
-void* large_page_alloc(size_t size) {
+#if defined(__linux__) && !defined(__ANDROID__)
 
-#ifdef USE_MADVISE_HUGEPAGE
-    size_t alignment = 2 * 1024 * 1024;
-    void* addr = aligned_alloc(alignment, size);
-    if (addr)
-        madvise(addr, size, MADV_HUGEPAGE);
-    return addr ? addr : malloc(size);
+void* aligned_ttmem_alloc(size_t allocSize, void*& mem) {
+
+  constexpr size_t alignment = 2 * 1024 * 1024; // assumed 2MB page sizes
+  size_t size = ((allocSize + alignment - 1) / alignment) * alignment; // multiple of alignment
+  if (posix_memalign(&mem, alignment, size))
+     mem = nullptr;
+  madvise(mem, allocSize, MADV_HUGEPAGE);
+  return mem;
+}
+
+#elif defined(_WIN64)
+
+static void* aligned_ttmem_alloc_large_pages(size_t allocSize) {
+
+  HANDLE hProcessToken { };
+  LUID luid { };
+  void* mem = nullptr;
+
+  const size_t largePageSize = GetLargePageMinimum();
+  if (!largePageSize)
+      return nullptr;
+
+  // We need SeLockMemoryPrivilege, so try to enable it for the process
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hProcessToken))
+      return nullptr;
+
+  if (LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid))
+  {
+      TOKEN_PRIVILEGES tp { };
+      TOKEN_PRIVILEGES prevTp { };
+      DWORD prevTpLen = 0;
+
+      tp.PrivilegeCount = 1;
+      tp.Privileges[0].Luid = luid;
+      tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+      // Try to enable SeLockMemoryPrivilege. Note that even if AdjustTokenPrivileges() succeeds,
+      // we still need to query GetLastError() to ensure that the privileges were actually obtained.
+      if (AdjustTokenPrivileges(
+              hProcessToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), &prevTp, &prevTpLen) &&
+          GetLastError() == ERROR_SUCCESS)
+      {
+          // Round up size to full pages and allocate
+          allocSize = (allocSize + largePageSize - 1) & ~size_t(largePageSize - 1);
+          mem = VirtualAlloc(
+              NULL, allocSize, MEM_RESERVE | MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
+
+          // Privilege no longer needed, restore previous state
+          AdjustTokenPrivileges(hProcessToken, FALSE, &prevTp, 0, NULL, NULL);
+      }
+  }
+
+  CloseHandle(hProcessToken);
+
+  return mem;
+}
+
+void* aligned_ttmem_alloc(size_t allocSize, void*& mem) {
+
+  static bool firstCall = true;
+
+  // Try to allocate large pages
+  mem = aligned_ttmem_alloc_large_pages(allocSize);
+
+  // Suppress info strings on the first call. The first call occurs before 'uci'
+  // is received and in that case this output confuses some GUIs.
+  if (!firstCall && memtest != allocSize )
+  {
+      if (mem)
+          sync_cout << "info string Hash Table: Windows Large Pages, " << (allocSize >> 20)  << " Mb" << sync_endl;
+      else
+          sync_cout << "info string Hash Table: Default, "  << (allocSize >> 20)  << " Mb" << sync_endl;
+      memtest = allocSize;
+  }
+  firstCall = false;
+
+  // Fall back to regular, page aligned, allocation if necessary
+  if (!mem)
+      mem = VirtualAlloc(NULL, allocSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+
+
+  // NOTE: VirtualAlloc returns memory at page boundary, so no need to align for
+  // cachelines
+  return mem;
+}
+
 #else
-    return malloc(size);
+
+void* aligned_ttmem_alloc(size_t allocSize, void*& mem) {
+
+  constexpr size_t alignment = 64; // assumed cache line size
+  size_t size = allocSize + alignment - 1; // allocate some extra space
+  mem = malloc(size);
+  void* ret = reinterpret_cast<void*>((uintptr_t(mem) + alignment - 1) & ~uintptr_t(alignment - 1));
+  return ret;
+}
+
 #endif
 
+
+/// aligned_ttmem_free() will free the previously allocated ttmem
+
+#if defined(_WIN64)
+
+void aligned_ttmem_free(void* mem) {
+
+  if (mem && !VirtualFree(mem, 0, MEM_RELEASE))
+  {
+      DWORD err = GetLastError();
+      std::cerr << "Failed to free transposition table. Error code: 0x" <<
+          std::hex << err << std::dec << std::endl;
+      exit(EXIT_FAILURE);
+  }
 }
+
+#else
+
+void aligned_ttmem_free(void *mem) {
+  free(mem);
+}
+
+#endif
+
 
 namespace WinProcGroup {
 
@@ -459,3 +668,36 @@ void bindThisThread(size_t idx) {
 #endif
 
 } // namespace WinProcGroup
+/* ascii logos
+
+                |
+           .-'`````'-.
+      (\  /   \   /   \
+      ) \/   (@) (@)   \
+     (__(       W       )
+        (  V v V V v V  )
+         \  A A A A A  /
+         \/\-.,,,.-/\/
+
+          __         __
+         /  \.-'''-./  \
+         \    ~   ~   /
+          |   o   o   |
+          \  .-'''-.  /
+           '-\__Y__/-'
+              `---`
+
+            |\/\/\/|
+            |      |
+            |  / \|
+            | (o)(o)
+            c      _)
+            | ,___|
+            |   /
+           /____\
+
+            /''*._
+       .-*'`    `*-.._.-'\
+      < * ) ) )   ,     (
+       `*-._`._(__.--*'`.)
+*/

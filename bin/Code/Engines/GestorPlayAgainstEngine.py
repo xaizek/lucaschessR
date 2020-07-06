@@ -86,7 +86,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         self.summary = {}  # numJugada : "a"ccepted, "s"ame, "r"ejected, dif points, time used
         self.with_summary = dic_var.get("SUMMARY", False)
 
-        is_white = dic_var["SIBLANCAS"]
+        is_white = dic_var["ISWHITE"]
         self.is_human_side_white = is_white
         self.is_engine_side_white = not is_white
 
@@ -479,6 +479,19 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         self.summary = dic["summary"]
         self.goto_end()
 
+    def close_position(self, key):
+        if key == TB_CLOSE:
+            self.procesador.run_action(TB_QUIT)
+        else:
+            self.run_action(key)
+
+    def play_position(self, dic, restore_game):
+        self.ponRutinaAccionDef(self.close_position)
+        self.base_inicio(dic)
+        self.game.restore(restore_game)
+        self.goto_end()
+        self.siguiente_jugada()
+
     def reiniciar(self, siPregunta):
         if siPregunta:
             if not QTUtil2.pregunta(self.main_window, _("Restart the game?")):
@@ -672,20 +685,6 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             if mrm and self.tutor_con_flechas:
                 self.ponFlechasTutor(mrm, self.nArrowsTt)
             self.is_analyzed_by_tutor = True
-
-    # def analizaSiguiente(self):
-    #     if self.is_analyzing:
-    #         if self.human_is_playing and self.state == ST_PLAYING:
-    #             if not self.is_tutor_enabled:
-    #                 self.xtutor.ac_final(-1)
-    #             else:
-    #                 mrm = self.xtutor.ac_estado()
-    #                 if mrm:
-    #                     rm = mrm.mejorMov()
-    #                     rm.whoDispatch = True
-    #                     if self.tutor_con_flechas:
-    #                         self.ponFlechasTutor(mrm, self.nArrowsTt)
-                        # QtCore.QTimer.singleShot(4000 if self.tutor_con_flechas else 2000, self.analizaSiguiente)
 
     def analizaFinal(self, is_mate=False):
         if is_mate:
@@ -1181,7 +1180,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             for k, v in dic.items():
                 self.reinicio[k] = v
 
-            is_white = dic["SIBLANCAS"]
+            is_white = dic["ISWHITE"]
 
             self.pon_toolbar()
 

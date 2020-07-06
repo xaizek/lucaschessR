@@ -692,10 +692,10 @@ class Gestor:
     def guardarPGN(self):
         conf = self.configuracion
 
-        if conf.x_salvar_pgn:
+        if conf.x_save_pgn:
 
             try:
-                with open(conf.x_salvar_pgn, "at", encoding="utf-8", errors="ignore") as q:
+                with open(conf.x_save_pgn, "at", encoding="utf-8", errors="ignore") as q:
                     dato = self.pgn.actual() + "\n\n"
                     q.write(dato.replace("\n", "\r\n"))
             except:
@@ -705,7 +705,7 @@ class Gestor:
                     "%s : %s\n\n%s"
                     % (
                         _("Unable to save"),
-                        conf.x_salvar_pgn,
+                        conf.x_save_pgn,
                         _("It is saved in the clipboard to paste it wherever you want."),
                     ),
                 )
@@ -714,9 +714,9 @@ class Gestor:
         conf = self.configuracion
 
         if siGanado:
-            siSalvar = conf.x_salvar_ganados
+            siSalvar = conf.x_save_won
         else:
-            siSalvar = conf.x_salvar_perdidos
+            siSalvar = conf.x_save_lost
 
         if siSalvar:
             self.guardarPGN()
@@ -727,7 +727,7 @@ class Gestor:
 
         conf = self.configuracion
 
-        if conf.x_salvar_abandonados:
+        if conf.x_save_unfinished:
             if not QTUtil2.pregunta(self.main_window, _("Do you want to save this game?")):
                 return
             self.guardarPGN()
@@ -1830,9 +1830,7 @@ class Gestor:
                 posicion = move.position
             dic = {
                 "GAME": gm.save(),
-                "SICAMBIORIVAL": True,
-                "EXIT_WHEN_FINISHED": True,
-                "SIBLANCAS": posicion.is_white
+                "ISWHITE": posicion.is_white
             }
             fich = Util.relative_path(self.configuracion.ficheroTemporal(".pkd"))
             Util.save_pickle(fich, dic)

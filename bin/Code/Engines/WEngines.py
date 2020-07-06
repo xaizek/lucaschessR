@@ -216,7 +216,7 @@ class WEngines(QTVarios.WDialogo):
             me = self.lista_motores[fila].copy()
             w = WEngine(self, self.lista_motores, me)
             if w.exec_():
-                self.lista_motores.nuevo(me)
+                self.lista_motores.append(me)
                 self.grid.refresh()
                 self.grid.gobottom(0)
                 self.grabar()

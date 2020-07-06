@@ -937,12 +937,26 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
             self.procesador.cambiaXTutor()
 
 
-def entrenamientoMaquina(procesador, titulo):
+def play_against_engine(procesador, titulo):
     w = WPlayAgainstEngine(procesador, titulo)
     if w.exec_():
         return w.dic
     else:
         return None
+
+
+def play_position(procesador, titulo, is_white):
+    w = WPlayAgainstEngine(procesador, titulo)
+    w.posicionQuitar()
+    w.btPosicion.setDisabled(True)
+    if is_white:
+        w.rbBlancas.activa()
+    else:
+        w.rbNegras.activa()
+    if w.exec_():
+        return w.dic
+    else:
+        None
 
 
 class WCambioRival(QtWidgets.QDialog):
@@ -1068,7 +1082,7 @@ class WCambioRival(QtWidgets.QDialog):
 
     def aceptar(self):
         dic = self.dic
-        dic["SIBLANCAS"] = self.rbBlancas.isChecked()
+        dic["ISWHITE"] = self.rbBlancas.isChecked()
 
         dr = dic["RIVAL"] = {}
         dr["MOTOR"] = self.rival.clave
@@ -1089,7 +1103,7 @@ class WCambioRival(QtWidgets.QDialog):
 
     def recuperaDic(self):
         dic = self.dic
-        is_white = dic.get("SIBLANCAS", True)
+        is_white = dic.get("ISWHITE", True)
         self.rbBlancas.activa(is_white)
         self.rbNegras.activa(not is_white)
 

@@ -67,7 +67,8 @@ const vector<string> Defaults = {
   "4rrk1/1p1nq3/p7/2p1P1pp/3P2bp/3Q1Bn1/PPPB4/1K2R1NR w - - 40 21",
   "r3k2r/3nnpbp/q2pp1p1/p7/Pp1PPPP1/4BNN1/1P5P/R2Q1RK1 w kq - 0 16",
   "3Qb1k1/1r2ppb1/pN1n2q1/Pp1Pp1Pr/4P2p/4BP2/4B1R1/1R5K b - - 11 40",
-#if defined (Sullivan) || (Blue)
+  "4k3/3q1r2/1N2r1b1/3ppN2/2nPP3/1B1R2n1/2R1Q3/3K4 w - - 5 1",
+#if defined (Sullivan) || (Blau)
   "8/1p2KP2/1p4q1/1Pp5/2P5/N1Pp1k2/3P4/1N6 b - - 76 40", //draw
 
   // 5-man positions
@@ -100,12 +101,10 @@ const vector<string> Defaults = {
   // Mate and stalemate positions
   "6k1/3b3r/1p1p4/p1n2p2/1PPNpP1q/P3Q1p1/1R1RB1P1/5K2 b - - 0 1",
   "r2r1n2/pp2bk2/2p1p2p/3q4/3PN1QP/2P3R1/P4PP1/5RK1 w - - 0 1",
-  "8/8/8/8/8/6k1/6p1/6K1 w - -",
-  "7k/7P/6K1/8/3B4/8/8/8 b - -",
 
   // Chess 960
   "setoption name UCI_Chess960 value true",
-  "bbqnnrkr/pppppppp/8/8/8/8/PPPPPPPP/BBQNNRKR w KQkq - 0 1 moves g2g3 d7d5 d2d4 c8h3 c1g5 e8d6 g5e7 f7f6",
+  "bbqnnrkr/pppppppp/8/8/8/8/PPPPPPPP/BBQNNRKR w HFhf - 0 1 moves g2g3 d7d5 d2d4 c8h3 c1g5 e8d6 g5e7 f7f6",
   "setoption name UCI_Chess960 value false"
 };
 
@@ -129,15 +128,13 @@ vector<string> setup_bench(const Position& current, istream& is) {
   string go, token;
 
   // Assign default values to missing arguments
+#if defined (Stockfish) || (Weakfish)
   string ttSize    = (is >> token) ? token : "16";
-  string threads   = (is >> token) ? token : "1";
-#ifdef Weakfish
-  string limit     = (is >> token) ? token : "7";
-#elif defined (Noir)
-  string limit     = (is >> token) ? token : "12";
 #else
-  string limit     = (is >> token) ? token : "13";
+  string ttSize    = (is >> token) ? token : "256";
 #endif
+  string threads   = (is >> token) ? token : "1";
+  string limit     = (is >> token) ? token : "13";
   string fenFile   = (is >> token) ? token : "default";
   string limitType = (is >> token) ? token : "depth";
 

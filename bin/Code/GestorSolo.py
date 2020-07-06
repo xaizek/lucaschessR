@@ -51,7 +51,6 @@ class GestorSolo(Gestor.Gestor):
             self.game.add_tag("Event", _("Create your own game"))
 
         self.reinicio = dic
-        self.exit_when_finished = dic.get("EXIT_WHEN_FINISHED", False)
 
         self.human_is_playing = True
         self.is_human_side_white = True
@@ -169,8 +168,6 @@ class GestorSolo(Gestor.Gestor):
 
     def pon_toolbar(self):
         li = [TB_CLOSE, TB_FILE, TB_PGN_LABELS, TB_TAKEBACK, TB_HELP_TO_MOVE, TB_REINIT, TB_CONFIG, TB_UTILITIES]
-        if self.exit_when_finished:
-            li[0] = TB_END_GAME
         self.main_window.pon_toolbar(li)
 
     def finPartida(self):
@@ -187,14 +184,7 @@ class GestorSolo(Gestor.Gestor):
             elif resp:
                 self.grabarComo()
 
-        if self.exit_when_finished:
-            self.procesador.run_action(TB_QUIT)
-            self.procesador.pararMotores()
-            self.procesador.quitaKibitzers()
-            self.procesador.main_window.accept()
-            sys.exit(0)
-        else:
-            self.procesador.inicio()
+        self.procesador.inicio()
 
     def final_x(self):
         self.finPartida()
@@ -680,7 +670,7 @@ class GestorSolo(Gestor.Gestor):
             self.ponRotulo1(dic["ROTULO1"])
             self.play_against_engine = True
             self.configuracion.escVariables("ENG_GESTORSOLO", dic)
-            self.is_human_side_white = dic["SIBLANCAS"]
+            self.is_human_side_white = dic["ISWHITE"]
             if self.game.last_position.is_white != self.is_human_side_white and not self.game.siEstaTerminada():
                 self.play_against_engine = False
                 self.disable_all()

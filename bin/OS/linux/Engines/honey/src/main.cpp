@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include "bitboard.h"
+#include "endgame.h"
 #include "position.h"
 #include "search.h"
 #ifdef Sullivan  //  Replace Mobility table with log equations (with rook mg exception). #1784
@@ -30,32 +31,35 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
-#include "endgame.h"
 #include "syzygy/tbprobe.h"
-#ifdef Add_Features
 #include "polybook.h"
-#endif
+
 namespace PSQT {
   void init();
 }
 
 int main(int argc, char* argv[]) {
 
+  std::cout << splash() << std::endl;
   std::cout << engine_info() << std::endl;
 
   UCI::init(Options);
+  Tune::init();
   PSQT::init();
   Bitboards::init();
   Position::init();
   Bitbases::init();
   Endgames::init();
-#ifdef Add_Features
+
    polybook1.init(Options["Book_File_1"]);  // book idea from Marco Zerbanti
    polybook2.init(Options["Book_File_2"]);
    polybook3.init(Options["Book_File_3"]);
    polybook4.init(Options["Book_File_4"]);
+#ifdef Weakfish
+  Threads.set(size_t(1));
+#else
+  Threads.set(size_t(Options["Threads"]));
 #endif
-  Threads.set(Options["Threads"]);
   Search::clear(); // After threads are up
 
   UCI::loop(argc, argv);
