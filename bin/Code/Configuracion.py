@@ -282,9 +282,7 @@ class Configuracion:
         self.liPersonalidades = []
 
         self.folder_internal_engines = os.path.join(Code.folder_OS, "Engines")
-        self.dic_engines = OSEngines.read_engines(self.folder_internal_engines)
-
-        self.lee_motores_externos()
+        self.relee_engines()
 
         self.rival = self.buscaRival(self.x_rival_inicial)
         self.tutor = self.buscaTutor(self.tutor_inicial)
@@ -292,6 +290,10 @@ class Configuracion:
             self.x_tutor_clave = self.tutor.clave
 
         self.siAplazada = False
+
+    def relee_engines(self):
+        self.dic_engines = OSEngines.read_engines(self.folder_internal_engines)
+        self.lee_motores_externos()
 
     def boxrooms(self):
         return BoxRooms(self)

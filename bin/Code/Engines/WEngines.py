@@ -78,7 +78,7 @@ class WEngines(QTVarios.WDialogo):
     def grabar(self):
         li = [eng.save() for eng in self.lista_motores]
         Util.save_pickle(self.configuracion.file_external_engines(), li)
-        self.configuracion.lee_motores_externos()
+        self.configuracion.relee_engines()
 
     def terminar(self):
         self.save_video()
