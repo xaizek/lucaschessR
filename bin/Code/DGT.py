@@ -52,7 +52,7 @@ def envia(quien, dato):
     return 1
 
 
-def ponPosicion(game):
+def setposition(game):
     if Code.dgt:
         writePosition(game.last_position.fenDGT())
 
@@ -113,6 +113,9 @@ def activar():
     if dgt is None:
         return False
 
+    # Added by GON
+    # log( "activar" )
+    # ------------
     Code.dgt = dgt
 
     cmpfunc = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_char_p)
@@ -151,6 +154,10 @@ def activar():
     dgt._DGTDLL_WriteDebug.argtype = [ctypes.c_bool]
     dgt._DGTDLL_WriteDebug.restype = ctypes.c_int
 
+    # Added by GON
+    dgt._DGTDLL_Exit.argtype = []
+    dgt._DGTDLL_Exit.restype = ctypes.c_int
+    # ------------
     dgt._DGTDLL_SetNRun.argtype = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     dgt._DGTDLL_SetNRun.restype = ctypes.c_int
 
@@ -200,6 +207,13 @@ def writeClocks(wclock, bclock):
         dgt._DGTDLL_SetNRun(wclock, bclock, 0)
 
 
+# Added by GON
+def close():
+    if Code.dgt:
+        # log( "DGT", "Exiting DGT board" )
+        dgt = Code.dgt
+        dgt._DGTDLL_Exit()
+# ------------
 # Utilidades para la trasferencia de datos
 
 

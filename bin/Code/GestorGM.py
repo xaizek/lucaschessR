@@ -73,7 +73,7 @@ class GestorGM(Gestor.Gestor):
         self.main_window.pon_toolbar((TB_CLOSE, TB_REINIT, TB_CONFIG, TB_UTILITIES))
         self.main_window.activaJuego(True, False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.quitaAyudas()
         self.ponPiezasAbajo(self.is_white)
@@ -275,7 +275,7 @@ class GestorGM(Gestor.Gestor):
         analisis = None
 
         if not isValid:
-            self.tablero.ponPosicion(position)
+            self.tablero.setposition(position)
             self.tablero.activaColor(self.is_human_side_white)
             li_moves = self.motorGM.dameJugadasTXT(position, True)
             desdeGM, hastaGM, coronacionGM = PantallaGM.eligeJugada(self, li_moves, True)

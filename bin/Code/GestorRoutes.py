@@ -188,7 +188,7 @@ class GestorRoutesPlay(GestorRoutes):
             self.ponRotulo2(_("You must win to pass this game"))
 
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
 
@@ -411,7 +411,7 @@ class GestorRoutesEndings(GestorRoutes):
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.main_window.quitaAyudas(True)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
 
@@ -535,7 +535,7 @@ class GestorRoutesEndings(GestorRoutes):
                 self.show_error(_("Wrong move"))
                 self.warnings += 1
                 self.ponWarnings()
-                self.ponPosicion(self.game.last_position)
+                self.setposition(self.game.last_position)
                 self.sigueHumano()
                 return False
 
@@ -631,7 +631,7 @@ class GestorRoutesTactics(GestorRoutes):
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.main_window.quitaAyudas(True)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
         # self.ponRotulo1("<b>%s</b>" % tactica.label)

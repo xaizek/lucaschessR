@@ -305,14 +305,14 @@ class InfoMove(QtWidgets.QWidget):
         self.movActual = None
 
     def porDefecto(self):
-        self.tablero.ponPosicion(self.cpDefecto)
+        self.tablero.setposition(self.cpDefecto)
 
     def cambioTablero(self):
         pass
 
     def ponValores(self):
         position, from_sq, to_sq = self.movActual.damePosicion()
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
 
         if from_sq:
             self.tablero.ponFlechaSC(from_sq, to_sq)

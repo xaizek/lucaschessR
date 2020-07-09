@@ -60,7 +60,7 @@ class TareaPonPosicion(Tarea):
         self.position = position
 
     def unPaso(self):
-        self.cpu.tablero.ponPosicion(self.position)
+        self.cpu.tablero.setposition(self.position)
         return True
 
     def __str__(self):

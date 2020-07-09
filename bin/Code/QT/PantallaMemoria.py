@@ -267,7 +267,7 @@ class WMemoria(QTVarios.WDialogo):
         self.fenObjetivo = self.listaFen[nPos]
         del self.listaFen[nPos]
         self.position.read_fen(self.fenObjetivo)
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.tablero.disable_all()
         self.squares = self.position.squares
         self.tablero.squares = self.squares
@@ -306,7 +306,7 @@ class WMemoria(QTVarios.WDialogo):
 
         for k in self.squares:
             self.squares[k] = None
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
 
         self.encenderExtras(True)
 
@@ -361,12 +361,12 @@ class WMemoria(QTVarios.WDialogo):
 
     def objetivo(self):
         self.position.read_fen(self.fenObjetivo)
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.tablero.disable_all()
 
     def nuestro(self):
         self.position.read_fen(self.fenNuestro)
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.tablero.disable_all()
 
     def repetir(self):

@@ -510,7 +510,7 @@ class GestorMate(Gestor.Gestor):
     def iniciaPosicion(self, position_mate):
         cp = Position.Position()
         cp.read_fen(position_mate.fen)
-        self.ponPosicion(cp)
+        self.setposition(cp)
         self.activaColor(cp.is_white)
         self.is_human_side_white = cp.is_white
         self.tablero.quitaFlechas()

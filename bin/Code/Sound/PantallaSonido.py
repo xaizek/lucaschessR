@@ -124,7 +124,7 @@ class MesaSonido(QtWidgets.QGraphicsView):
         self.escena.update()
 
     def ponCentesimasActual(self, centesimas):
-        self.txtActual.ponPosicion(centesimas)
+        self.txtActual.setposition(centesimas)
         self.escena.update()
 
     def limites(self, siTotal):

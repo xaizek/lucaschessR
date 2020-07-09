@@ -105,7 +105,7 @@ class WRunCaptures(QTVarios.WDialogo):
     def set_position(self):
         self.move_base = self.capture.game.move(self.capture.current_posmove)
         self.move_obj = self.capture.game.move(self.capture.current_posmove + self.capture.current_depth)
-        self.board.ponPosicion(self.move_base.position_before)
+        self.board.setposition(self.move_base.position_before)
 
     def pon_info_posic(self):
         self.lb_info.ponTexto(
@@ -253,7 +253,7 @@ class WRunCaptures(QTVarios.WDialogo):
             else:
                 self.lb_result.ponTexto(_("Wrong, you must repeat this position"))
                 self.lb_result.ponColorN("red")
-            self.board.ponPosicion(position_obj)
+            self.board.setposition(position_obj)
 
         self.db_captures.change_count_capture(self.capture)
         self.pon_info_posic()

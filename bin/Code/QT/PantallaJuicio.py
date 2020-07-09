@@ -204,9 +204,9 @@ class WJuicio(QTVarios.WDialogo):
         if len(self.game):
             move = self.game.move(self.posMueve if self.posMueve > -1 else 0)
             if is_base:
-                self.tablero.ponPosicion(move.position_before)
+                self.tablero.setposition(move.position_before)
             else:
-                self.tablero.ponPosicion(move.position)
+                self.tablero.setposition(move.position)
                 self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
         return True
 

@@ -129,7 +129,7 @@ class WInfomove(QtWidgets.QWidget):
 
         move = self.historia[self.posHistoria]
         self.cpActual.read_fen(move.fen())
-        self.tablero.ponPosicion(self.cpActual)
+        self.tablero.setposition(self.cpActual)
         pv = move.pv()
         if pv:
             self.tablero.ponFlechaSC(pv[:2], pv[2:4])
@@ -156,7 +156,7 @@ class WInfomove(QtWidgets.QWidget):
     def colocatePartida(self, pos):
         if not len(self.game):
             self.lbPGN.ponTexto("")
-            self.tablero.ponPosicion(self.game.first_position)
+            self.tablero.setposition(self.game.first_position)
             return
         lh = len(self.game) - 1
         if pos >= lh:
@@ -194,13 +194,13 @@ class WInfomove(QtWidgets.QWidget):
         self.pos_move = pos
 
         if pos < 0:
-            self.tablero.ponPosicion(self.game.first_position)
+            self.tablero.setposition(self.game.first_position)
             return
 
         move = self.game.move(self.pos_move)
         position = move.position
 
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
         self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
 
         self.tablero.disable_all()
@@ -223,7 +223,7 @@ class WInfomove(QtWidgets.QWidget):
             # self.colocatePartida(-1)
             self.pos_move = -1
             position = self.game.first_position
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
 
     def MoverAtras(self):
         if self.usoNormal:

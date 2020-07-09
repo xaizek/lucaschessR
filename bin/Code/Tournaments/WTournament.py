@@ -284,7 +284,7 @@ class WTournament(QTVarios.WDialogo):
         tab.nuevaTab(w, _("Results"))
 
         # Layout
-        # tab.ponPosicion("W")
+        # tab.setposition("W")
         layout = Colocacion.V().control(tb).espacio(-3).control(tab).margen(2)
         self.setLayout(layout)
 

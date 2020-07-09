@@ -275,7 +275,7 @@ class TiempoSC(BloqueSC):
         self.centesimas = centesimas
         self.chunk = centesimas * 1.0 / 400.0
 
-    def ponPosicion(self, centesimas):
+    def setposition(self, centesimas):
         position = self.bloqueDatos.position
         position.x = int(round(1.0 * centesimas / self.chunk, 0) + self.inicialx)
         self.setPos(position.x, position.y)

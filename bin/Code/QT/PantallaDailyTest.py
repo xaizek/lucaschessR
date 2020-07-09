@@ -393,7 +393,7 @@ class WDailyTest(QTVarios.WDialogo):
 
     def sigueHumano(self):
         siW = self.position.is_white
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.tablero.ponerPiezasAbajo(siW)
         self.tablero.ponIndicador(siW)
         self.tablero.activaColor(siW)
@@ -414,7 +414,7 @@ class WDailyTest(QTVarios.WDialogo):
 
         siBien, mens, self.move = Move.dameJugada(self.game, self.position, from_sq, to_sq, promotion)
         if siBien:
-            self.tablero.ponPosicion(self.move.position)
+            self.tablero.setposition(self.move.position)
             self.tablero.ponFlechaSC(from_sq, to_sq)
             self.calculaTiempoPuntos()
         else:

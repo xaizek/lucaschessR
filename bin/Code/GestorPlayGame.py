@@ -52,7 +52,7 @@ class GestorPlayGame(Gestor.Gestor):
         self.quitaAyudas(True, True)
 
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(self.is_human_side_white)
         self.mostrarIndicador(True)
         self.ponRotulo1(rotulo)
@@ -113,7 +113,7 @@ class GestorPlayGame(Gestor.Gestor):
         self.vtime = 0.0
         self.book = Apertura.AperturaPol(999)
         self.state = ST_PLAYING
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.pgnRefresh(True)
         self.dgt_setposition()
         self.analizaFinal()
@@ -292,7 +292,7 @@ class GestorPlayGame(Gestor.Gestor):
         self.game.add_move(move)
 
         self.move_the_pieces(move.liMovs, True)
-        self.tablero.ponPosicion(move.position)
+        self.tablero.setposition(move.position)
         self.ponFlechaSC(move.from_sq, move.to_sq)
         self.beepExtendido(siNuestra)
 

@@ -471,7 +471,7 @@ class WColores(QTVarios.WDialogo):
         )
         self.tablero = Tablero.Tablero(self, self.config_board, siMenuVisual=False)
         self.tablero.crea()
-        self.tablero.ponPosicion(cp)
+        self.tablero.setposition(cp)
         self.rehazFlechas()
 
         li_acciones = [

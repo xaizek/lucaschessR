@@ -230,7 +230,7 @@ class WStEval(QtWidgets.QDialog):
         if fen:
             position = Position.Position()
             position.read_fen(fen)
-            self.tablero.ponPosicion(position)
+            self.tablero.setposition(position)
             if self.fen and fen != self.fen:
                 txt = self.em.texto()
                 if self.fen and txt:

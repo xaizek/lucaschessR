@@ -403,7 +403,7 @@ class WLearnPuente(QTVarios.WDialogo):
 
         self.repJugada = -1
         self.repWorking = True
-        self.tableroIni.ponPosicion(self.game.first_position)
+        self.tableroIni.setposition(self.game.first_position)
         self.replayDispatch()
 
     def replayDispatch(self):
@@ -418,11 +418,11 @@ class WLearnPuente(QTVarios.WDialogo):
             return
 
         move = self.game.move(self.repJugada)
-        self.tableroIni.ponPosicion(move.position)
+        self.tableroIni.setposition(move.position)
         self.tableroIni.ponFlechaSC(move.from_sq, move.to_sq)
         self.lbIni.ponTexto("%d/%d" % (self.repJugada + 1, num_moves))
 
-        self.tableroFin.ponPosicion(move.position)
+        self.tableroFin.setposition(move.position)
         self.tableroFin.ponFlechaSC(move.from_sq, move.to_sq)
         self.lbFin.ponTexto("%d/%d" % (self.repJugada + 1, num_moves))
 
@@ -456,7 +456,7 @@ class WLearnPuente(QTVarios.WDialogo):
 
     def reset(self):
         self.time_base = time.time()
-        self.tableroIni.ponPosicion(self.game.first_position)
+        self.tableroIni.setposition(self.game.first_position)
 
         self.movActual = -1
 
@@ -488,7 +488,7 @@ class WLearnPuente(QTVarios.WDialogo):
 
         move = self.game.move(self.movActual)
 
-        self.tableroIni.ponPosicion(move.position_before)
+        self.tableroIni.setposition(move.position_before)
         if self.movActual > 0:
             jgant = self.game.move(self.movActual - 1)
             self.tableroIni.ponFlechaSC(jgant.from_sq, jgant.to_sq)
@@ -500,7 +500,7 @@ class WLearnPuente(QTVarios.WDialogo):
             mfin = num_moves - 1
 
         jgf = self.game.move(mfin)
-        self.tableroFin.ponPosicion(jgf.position)
+        self.tableroFin.setposition(jgf.position)
         if self.nivel == 0:
             self.tableroFin.ponFlechaSC(jgf.from_sq, jgf.to_sq)
         self.lbFin.ponTexto("%d/%d" % (mfin + 1, num_moves))
@@ -560,7 +560,7 @@ class WLearnPuente(QTVarios.WDialogo):
         self.siClock = False
         num_moves = len(self.game)
         self.lbIni.ponTexto("%d/%d" % (num_moves, num_moves))
-        self.tableroIni.ponPosicion(self.game.last_position)
+        self.tableroIni.setposition(self.game.last_position)
         self.guardar()
 
         self.pon_toolbar(self.FINAL_JUEGO)

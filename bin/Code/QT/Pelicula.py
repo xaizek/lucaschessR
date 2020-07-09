@@ -76,7 +76,7 @@ class Pelicula:
             return
 
         move = self.li_moves[self.current_position]
-        self.tablero.ponPosicion(move.position_before)
+        self.tablero.setposition(move.position_before)
         liMovs = [("b", move.to_sq), ("m", move.from_sq, move.to_sq)]
         if move.position.li_extras:
             liMovs.extend(move.position.li_extras)
@@ -127,7 +127,7 @@ class Pelicula:
         cpu.runLineal()
         self.gestor.ponFlechaSC(move.from_sq, move.to_sq)
 
-        self.tablero.ponPosicion(move.position)
+        self.tablero.setposition(move.position)
 
         self.gestor.put_view()
 

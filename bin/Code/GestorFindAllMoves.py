@@ -180,7 +180,7 @@ class GestorFindAllMoves(Gestor.Gestor):
         else:
             siP = not self.siJugador
         self.ponPiezasAbajo(siP)
-        self.ponPosicion(cp)
+        self.setposition(cp)
         self.cp = cp
         self.refresh()
 
@@ -267,7 +267,7 @@ class GestorFindAllMoves(Gestor.Gestor):
     def put_result(self):
         vtime = int((time.time() - self.iniTiempo) * 100.0)
         self.finJuego()
-        self.ponPosicion(self.cp)
+        self.setposition(self.cp)
 
         self.refresh()
 

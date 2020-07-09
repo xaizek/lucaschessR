@@ -29,7 +29,7 @@ class WRunCoordinatesBasic(QTVarios.WDialogo):
         self.cp_initial = Position.Position()
         self.cp_initial.set_pos_initial()
         self.board.ponerPiezasAbajo(self.is_white)
-        self.board.ponPosicion(self.cp_initial)
+        self.board.setposition(self.cp_initial)
 
         font = Controles.TipoLetra(puntos=self.configuracion.x_sizefont_infolabels)
 

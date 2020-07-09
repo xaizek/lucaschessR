@@ -187,7 +187,7 @@ class GestorMicElo(Gestor.Gestor):
 
         self.main_window.activaJuego(True, True, siAyudas=False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(is_white)
         self.quitaAyudas(True, siQuitarAtras=True)
         self.mostrarIndicador(True)

@@ -235,7 +235,7 @@ class WHorses(QTVarios.WDialogo):
     def reset(self):
         self.preparaTest()
         self.tablero.ponerPiezasAbajo(True)
-        self.tablero.ponPosicion(self.cpInicial)
+        self.tablero.setposition(self.cpInicial)
         self.tablero.quitaFlechas()
         self.min_moves = 0
         self.timer = time.time()
@@ -267,7 +267,7 @@ class WHorses(QTVarios.WDialogo):
 
         self.cpActivo = cp
 
-        self.tablero.ponPosicion(cp)
+        self.tablero.setposition(cp)
         self.tablero.activaColor(self.is_white)
 
         self.ponNumMoves()
@@ -314,7 +314,7 @@ class WHorses(QTVarios.WDialogo):
                 return False
             self.cpActivo.squares[from_sq] = None
             self.cpActivo.squares[to_sq] = "N" if self.is_white else "n"
-            self.tablero.ponPosicion(self.cpActivo)
+            self.tablero.setposition(self.cpActivo)
             self.tablero.activaColor(self.is_white)
             self.posTemporal = p1
             if p1 == self.camino[self.current_position + 1]:

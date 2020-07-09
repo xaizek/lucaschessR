@@ -375,7 +375,7 @@ class WPosicion(QtWidgets.QWidget):
         self.resetPosicion()
 
     def resetPosicion(self):
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.squares = self.position.squares
         self.tablero.squares = self.squares
         self.tablero.activaTodas()
@@ -701,7 +701,7 @@ class WPGN(QtWidgets.QWidget):
         ly.margen(1)
         self.setLayout(ly)
 
-        self.tablero.ponPosicion(self.game.last_position)
+        self.tablero.setposition(self.game.last_position)
         self.siguiente_jugada()
 
     def save(self):
@@ -709,7 +709,7 @@ class WPGN(QtWidgets.QWidget):
 
     def limpia(self):
         self.game.li_moves = []
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.siguiente_jugada()
 
     def atras(self):
@@ -718,10 +718,10 @@ class WPGN(QtWidgets.QWidget):
             self.game.li_moves = self.game.li_moves[:-1]
             move = self.game.move(n - 2)
             if move:
-                self.tablero.ponPosicion(move.position)
+                self.tablero.setposition(move.position)
                 self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
             else:
-                self.tablero.ponPosicion(self.game.first_position)
+                self.tablero.setposition(self.game.first_position)
             self.siguiente_jugada()
 
     def inicial(self):
@@ -746,7 +746,7 @@ class WPGN(QtWidgets.QWidget):
 
         if siBien:
             self.game.add_move(move)
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
 
             self.siguiente_jugada()

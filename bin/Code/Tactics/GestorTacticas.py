@@ -55,7 +55,7 @@ class GestorTacticas(Gestor.Gestor):
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.main_window.quitaAyudas(True, True)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
 
@@ -234,7 +234,7 @@ class GestorTacticas(Gestor.Gestor):
         self.beepExtendido(si_nuestra)
 
         self.pgnRefresh(self.game.last_position.is_white)
-        self.tablero.ponPosicion(move.position)
+        self.tablero.setposition(move.position)
         self.refresh()
 
         self.dgt_setposition()

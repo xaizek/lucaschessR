@@ -306,7 +306,7 @@ class WKibIndex(QtWidgets.QDialog):
 
         self.siW = posicionInicial.is_white
 
-        self.tablero.ponPosicion(posicionInicial)
+        self.tablero.setposition(posicionInicial)
         self.tablero.activaColor(self.siW)
 
         self.escribe("stop")

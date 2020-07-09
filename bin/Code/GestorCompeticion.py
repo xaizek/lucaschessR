@@ -59,7 +59,7 @@ class GestorCompeticion(Gestor.Gestor):
         )
         self.main_window.activaJuego(True, False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(is_white)
         self.ponAyudas(self.ayudas)
         self.mostrarIndicador(True)

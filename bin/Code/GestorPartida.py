@@ -36,7 +36,7 @@ class GestorPartida(Gestor.Gestor):
         self.main_window.ponRotulo1(None)
         self.main_window.ponRotulo2(None)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.first_position)
+        self.setposition(self.game.first_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(game.iswhite())
         self.pgnRefresh(True)

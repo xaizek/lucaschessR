@@ -50,7 +50,7 @@ class GestorChallenge101:
         self.is_white = " w " in self.fen
         self.tablero.bloqueaRotacion(False)
         self.tablero.set_dispatcher(self.mueve_humano)
-        self.tablero.ponPosicion(self.cp)
+        self.tablero.setposition(self.cp)
         self.tablero.ponerPiezasAbajo(self.is_white)
         self.tablero.activaColor(self.is_white)
         self.tablero.ponIndicador(self.is_white)
@@ -163,7 +163,7 @@ class GestorChallenge101:
             tm = time.time() - self.iniTime
             self.tablero.disable_all()
             self.cp.mover(from_sq, to_sq, promotion)
-            self.tablero.ponPosicion(self.cp)
+            self.tablero.setposition(self.cp)
             self.tablero.ponFlechaSC(from_sq, to_sq)
 
             puntos = int(1000 - (1000 / self.max_intentos) * self.intentos)
@@ -185,7 +185,7 @@ class GestorChallenge101:
                     self.main_window, str(self.max_intentos - self.intentos), 0.5, puntos=24, background="#ffd985"
                 )
             else:
-                self.tablero.ponPosicion(self.cp)
+                self.tablero.setposition(self.cp)
                 self.tablero.ponFlechaSC(self.result[:2], self.result[2:])
                 self.pendientes = 0
                 self.menu()
@@ -244,7 +244,7 @@ class GestorChallenge101:
 #     hx = m(primer, 2.0 * factor)
 #     for uno in li:
 #         m(uno)
-#     return procesador.cpu.ponPosicion(procesador.posicionInicial)
+#     return procesador.cpu.setposition(procesador.posicionInicial)
 #
 #
 # def partidaDia(procesador, hx):
@@ -257,7 +257,7 @@ class GestorChallenge101:
 #
 #     cpu = procesador.cpu
 #
-#     padre = cpu.ponPosicion(procesador.posicionInicial)
+#     padre = cpu.setposition(procesador.posicionInicial)
 #     padre = cpu.duerme(0.6, padre=padre, siExclusiva=True)
 #
 #     for txt in liMovs:

@@ -203,7 +203,7 @@ class WManualSave(QTVarios.WDialogo):
 
             self.sb_multipv.ponValor(dic_vars.get("MULTIPV", 1))
 
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.reset_motor()
         self.test_save_solucion()
 
@@ -377,7 +377,7 @@ class WManualSave(QTVarios.WDialogo):
         if resp is not None:
             self.em_solucion.ponTexto("")
             self.position = resp
-            self.tablero.ponPosicion(self.position)
+            self.tablero.setposition(self.position)
 
             self.sb_number.ponValor(self.sb_number.valor() + 1)
 
@@ -455,28 +455,28 @@ class WManualSave(QTVarios.WDialogo):
     def reset_partida(self):
         if self.game:
             self.game = None
-            self.tablero.ponPosicion(self.position)
+            self.tablero.setposition(self.position)
 
     def test_partida(self):
         if not self.game:
             self.game = self.crea_partida()
-            self.tablero.ponPosicion(self.position)
+            self.tablero.setposition(self.position)
             self.game.mover_jugada = -1
 
     def MoverInicio(self):
         self.test_partida()
         self.game.mover_jugada = -1
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
 
     def MoverAtras(self):
         self.test_partida()
         if self.game.mover_jugada >= 0:
             self.game.mover_jugada -= 1
             if self.game.mover_jugada == -1:
-                self.tablero.ponPosicion(self.position)
+                self.tablero.setposition(self.position)
             else:
                 move = self.game.move(self.game.mover_jugada)
-                self.tablero.ponPosicion(move.position)
+                self.tablero.setposition(move.position)
                 self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
 
     def MoverAdelante(self):
@@ -484,7 +484,7 @@ class WManualSave(QTVarios.WDialogo):
         if self.game.mover_jugada < (len(self.game) - 1):
             self.game.mover_jugada += 1
             move = self.game.move(self.game.mover_jugada)
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
             return True
         return False
@@ -494,7 +494,7 @@ class WManualSave(QTVarios.WDialogo):
         if len(self.game):
             self.game.mover_jugada = len(self.game) - 1
             move = self.game.move(self.game.mover_jugada)
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
 
 

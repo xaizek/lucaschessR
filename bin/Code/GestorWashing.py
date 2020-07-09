@@ -65,7 +65,7 @@ class GestorWashingReplay(Gestor.Gestor):
         is_white = self.engine.color
         self.is_human_side_white = is_white
         self.is_engine_side_white = not is_white
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(is_white)
 
         self.ponRotulo1("%s: %s\n%s: %s" % (_("Rival"), self.engine.name, _("Task"), self.engine.lbState()))
@@ -187,7 +187,7 @@ class GestorWashingReplay(Gestor.Gestor):
             comment = "<br>".join(lic)
             w = PantallaJuicio.MensajeF(self.main_window, comment)
             w.mostrar()
-            self.ponPosicion(move.position_before)
+            self.setposition(move.position_before)
 
         # Creamos un move sin analisis
         siBien, self.error, move = Move.dameJugada(
@@ -273,7 +273,7 @@ class GestorWashingTactics(Gestor.Gestor):
         is_white = cp.is_white
         self.is_human_side_white = is_white
         self.is_engine_side_white = not is_white
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(is_white)
         # r1 = self.line.label
         self.ponRotulo1("")
@@ -471,7 +471,7 @@ class GestorWashingCreate(Gestor.Gestor):
         li = [TB_CLOSE, TB_REINIT, TB_TAKEBACK]
         self.main_window.pon_toolbar(li)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
 

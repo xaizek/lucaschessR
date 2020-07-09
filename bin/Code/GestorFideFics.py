@@ -131,7 +131,7 @@ class GestorFideFics(Gestor.Gestor):
 
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(self.is_human_side_white)
         self.quitaAyudas(True, siQuitarAtras=True)
         self.mostrarIndicador(True)
@@ -394,7 +394,7 @@ class GestorFideFics(Gestor.Gestor):
 
         self.game.add_move(move)
         self.move_the_pieces(move.liMovs, True)
-        self.tablero.ponPosicion(move.position)
+        self.tablero.setposition(move.position)
         self.ponFlechaSC(move.from_sq, move.to_sq)
         self.beepExtendido(siNuestra)
 

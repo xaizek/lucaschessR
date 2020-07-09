@@ -84,7 +84,7 @@ class WRunCounts(QTVarios.WDialogo):
     def set_position(self):
         self.move_base = self.count.game.move(self.count.current_posmove)
         self.move_obj = self.count.game.move(self.count.current_posmove + self.count.current_depth)
-        self.board.ponPosicion(self.move_base.position_before)
+        self.board.setposition(self.move_base.position_before)
         self.ed_moves.setFocus()
 
     def pon_info_posic(self):
@@ -175,7 +175,7 @@ class WRunCounts(QTVarios.WDialogo):
             else:
                 self.lb_result.ponTexto(_("Wrong, you must repeat this position"))
                 self.lb_result.ponColorN("red")
-            self.board.ponPosicion(position_obj)
+            self.board.setposition(position_obj)
             for x in moves:
                 self.board.creaFlechaTmp(x.xfrom(), x.xto(), False)
 

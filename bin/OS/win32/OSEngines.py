@@ -174,6 +174,7 @@ def read_engines(folder_engines):
 
     cm = mas("honey", "Michael Byrne", f"XI-r3 {t32_64}bit", "https://github.com/MichaelB7/Stockfish/tree/honey", f"Honey-XI-r3_x{t32_64}.exe", 3300)
     cm.ordenUCI("Hash", "64")
+    cm.ordenUCI("UCI_ShowWDL", "false")
     cm.ponMultiPV(20, 256)
 
     if is64:

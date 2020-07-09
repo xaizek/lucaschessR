@@ -105,7 +105,7 @@ class WAnalisisGraph(QTVarios.WDialogo):
         layout.otroc(ly_rb, 1, 0)
         layout.otroc(ly_tc, 0, 1, numFilas=2)
 
-        Controles.Tab().ponPosicion("W")
+        Controles.Tab().setposition("W")
         ancho = self.tablero.width() + anchoGrid
         self.htotal = [
             Histogram.Histogram(self, alm.hgame, gridAll, ancho, True),
@@ -179,7 +179,7 @@ class WAnalisisGraph(QTVarios.WDialogo):
     def grid_boton_izquierdo(self, grid, fila, columna):
         self.tablero.quitaFlechas()
         move = self.dicLiJG[grid.id][fila]
-        self.tablero.ponPosicion(move.position)
+        self.tablero.setposition(move.position)
         mrm, pos = move.analysis
         rm = mrm.li_rm[pos]
         self.tablero.ponFlechaSC(rm.from_sq, rm.to_sq)
@@ -348,7 +348,7 @@ class WMuestra(QtWidgets.QWidget):
 
     def ponTablero(self):
         position, from_sq, to_sq = self.um.active_position()
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
         if from_sq:
             self.tablero.ponFlechaSC(from_sq, to_sq)
 

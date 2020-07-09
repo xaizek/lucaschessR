@@ -421,7 +421,7 @@ class WPlay(QTVarios.WDialogo):
         cp.read_fen(fen)
         cp.legal()
         self.tablero.ponerPiezasAbajo(cp.is_white)
-        self.tablero.ponPosicion(cp)
+        self.tablero.setposition(cp)
 
         mens = ""
         if cp.castles:

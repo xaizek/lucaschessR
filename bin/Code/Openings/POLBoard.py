@@ -204,7 +204,7 @@ class BoardLines(QtWidgets.QWidget):
         if num_jugadas == 0:
             self.pos_move = -1
             self.lbPGN.ponTexto("")
-            self.tablero.ponPosicion(self.game.first_position)
+            self.tablero.setposition(self.game.first_position)
             self.resetValues()
             self.activaPiezas()
             return
@@ -241,7 +241,7 @@ class BoardLines(QtWidgets.QWidget):
         self.pos_move = pos
 
         if pos < 0:
-            self.tablero.ponPosicion(self.game.first_position)
+            self.tablero.setposition(self.game.first_position)
             self.resetValues()
             self.activaPiezas()
             return
@@ -257,7 +257,7 @@ class BoardLines(QtWidgets.QWidget):
         self.cbVentaja.ponValor(ventaja)
         self.emComentario.ponTexto(comment)
 
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
         if move:
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
             position_before = move.position_before

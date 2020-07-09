@@ -50,7 +50,7 @@ class GestorVariantes(Gestor.Gestor):
             self.ponFlechaSC(move.from_sq, move.to_sq)
             self.disable_all()
         else:
-            self.ponPosicion(self.game.last_position)
+            self.setposition(self.game.last_position)
 
         self.pensando(False)
 

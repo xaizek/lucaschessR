@@ -263,7 +263,7 @@ class WGaviota(QtWidgets.QDialog):
 
         if self.siPlay:
             self.siW = self.position.is_white
-            self.tablero.ponPosicion(self.position)
+            self.tablero.setposition(self.position)
             self.tablero.activaColor(self.siW)
             self.li_moves = self.t4.listFen(fen)
             self.grid_moves.gotop()

@@ -209,7 +209,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         self.main_window.activaJuego(True, self.siTiempo)
 
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         if self.ayudas_iniciales:
             self.ponAyudasEM()
@@ -533,14 +533,14 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         if self.is_analyzing:
             self.is_analyzing = False
             self.xtutor.ac_final(-1)
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.tablero.disable_all()
         self.main_window.hide_pgn()
         self.pon_toolbar()
 
     def xcontinue(self):
         self.state = ST_PLAYING
-        self.tablero.ponPosicion(self.game.last_position)
+        self.tablero.setposition(self.game.last_position)
         self.pon_toolbar()
         self.main_window.show_pgn()
         self.siguiente_jugada()

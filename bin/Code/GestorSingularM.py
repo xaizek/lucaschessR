@@ -75,7 +75,7 @@ class GestorSingularM(Gestor.Gestor):
         self.main_window.ponActivarTutor(False)
         self.quitaAyudas(True)
         self.game = Game.Game(fen=self.linea_bloque.fen)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
         self.ponIndicador(is_white)

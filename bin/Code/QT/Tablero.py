@@ -1296,7 +1296,7 @@ class Tablero(QtWidgets.QGraphicsView):
                 elif self.siDirectorIcon:
                     self.scriptSC_menu.hide()
 
-    def ponPosicion(self, position, siBorraMoviblesAhora=True):
+    def setposition(self, position, siBorraMoviblesAhora=True):
         if self.dirvisual:
             self.dirvisual.cambiadaPosicionAntes()
         elif self.dbVisual.saveAllways():

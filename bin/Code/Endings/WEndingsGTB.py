@@ -139,7 +139,7 @@ class WEndingsGTB(QTVarios.WDialogo):
         self.act_recno = fila
         self.fen = self.db.get_current_fen(fila)
         self.game.set_fen(self.fen)
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.bt_movs.hide()
         self.replaying = False
         self.grid.setFocus()
@@ -177,7 +177,7 @@ class WEndingsGTB(QTVarios.WDialogo):
             return
 
         self.game.reset()
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.test_help()
         self.bt_movs.hide()
         self.ms = 0
@@ -267,7 +267,7 @@ class WEndingsGTB(QTVarios.WDialogo):
             self.act_recno = -1
             self.game = Game.Game()
 
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
 
     def grid_num_datos(self, grid):
         return self.db.current_num_fens()
@@ -443,7 +443,7 @@ class WEndingsGTB(QTVarios.WDialogo):
         ok, self.error, move = Move.dameJugada(self.game, self.game.last_position, from_sq, to_sq, promotion)
         if ok:
             self.game.add_move(move)
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
             self.sigueMaquina()
             return True
         else:
@@ -466,7 +466,7 @@ class WEndingsGTB(QTVarios.WDialogo):
         else:
             move = self.game.move(self.pos_game)
             position = move.position
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
 
         lif = [x[:2] for x in self.t4.best_mvs(position.fen())]
         if lif:

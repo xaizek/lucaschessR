@@ -356,7 +356,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
             bt.ponIcono(self.dicIconos[0])
 
         self.siTerminadaAntes = self.is_finished = False
-        self.tablero.ponPosicion(Position.Position().logo())
+        self.tablero.setposition(Position.Position().logo())
         for bt in self.liBTrm:
             bt.ponTexto("")
         self.siMostrarPGN = False
@@ -378,8 +378,8 @@ class WEntrenarBMT(QTVarios.WDialogo):
         self.update()
         QTUtil.refresh_gui()
 
-    def ponPosicion(self, position):
-        self.tablero.ponPosicion(position)
+    def setposition(self, position):
+        self.tablero.setposition(position)
 
     def ponFlechaSC(self, from_sq, to_sq, liVar=None):  # liVar incluido por compatibilidad
         self.tablero.ponFlechaSC(from_sq, to_sq)
@@ -391,7 +391,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
             return 0
 
     def ponteAlPrincipio(self):
-        self.tablero.ponPosicion(self.game.first_position)
+        self.tablero.setposition(self.game.first_position)
         self.pgn.goto(0, 0)
         self.pgn.refresh()
 
@@ -642,7 +642,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
 
         self.lbCondiciones.ponTexto(mrm.name + txt)
 
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
 
         self.liBT[self.actualP].ponPlano(True)
         self.liBT[num].ponPlano(False)
@@ -715,7 +715,7 @@ class WEntrenarBMT(QTVarios.WDialogo):
         self.siMostrarPGN = False
         self.pgn.refresh()
         siW = self.position.is_white
-        self.tablero.ponPosicion(self.position)
+        self.tablero.setposition(self.position)
         self.tablero.ponerPiezasAbajo(siW)
         self.tablero.ponIndicador(siW)
         self.tablero.activaColor(siW)

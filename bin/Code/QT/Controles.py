@@ -901,7 +901,7 @@ class Tab(QtWidgets.QTabWidget):
     def activa(self, cual):
         self.setCurrentIndex(cual)
 
-    def ponPosicion(self, pos):
+    def setposition(self, pos):
         rpos = self.North
         if pos == "S":
             rpos = self.South

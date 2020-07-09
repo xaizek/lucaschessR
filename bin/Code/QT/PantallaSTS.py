@@ -336,7 +336,7 @@ class WRun2(QTVarios.WDialogo):
                 self.ngroup = ngroup
             cp = Position.Position()
             cp.read_fen(self.elem.fen)
-            self.tablero.ponPosicion(cp)
+            self.tablero.setposition(cp)
             self.xengine.ponGuiDispatch(self.dispatch)
             xpt, xa1h8 = self.elem.bestA1H8()
             self.tablero.quitaFlechas()

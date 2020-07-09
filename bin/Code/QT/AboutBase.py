@@ -99,7 +99,7 @@ class ThanksTo:
             return mtxt
 
         # Version R
-        li_base = ["Alfonso Solbes", "Alan Lee"]
+        li_base = ["Alfonso Solbes", "Alan Lee", "Graham O'Neill"]
         li_resto = []
         txt += version("R0", li_base, li_resto, False)
 

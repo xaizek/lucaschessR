@@ -403,7 +403,7 @@ class WKibBase(QtWidgets.QDialog):
         if self.siThreats:
             self.siW = not self.siW
 
-        self.tablero.ponPosicion(posicionInicial)
+        self.tablero.setposition(posicionInicial)
         self.tablero.activaColor(self.siW)
 
         self.escribe("stop")

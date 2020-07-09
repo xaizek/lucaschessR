@@ -70,7 +70,7 @@ class GestorAnotar(Gestor.Gestor):
 
         self.ponPiezasAbajo(self.si_blancas_abajo)
 
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
 
         is_white = self.game.is_white()
 

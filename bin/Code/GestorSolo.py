@@ -83,7 +83,7 @@ class GestorSolo(Gestor.Gestor):
         self.main_window.ponRotulo1(dic.get("ROTULO1", None))
         self.pon_rotulo()
         self.set_dispatcher(self.mueve_humano)
-        # self.ponPosicion(self.game.last_position)
+        # self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(dic.get("WHITEBOTTOM", True))
         self.pgnRefresh(True)

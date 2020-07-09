@@ -581,7 +581,7 @@ class WPotencia(QTVarios.WDialogo):
         self.tablero = Tablero.TableroEstatico(self, config_board)
         self.tablero.crea()
         self.tablero.ponerPiezasAbajo(cp.is_white)
-        self.tablero.ponPosicion(cp)
+        self.tablero.setposition(cp)
 
         # Rotulo informacion
         self.lbInformacion = self.creaLBInformacion(info, cp)

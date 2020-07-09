@@ -60,7 +60,7 @@ class CPU:
         tarea.enlaza(self)
         return self.masTarea(tarea, padre, siExclusiva)
 
-    def ponPosicion(self, position, padre=0):
+    def setposition(self, position, padre=0):
         tarea = Tareas.TareaPonPosicion(position)
         tarea.enlaza(self)
         return self.masTarea(tarea, padre, True)

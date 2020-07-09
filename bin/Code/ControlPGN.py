@@ -103,7 +103,7 @@ class ControlPGN:
                 pos = tam_lj - 1
 
             move = self.gestor.game.move(pos)
-            self.gestor.ponPosicion(move.position)
+            self.gestor.setposition(move.position)
 
             lipvvar = []
             self.gestor.ponFlechaSC(move.from_sq, move.to_sq, lipvvar)

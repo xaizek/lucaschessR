@@ -13,6 +13,11 @@ from Code.Constantes import *
 from Code import Albums
 from Code import CPU
 from Code import Configuracion
+
+# Added by GON
+from Code import DGT
+# ------------
+
 from Code import Position
 from Code import Trainings
 from Code import GestorAlbum
@@ -202,7 +207,7 @@ class Procesador:
         self.main_window.pon_toolbar(self.li_opciones_inicio, atajos=True)
         self.main_window.activaJuego(False, False)
         self.tablero.exePulsadoNum = None
-        self.tablero.ponPosicion(self.posicionInicial)
+        self.tablero.setposition(self.posicionInicial)
         self.tablero.borraMovibles()
         self.tablero.quitaFlechas()
         self.main_window.ajustaTam()
@@ -232,7 +237,7 @@ class Procesador:
             self.cpu.stop()
             self.tablero.ponerPiezasAbajo(True)
             self.tablero.activaMenuVisual(True)
-            self.tablero.ponPosicion(self.posicionInicial)
+            self.tablero.setposition(self.posicionInicial)
             self.tablero.setToolTip("")
             self.tablero.bloqueaRotacion(False)
 
@@ -327,6 +332,12 @@ class Procesador:
 
     def pararMotores(self):
         Code.list_engine_managers.close_all()
+
+    # Added by GON
+    def closeEboard(self):
+        if Code.dgt:
+            DGT.close()
+    # ------------        
 
     def cambiaRival(self, nuevo):
         """

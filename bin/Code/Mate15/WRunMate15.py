@@ -85,7 +85,7 @@ class WRunMate15(QTVarios.WDialogo):
         fen = self.mate15.fen
         cp = Position.Position()
         cp.read_fen(fen)
-        self.board.ponPosicion(cp)
+        self.board.setposition(cp)
 
         self.gb.show()
         self.lb_first_move.ponTexto("%s: %s" % (_("First move"), cp.html(self.mate15.move)))

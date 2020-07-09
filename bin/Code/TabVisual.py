@@ -486,7 +486,7 @@ class Guion:
 
     def restoreTablero(self):
         self.tablero.dirvisual = None
-        self.tablero.ponPosicion(self.tablero_ultPosicion, siBorraMoviblesAhora=False)
+        self.tablero.setposition(self.tablero_ultPosicion, siBorraMoviblesAhora=False)
         if self.tablero_flechaSC:
             from_sq, to_sq = self.tablero_flechaSC
             self.tablero.ponFlechaSC(from_sq, to_sq)

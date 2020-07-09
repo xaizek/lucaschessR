@@ -769,7 +769,7 @@ class InfoMove(QtWidgets.QWidget):
 
     def ponValores(self):
         position, from_sq, to_sq = self.movActual.damePosicion()
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
 
         if from_sq:
             self.tablero.ponFlechaSC(from_sq, to_sq)

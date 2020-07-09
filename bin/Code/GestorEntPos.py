@@ -105,7 +105,7 @@ class GestorEntPos(Gestor.Gestor):
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.main_window.quitaAyudas(False, False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
         titulo = "<b>%s</b>" % TrListas.dicTraining().get(self.title_training, self.title_training)

@@ -146,7 +146,7 @@ class WAperturas(QTVarios.WDialogo):
             li = []
         self.liActivas = li
 
-        self.tablero.ponPosicion(self.game.last_position)
+        self.tablero.setposition(self.game.last_position)
 
         self.game.assign_opening()
         txt = self.game.pgn_translated()
@@ -173,7 +173,7 @@ class WAperturas(QTVarios.WDialogo):
             position = self.game.first_position
             move = None
 
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
         self.tablero.activaColor(position.is_white)
         if move:
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)

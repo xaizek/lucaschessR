@@ -110,7 +110,7 @@ class WPolyglot(QTVarios.WDialogo):
 
         self.li_moves.sort(key=lambda x: x.weight(), reverse=True)
         self.grid_moves.refresh()
-        self.tablero.ponPosicion(position)
+        self.tablero.setposition(position)
         self.tablero.activaColor(position.is_white)
         if save_history:
             self.history.append(self.position.fen())

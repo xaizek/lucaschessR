@@ -91,7 +91,7 @@ class WMap(QTVarios.WDialogo):
         w.setLayout(ly)
 
         self.tab = Controles.Tab()
-        self.tab.ponPosicion("W")
+        self.tab.setposition("W")
         self.tab.nuevaTab(splitter, _("Map"))
         self.tab.nuevaTab(w, _("Data"))
 
@@ -312,7 +312,7 @@ class WUnSTSMap(QTVarios.WDialogo):
         self.lbJuego.ponTexto(mens)
 
         siW = cp.is_white
-        self.tablero.ponPosicion(cp)
+        self.tablero.setposition(cp)
         self.tablero.ponerPiezasAbajo(siW)
         self.tablero.ponIndicador(siW)
         self.tablero.activaColor(siW)
@@ -329,7 +329,7 @@ class WUnSTSMap(QTVarios.WDialogo):
 
         siBien, mens, move = Move.dameJugada(None, self.position, from_sq, to_sq, promotion)
         if siBien:
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
             self.tablero.ponFlechaSC(from_sq, to_sq)
             self.hechaJugada(move)
         else:

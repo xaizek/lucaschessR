@@ -296,7 +296,7 @@ class WTournamentRun(QtWidgets.QWidget):
         self.lbRotulo3.altoFijo(32)
 
         self.tablero.disable_all()
-        self.tablero.ponPosicion(self.game.last_position)
+        self.tablero.setposition(self.game.last_position)
         self.grid_pgn.refresh()
 
         for side in (WHITE, BLACK):

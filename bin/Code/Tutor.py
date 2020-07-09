@@ -87,7 +87,7 @@ class Tutor:
         self.partidaUsuario.read_pv(self.rmUsuario.getPV())
         self.posUsuario = 0
         self.maxUsuario = len(self.partidaUsuario.li_moves)
-        self.tableroUsuario.ponPosicion(self.move.position)
+        self.tableroUsuario.setposition(self.move.position)
         w.ponPuntuacionUsuario(self.rmUsuario.texto())
 
         if siRival:
@@ -105,7 +105,7 @@ class Tutor:
                 self.posRival = 0
                 self.maxRival = len(self.partidaRival.li_moves) - 1
                 if self.maxRival >= 0:
-                    self.tableroRival.ponPosicion(self.partidaRival.li_moves[0].position)
+                    self.tableroRival.setposition(self.partidaRival.li_moves[0].position)
                     self.mueve_rival(True)
                     w.ponPuntuacionRival(self.rm_rival.texto())
 
@@ -243,9 +243,9 @@ class Tutor:
 
         move = self.partidaUsuario.move(self.posUsuario if self.posUsuario > -1 else 0)
         if is_base:
-            self.tableroUsuario.ponPosicion(move.position_before)
+            self.tableroUsuario.setposition(move.position_before)
         else:
-            self.tableroUsuario.ponPosicion(move.position)
+            self.tableroUsuario.setposition(move.position)
             self.tableroUsuario.ponFlechaSC(move.from_sq, move.to_sq)
 
     def moving_tutor(self, siInicio=False, nSaltar=0, siFinal=False, is_base=False):
@@ -264,9 +264,9 @@ class Tutor:
 
         move = self.game_tutor.move(self.pos_tutor if self.pos_tutor > -1 else 0)
         if is_base:
-            self.tableroTutor.ponPosicion(move.position_before)
+            self.tableroTutor.setposition(move.position_before)
         else:
-            self.tableroTutor.ponPosicion(move.position)
+            self.tableroTutor.setposition(move.position)
             self.tableroTutor.ponFlechaSC(move.from_sq, move.to_sq)
 
     def mueve_rival(self, siInicio=False, nSaltar=0, siFinal=False, is_base=False):
@@ -285,9 +285,9 @@ class Tutor:
 
         move = self.partidaRival.move(self.posRival if self.posRival > -1 else 0)
         if is_base:
-            self.tableroRival.ponPosicion(move.position_before)
+            self.tableroRival.setposition(move.position_before)
         else:
-            self.tableroRival.ponPosicion(move.position)
+            self.tableroRival.setposition(move.position)
             self.tableroRival.ponFlechaSC(move.from_sq, move.to_sq)
 
     def mueveApertura(self, siInicio=False, nSaltar=0, siFinal=False, is_base=False):
@@ -306,9 +306,9 @@ class Tutor:
 
         move = self.partidaAperturas.move(self.posApertura if self.posApertura > -1 else 0)
         if is_base:
-            self.tableroAperturas.ponPosicion(move.position_before)
+            self.tableroAperturas.setposition(move.position_before)
         else:
-            self.tableroAperturas.ponPosicion(move.position)
+            self.tableroAperturas.setposition(move.position)
             self.tableroAperturas.ponFlechaSC(move.from_sq, move.to_sq)
 
     def ponTablerosGUI(self, tableroTutor, tableroUsuario, tableroRival, tableroAperturas):
@@ -322,7 +322,7 @@ class Tutor:
     def cambiarApertura(self, number):
         self.partidaAperturas = Game.Game(self.last_position)
         self.partidaAperturas.read_pv(self.liApPosibles[number].a1h8)
-        self.tableroAperturas.ponPosicion(self.partidaAperturas.move(0).position)
+        self.tableroAperturas.setposition(self.partidaAperturas.move(0).position)
         self.maxApertura = len(self.partidaAperturas)
         self.mueveApertura(siInicio=True)
 

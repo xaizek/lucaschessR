@@ -79,7 +79,7 @@ class WRunCoordinatesBlocks(QTVarios.WDialogo):
     def new_try(self):
         is_white = self.coordinates.new_try()
         self.board.ponerPiezasAbajo(is_white)
-        self.board.ponPosicion(self.cp_initial)
+        self.board.setposition(self.cp_initial)
         self.lb_active_score_k.ponTexto(_("Active score") + ":")
         self.current_score = 0
         self.working = True

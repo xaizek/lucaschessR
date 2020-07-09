@@ -332,7 +332,7 @@ class Gestor:
         # Gestor ent tac + ent pos si hay game
         if len(self.game):
             move = self.game.last_jg()
-            self.tablero.ponPosicion(move.position_before)
+            self.tablero.setposition(move.position_before)
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
             QTUtil.refresh_gui()
             time.sleep(0.6)
@@ -340,7 +340,7 @@ class Gestor:
             self.configuracion.x_show_effects = True
             self.move_the_pieces(move.liMovs, True)
             self.configuracion.x_show_effects = ant
-            self.tablero.ponPosicion(move.position)
+            self.tablero.setposition(move.position)
 
     def move_the_pieces(self, liMovs, siMovTemporizado=False):
         if siMovTemporizado and self.configuracion.x_show_effects:
@@ -626,7 +626,7 @@ class Gestor:
         self.pgnMueve(fila, is_white)
 
     def ponteAlPrincipio(self):
-        self.ponPosicion(self.game.first_position)
+        self.setposition(self.game.first_position)
         self.main_window.base.pgn.goto(0, 0)
         self.main_window.base.pgnRefresh()  # No se puede usar pgnRefresh, ya que se usa con gobottom en otros lados y aqui eso no funciona
         self.put_view()
@@ -634,7 +634,7 @@ class Gestor:
     def ponteAlPrincipioColor(self):
         if self.game.li_moves:
             move = self.game.move(0)
-            self.ponPosicion(move.position)
+            self.setposition(move.position)
             self.main_window.base.pgn.goto(0, 2 if move.position.is_white else 1)
             self.tablero.ponFlechaSC(move.from_sq, move.to_sq)
             self.main_window.base.pgnRefresh()  # No se puede usar pgnRefresh, ya que se usa con gobottom en otros lados y aqui eso no funciona
@@ -660,7 +660,7 @@ class Gestor:
         if len(self.game):
             self.mueveJugada(GO_END)
         else:
-            self.ponPosicion(self.game.first_position)
+            self.setposition(self.game.first_position)
             self.main_window.base.pgnRefresh()  # No se puede usar pgnRefresh, ya que se usa con gobottom en otros lados y aqui eso no funciona
         self.put_view()
 
@@ -956,6 +956,7 @@ class Gestor:
                     move.del_comment()
                 if analysis:
                     move.del_analysis()
+            self.main_window.base.pgnRefresh()
             self.refresh()
 
     def cambiaRival(self, nuevo):
@@ -1120,6 +1121,8 @@ class Gestor:
         if self.configuracion.x_digital_board:
             if not DGT.activarSegunON_OFF(self.dgt):  # Error
                 QTUtil2.message_error(self.main_window, _("Error, could not detect the %s board driver.") % self.configuracion.x_digital_board)
+            else:
+                self.dgt_setposition()
 
     def dgt(self, quien, a1h8):
         if self.tablero.mensajero and self.tablero.siActivasPiezas:
@@ -1141,11 +1144,11 @@ class Gestor:
 
         return 1
 
-    def ponPosicion(self, position):
-        self.tablero.ponPosicion(position)
+    def setposition(self, position):
+        self.tablero.setposition(position)
 
     def dgt_setposition(self):
-        DGT.ponPosicion(self.game)
+        DGT.setposition(self.game)
 
     def juegaPorMi(self):
         if (

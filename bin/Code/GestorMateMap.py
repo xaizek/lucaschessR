@@ -62,7 +62,7 @@ class GestorMateMap(Gestor.Gestor):
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.main_window.quitaAyudas(True, True)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.ponPiezasAbajo(is_white)
         self.ponRotulo1(etiqueta)

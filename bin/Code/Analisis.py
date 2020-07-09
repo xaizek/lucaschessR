@@ -803,7 +803,7 @@ class AnalisisVariantes:
         self.w.exec_()
 
     def reset(self):
-        self.w.tablero.ponPosicion(self.position_before)
+        self.w.tablero.setposition(self.position_before)
         self.w.tablero.ponFlechaSC(self.move.from_sq, self.move.to_sq)
         self.w.tablero.set_dispatcher(self.mueve_humano)
         self.w.tablero.activaColor(not self.move.position.is_white)
@@ -838,7 +838,7 @@ class AnalisisVariantes:
         self.game_tutor.read_pv(self.rm.pv)
 
         if len(self.game_tutor):
-            self.w.tableroT.ponPosicion(self.game_tutor.move(0).position)
+            self.w.tableroT.setposition(self.game_tutor.move(0).position)
 
         self.w.ponPuntuacion(self.rm.texto())
 
@@ -898,9 +898,9 @@ class AnalisisVariantes:
         if self.game_tutor.num_moves():
             move = self.game_tutor.move(self.pos_tutor)
             if is_base:
-                self.w.tableroT.ponPosicion(move.position_before)
+                self.w.tableroT.setposition(move.position_before)
             else:
-                self.w.tableroT.ponPosicion(move.position)
+                self.w.tableroT.setposition(move.position)
                 self.w.tableroT.ponFlechaSC(move.from_sq, move.to_sq)
         self.w.tableroT.escena.update()
         self.w.update()
@@ -982,7 +982,7 @@ def analyse_game(gestor):
     def dispatch_bp(pos, ntotal, njg):
         tmp_bp.mensaje(mensaje + " %d/%d" % (pos + 1, ntotal))
         move = game.move(njg)
-        gestor.ponPosicion(move.position)
+        gestor.setposition(move.position)
         gestor.main_window.pgnColocate(njg / 2, (njg + 1) % 2)
         gestor.tablero.ponFlechaSC(move.from_sq, move.to_sq)
         gestor.put_view()

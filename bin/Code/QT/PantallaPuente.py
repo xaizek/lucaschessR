@@ -425,14 +425,14 @@ class WPuente(QTVarios.WDialogo):
         self.tableroIni = Tablero.TableroEstatico(self, config_board)
         self.tableroIni.crea()
         self.tableroIni.ponerPiezasAbajo(is_white)
-        self.tableroIni.ponPosicion(cpIni)
+        self.tableroIni.setposition(cpIni)
 
         cpFin = Position.Position()
         cpFin.read_fen(fenFin)
         self.tableroFin = Tablero.TableroEstatico(self, config_board)
         self.tableroFin.crea()
         self.tableroFin.ponerPiezasAbajo(is_white)  # esta bien
-        self.tableroFin.ponPosicion(cpFin)
+        self.tableroFin.setposition(cpFin)
 
         # Rotulo informacion
         self.lbInformacion = Controles.LB(self, self.textoLBInformacion(info, cpIni)).alinCentrado()
@@ -561,12 +561,12 @@ class WPuente(QTVarios.WDialogo):
         cpIni.read_fen(fenIni)
         is_white = cpIni.is_white
         self.tableroIni.ponerPiezasAbajo(is_white)
-        self.tableroIni.ponPosicion(cpIni)
+        self.tableroIni.setposition(cpIni)
 
         cpFin = Position.Position()
         cpFin.read_fen(fenFin)
         self.tableroFin.ponerPiezasAbajo(is_white)  # esta bien
-        self.tableroFin.ponPosicion(cpFin)
+        self.tableroFin.setposition(cpFin)
 
         # Rotulo informacion
         self.lbInformacion.ponTexto(self.textoLBInformacion(info, cpIni))

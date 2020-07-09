@@ -185,7 +185,7 @@ class WGM(QTVarios.WDialogo):
         self.register_grid(grid)
 
         # Tabs
-        self.tab = Controles.Tab().ponPosicion("S")
+        self.tab = Controles.Tab().setposition("S")
         self.tab.nuevaTab(gbBasic, _("Basic"))
         self.tab.nuevaTab(gbAdvanced, _("Advanced"))
         self.tab.nuevaTab(self.grid, _("Track record"))
@@ -430,7 +430,7 @@ class WGM(QTVarios.WDialogo):
         if dic:
             gm = dic["GM"]
             modo = dic.get("MODO", "estandar")
-            is_white = dic["ISWHITE"]
+            is_white = dic.get("ISWHITE", True)
             siJuez = dic["SIJUEZ"]
             showevals = dic.get("SHOWEVALS", False)
             engine = dic["ENGINE"]

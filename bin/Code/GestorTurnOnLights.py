@@ -91,7 +91,7 @@ class GestorTurnOnLights(Gestor.Gestor):
             is_white = cp.is_white
             self.is_human_side_white = is_white
             self.is_engine_side_white = not is_white
-            self.ponPosicion(self.game.last_position)
+            self.setposition(self.game.last_position)
             self.ponPiezasAbajo(is_white)
             self.pgnRefresh(True)
 

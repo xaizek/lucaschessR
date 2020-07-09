@@ -88,7 +88,7 @@ class GestorPerson(GestorPlayAgainstEngine.GestorPlayAgainstEngine):
         self.main_window.activaJuego(True, self.siTiempo)
 
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.mostrarIndicador(True)
         self.quitaAyudas(True, siQuitarAtras=False)
         self.ponPiezasAbajo(is_white)

@@ -44,7 +44,7 @@ class GestorResistance(Gestor.Gestor):
         self.main_window.pon_toolbar((TB_RESIGN, TB_REINIT, TB_CONFIG, TB_UTILITIES))
         self.main_window.activaJuego(True, False, siAyudas=False)
         self.set_dispatcher(self.mueve_humano)
-        self.ponPosicion(self.game.last_position)
+        self.setposition(self.game.last_position)
         self.ponPiezasAbajo(is_white)
         self.quitaAyudas()
         self.ponActivarTutor(False)
