@@ -41,7 +41,7 @@ class GestorTurnOnLights(Gestor.Gestor):
         self.total_time_used = 0.0
         self.ayudas = 0
         self.errores = 0
-        self.dicFENayudas = {}  # se muestra la flecha a partir de dos del mismo
+        self.dicFENayudas = {}  # se muestra la arrow a partir de dos del mismo
 
         self.game_type = GT_TURN_ON_LIGHTS
 

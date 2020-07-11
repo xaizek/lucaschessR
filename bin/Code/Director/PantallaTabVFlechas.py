@@ -3,7 +3,7 @@ import copy
 from PySide2 import QtCore, QtWidgets
 
 import Code
-from Code import TabVisual
+from Code.Director import TabVisual
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles
@@ -34,7 +34,7 @@ class WTV_Flecha(QtWidgets.QDialog):
 
         self.siNombre = siNombre
 
-        if not regFlecha:
+        if regFlecha is None:
             regFlecha = TabVisual.PFlecha()
 
         li_acciones = [(_("Save"), Iconos.Aceptar(), "grabar"), None, (_("Cancel"), Iconos.Cancelar(), "reject"), None]
@@ -51,7 +51,7 @@ class WTV_Flecha(QtWidgets.QDialog):
         liGen = []
 
         if siNombre:
-            # name de la flecha que se usara en los menus del tutorial
+            # name de la arrow que se usara en los menus del tutorial
             config = FormLayout.Editbox(_("Name"), ancho=120)
             liGen.append((config, regFlecha.name))
 
@@ -99,11 +99,11 @@ class WTV_Flecha(QtWidgets.QDialog):
         config = FormLayout.Spinbox(_("Head height"), 0, 100, 50)
         liGen.append((config, regFlecha.altocabeza))
 
-        # ( "ancho", "n", 10 ), # ancho de la base de la flecha si es un poligono
+        # ( "ancho", "n", 10 ), # ancho de la base de la arrow si es un poligono
         config = FormLayout.Spinbox(_("Base width"), 1, 100, 50)
         liGen.append((config, regFlecha.ancho))
 
-        # ( "vuelo", "n", 5 ), # vuelo de la flecha respecto al ancho de la base
+        # ( "vuelo", "n", 5 ), # vuelo de la arrow respecto al ancho de la base
         config = FormLayout.Spinbox(_("Additional width of the base of the head"), 1, 100, 50)
         liGen.append((config, regFlecha.vuelo))
 
@@ -137,8 +137,8 @@ class WTV_Flecha(QtWidgets.QDialog):
         for a1h8 in liMovs:
             regFlecha.a1h8 = a1h8
             regFlecha.siMovible = True
-            flecha = self.tablero.creaFlecha(regFlecha)
-            self.liEjemplos.append(flecha)
+            arrow = self.tablero.creaFlecha(regFlecha)
+            self.liEjemplos.append(arrow)
 
     def process_toolbar(self):
         accion = self.sender().clave
@@ -148,8 +148,8 @@ class WTV_Flecha(QtWidgets.QDialog):
         if hasattr(self, "form"):
             li = self.form.get()
             n = 1 if self.siNombre else 0
-            for flecha in self.liEjemplos:
-                regFlecha = flecha.bloqueDatos
+            for arrow in self.liEjemplos:
+                regFlecha = arrow.bloqueDatos
                 if self.siNombre:
                     regFlecha.name = li[0]
                 regFlecha.forma = li[n]
@@ -166,9 +166,9 @@ class WTV_Flecha(QtWidgets.QDialog):
                 regFlecha.descuelgue = li[n + 10]
                 regFlecha.destino = li[n + 11]
                 regFlecha.position.orden = li[n + 12]
-                flecha.posicion2xy()  # posible cambio en destino
-                flecha.setOpacity(regFlecha.opacidad)
-                flecha.setZValue(regFlecha.position.orden)
+                arrow.posicion2xy()  # posible cambio en destino
+                arrow.setOpacity(regFlecha.opacidad)
+                arrow.setZValue(regFlecha.position.orden)
             self.tablero.escena.update()
             QTUtil.refresh_gui()
 
@@ -190,13 +190,13 @@ class WTV_Flecha(QtWidgets.QDialog):
         pm = TabFlechas.pixmapArrow(bf, 32, 32)
         buf = QtCore.QBuffer()
         pm.save(buf, "PNG")
-        regFlecha.png = str(buf.buffer())
+        regFlecha.png = bytes(buf.buffer())
         self.regFlecha = regFlecha
         self.accept()
 
 
 class WTV_Flechas(QTVarios.WDialogo):
-    def __init__(self, owner, listaFlechas, dbFlechas):
+    def __init__(self, owner, list_arrows, dbFlechas):
 
         titulo = _("Arrows")
         icono = Iconos.Flechas()
@@ -211,7 +211,7 @@ class WTV_Flechas(QTVarios.WDialogo):
 
         self.dbFlechas = dbFlechas
 
-        self.liPFlechas = owner.listaFlechas()
+        self.liPFlechas = owner.list_arrows()
 
         # Lista
         o_columns = Columnas.ListaColumnas()
@@ -261,8 +261,8 @@ class WTV_Flechas(QTVarios.WDialogo):
         for a1h8 in liMovs:
             regFlecha.a1h8 = a1h8
             regFlecha.siMovible = True
-            flecha = self.tablero.creaFlecha(regFlecha)
-            self.liEjemplos.append(flecha)
+            arrow = self.tablero.creaFlecha(regFlecha)
+            self.liEjemplos.append(arrow)
 
         self.grid.gotop()
         self.grid.setFocus()
@@ -309,9 +309,9 @@ class WTV_Flechas(QTVarios.WDialogo):
         w = WTV_Flecha(self, None, True)
         if w.exec_():
             regFlecha = w.regFlecha
-            regFlecha.id = Util.new_id()
+            regFlecha.id = Util.str_id()
             regFlecha.ordenVista = (self.liPFlechas[-1].ordenVista + 1) if self.liPFlechas else 1
-            self.dbFlechas[regFlecha.id] = regFlecha
+            self.dbFlechas[regFlecha.id] = regFlecha.save_dic()
             self.liPFlechas.append(regFlecha)
             self.grid.refresh()
             self.grid.gobottom()
@@ -322,8 +322,8 @@ class WTV_Flechas(QTVarios.WDialogo):
         if fila >= 0:
             if QTUtil2.pregunta(self, _X(_("Delete the arrow %1?"), self.liPFlechas[fila].name)):
                 regFlecha = self.liPFlechas[fila]
-                xid = regFlecha.id
-                del self.dbFlechas[xid]
+                str_id = regFlecha.id
+                del self.dbFlechas[str_id]
                 del self.liPFlechas[fila]
                 self.grid.refresh()
                 self.grid.setFocus()
@@ -334,9 +334,9 @@ class WTV_Flechas(QTVarios.WDialogo):
             w = WTV_Flecha(self, self.liPFlechas[fila], True)
             if w.exec_():
                 regFlecha = w.regFlecha
-                xid = regFlecha.id
+                str_id = regFlecha.id
                 self.liPFlechas[fila] = regFlecha
-                self.dbFlechas[xid] = regFlecha
+                self.dbFlechas[str_id] = regFlecha.save_dic()
                 self.grid.refresh()
                 self.grid.setFocus()
                 self.grid_cambiado_registro(self.grid, fila, None)
@@ -358,9 +358,9 @@ class WTV_Flechas(QTVarios.WDialogo):
                 n += 1
                 name = "%s-%d" % (regFlecha.name, n)
             regFlecha.name = name
-            regFlecha.id = Util.new_id()
+            regFlecha.id = Util.str_id()
             regFlecha.ordenVista = self.liPFlechas[-1].ordenVista + 1
-            self.dbFlechas[regFlecha.id] = regFlecha
+            self.dbFlechas[regFlecha.id] = regFlecha.save_dic()
             self.liPFlechas.append(regFlecha)
             self.grid.refresh()
             self.grid.setFocus()
@@ -368,8 +368,8 @@ class WTV_Flechas(QTVarios.WDialogo):
     def intercambia(self, fila1, fila2):
         regFlecha1, regFlecha2 = self.liPFlechas[fila1], self.liPFlechas[fila2]
         regFlecha1.ordenVista, regFlecha2.ordenVista = regFlecha2.ordenVista, regFlecha1.ordenVista
-        self.dbFlechas[regFlecha1.id] = regFlecha1
-        self.dbFlechas[regFlecha2.id] = regFlecha2
+        self.dbFlechas[regFlecha1.id] = regFlecha1.save_dic()
+        self.dbFlechas[regFlecha2.id] = regFlecha2.save_dic()
         self.liPFlechas[fila1], self.liPFlechas[fila2] = self.liPFlechas[fila1], self.liPFlechas[fila2]
         self.grid.goto(fila2, 0)
         self.grid.refresh()

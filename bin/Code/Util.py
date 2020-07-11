@@ -153,6 +153,15 @@ def new_id() -> int:
     return t
 
 
+def str_id() -> str:
+    d = datetime.datetime.now()
+    r = random.randint
+    t = (
+        ((((r(1, d.year) * 12 + r(1, d.month)) * 31 + d.day) * 24 + d.hour) * 60 + d.minute) * 60 + d.second
+    ) * 1000 + r(1, d.microsecond + 737) // 1000
+    return str(t)
+
+
 def huella():
     m = hashlib.md5()
     s = str(random.random()) + str(today())

@@ -23,7 +23,7 @@ from Code.QT import TabMarker
 from Code.QT import TabSVG
 from Code.QT import TabTipos
 from Code.QT import Delegados
-from Code import TabVisual
+from Code.Director import TabVisual, PantallaDirector
 from Code import Util
 import Code
 from Code.Constantes import *
@@ -853,7 +853,6 @@ class Tablero(QtWidgets.QGraphicsView):
                 self.dirvisual = None
                 return False
             else:
-                from Code.QT import PantallaDirector
 
                 self.dirvisual = PantallaDirector.Director(self)
             return True
@@ -1655,9 +1654,9 @@ class Tablero(QtWidgets.QGraphicsView):
         bf.destino = destino
         bf.opacidad = opacidad
 
-        flecha = self.creaFlecha(bf)
-        self.liFlechas.append(flecha)
-        flecha.show()
+        arrow = self.creaFlecha(bf)
+        self.liFlechas.append(arrow)
+        arrow.show()
 
     def creaFlechaSC(self, a1h8):
         bf = copy.deepcopy(self.config_board.fTransicion())
@@ -1670,16 +1669,16 @@ class Tablero(QtWidgets.QGraphicsView):
     def creaFlechaTmp(self, desdeA1h8, hastaA1h8, siMain):
         bf = copy.deepcopy(self.config_board.fTransicion() if siMain else self.config_board.fAlternativa())
         bf.a1h8 = desdeA1h8 + hastaA1h8
-        flecha = self.creaFlecha(bf)
-        self.liFlechas.append(flecha)
-        flecha.show()
+        arrow = self.creaFlecha(bf)
+        self.liFlechas.append(arrow)
+        arrow.show()
 
     def creaFlechaPremove(self, desde, hasta):
         bf = copy.deepcopy(self.config_board.fActivo())
         bf.a1h8 = desde + hasta
-        flecha = self.creaFlecha(bf)
-        self.liFlechas.append(flecha)
-        flecha.show()
+        arrow = self.creaFlecha(bf)
+        self.liFlechas.append(arrow)
+        arrow.show()
         self.update()
 
     def creaFlechaTutor(self, desdeA1h8, hastaA1h8, factor):
@@ -1694,9 +1693,9 @@ class Tablero(QtWidgets.QGraphicsView):
         bf.forma = "1"
         bf.position.orden = ZVALUE_PIECE + 1
 
-        flecha = self.creaFlecha(bf)
-        self.liFlechas.append(flecha)
-        flecha.show()
+        arrow = self.creaFlecha(bf)
+        self.liFlechas.append(arrow)
+        arrow.show()
 
     def ponFlechasTmp(self, lista, ms=None):
         if self.flechaSC:
@@ -1803,15 +1802,15 @@ class Tablero(QtWidgets.QGraphicsView):
 
         bf.a1h8 = desdeA1h8 + hastaA1h8
 
-        flecha = self.creaFlecha(bf)
-        self.liFlechas.append(flecha)
-        flecha.show()
+        arrow = self.creaFlecha(bf)
+        self.liFlechas.append(arrow)
+        arrow.show()
 
     def quitaFlechas(self):
-        for flecha in self.liFlechas:
-            self.xremoveItem(flecha)
-            flecha.hide()
-            del flecha
+        for arrow in self.liFlechas:
+            self.xremoveItem(arrow)
+            arrow.hide()
+            del arrow
         self.liFlechas = []
         self.update()
 
@@ -1922,8 +1921,8 @@ class Tablero(QtWidgets.QGraphicsView):
         for pieza, piezaSC, siVisible in self.liPiezas:
             if siVisible:
                 piezaSC.hide()
-        for flecha in self.liFlechas:
-            flecha.hide()
+        for arrow in self.liFlechas:
+            arrow.hide()
         if self.flechaSC:
             self.flechaSC.hide()
 
@@ -1934,8 +1933,8 @@ class Tablero(QtWidgets.QGraphicsView):
         for pieza, piezaSC, siVisible in self.liPiezas:
             if siVisible:
                 piezaSC.show()
-        for flecha in self.liFlechas:
-            flecha.show()
+        for arrow in self.liFlechas:
+            arrow.show()
         if self.flechaSC:
             self.flechaSC.show()
 
@@ -2013,8 +2012,8 @@ class Tablero(QtWidgets.QGraphicsView):
         self.ponIndicador(bd.colorRelleno == self.colorBlancas)
         for k, uno in self.dicMovibles.items():
             uno.posicion2xy()
-        for flecha in self.liFlechas:
-            flecha.posicion2xy()
+        for arrow in self.liFlechas:
+            arrow.posicion2xy()
         self.escena.update()
 
         if hasattr(self.main_window, "capturas"):

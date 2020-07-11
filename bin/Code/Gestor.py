@@ -1042,13 +1042,13 @@ class Gestor:
                         regMarco.color = color
                         regMarco.colorinterior = color
                         regMarco.opacidad = 0.5
-                        marco = self.tablero.creaMarco(regMarco)
-                        self.liMarcosTmp.append(marco)
+                        box = self.tablero.creaMarco(regMarco)
+                        self.liMarcosTmp.append(box)
                         st.add(h8)
 
             else:
-                for marco in self.liMarcosTmp:
-                    self.tablero.xremoveItem(marco)
+                for box in self.liMarcosTmp:
+                    self.tablero.xremoveItem(box)
                 self.liMarcosTmp = []
 
     def exePulsadaLetra(self, siActivar, letra):

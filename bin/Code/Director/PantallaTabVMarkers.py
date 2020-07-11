@@ -3,7 +3,7 @@ import os
 
 from PySide2 import QtCore, QtWidgets
 
-from Code import TabVisual
+from Code.Director import TabVisual
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles
@@ -119,14 +119,14 @@ class WTV_Marker(QtWidgets.QDialog):
         pm = self.liEjemplos[0].pixmapX()
         bf = QtCore.QBuffer()
         pm.save(bf, "PNG")
-        regMarker.png = str(bf.buffer())
+        regMarker.png = bytes(bf.buffer())
 
         self.regMarker = regMarker
         self.accept()
 
 
 class WTV_Markers(QTVarios.WDialogo):
-    def __init__(self, owner, listaMarkers, dbMarkers):
+    def __init__(self, owner, list_markers, dbMarkers):
 
         titulo = _("Markers")
         icono = Iconos.Markers()
@@ -138,7 +138,7 @@ class WTV_Markers(QTVarios.WDialogo):
         flb = Controles.TipoLetra(puntos=8)
 
         self.configuracion = Code.configuracion
-        self.liPMarkers = listaMarkers
+        self.liPMarkers = list_markers
         self.dbMarkers = dbMarkers
 
         # Lista
@@ -218,27 +218,18 @@ class WTV_Markers(QTVarios.WDialogo):
 
         menu = QTVarios.LCMenu(self)
 
-        def miraDir(submenu, base, dr):
-            if base:
-                pathCarpeta = base + dr + "/"
-                smenu = submenu.submenu(dr, Iconos.Carpeta())
-            else:
-                pathCarpeta = dr + "/"
-                smenu = submenu
-            li = []
-            for fich in os.listdir(pathCarpeta):
-                pathFich = pathCarpeta + fich
-                if os.path.isdir(pathFich):
-                    miraDir(smenu, pathCarpeta, fich)
-                elif pathFich.lower().endswith(".svg"):
-                    li.append((pathFich, fich))
+        def seek_folder(submenu, folder):
+            for entry in os.scandir(folder):
+                if entry.is_dir():
+                    smenu = submenu.submenu(entry.name, Iconos.Carpeta())
+                    seek_folder(smenu, entry.path)
+            for entry in os.scandir(folder):
+                if entry.is_file() and entry.name.lower().endswith(".svg"):
+                    ico = QTVarios.fsvg2ico(entry.path, 32)
+                    if ico:
+                        submenu.opcion(entry.path, entry.name[:-4], ico)
 
-            for pathFich, fich in li:
-                ico = QTVarios.fsvg2ico(pathFich, 32)
-                if ico:
-                    smenu.opcion(pathFich, fich[:-4], ico)
-
-        miraDir(menu, "", "imgs")
+        seek_folder(menu, Code.path_resource("Imgs"))
 
         menu.separador()
 
@@ -261,9 +252,9 @@ class WTV_Markers(QTVarios.WDialogo):
         w = WTV_Marker(self, None, xml=contenido, name=name)
         if w.exec_():
             regMarker = w.regMarker
-            regMarker.id = Util.new_id()
+            regMarker.id = Util.str_id()
             regMarker.ordenVista = (self.liPMarkers[-1].ordenVista + 1) if self.liPMarkers else 1
-            self.dbMarkers[regMarker.id] = regMarker
+            self.dbMarkers[regMarker.id] = regMarker.save_dic()
             self.liPMarkers.append(regMarker)
             self.grid.refresh()
             self.grid.gobottom()
@@ -274,9 +265,9 @@ class WTV_Markers(QTVarios.WDialogo):
         if fila >= 0:
             if QTUtil2.pregunta(self, _X(_("Delete %1?"), self.liPMarkers[fila].name)):
                 regMarker = self.liPMarkers[fila]
-                nid = regMarker.id
+                str_id = regMarker.id
                 del self.liPMarkers[fila]
-                del self.dbMarkers[nid]
+                del self.dbMarkers[str_id]
                 self.grid.refresh()
                 self.grid.setFocus()
 
@@ -286,9 +277,9 @@ class WTV_Markers(QTVarios.WDialogo):
             w = WTV_Marker(self, self.liPMarkers[fila])
             if w.exec_():
                 regMarker = w.regMarker
-                xid = regMarker.id
+                str_id = regMarker.id
                 self.liPMarkers[fila] = regMarker
-                self.dbMarkers[xid] = regMarker
+                self.dbMarkers[str_id] = regMarker.save_dic()
                 self.grid.refresh()
                 self.grid.setFocus()
                 self.grid_cambiado_registro(self.grid, fila, None)
@@ -310,7 +301,7 @@ class WTV_Markers(QTVarios.WDialogo):
                 n += 1
                 name = "%s-%d" % (regMarker.name, n)
             regMarker.name = name
-            regMarker.id = Util.new_id()
+            regMarker.id = Util.str_id()
             regMarker.ordenVista = self.liPMarkers[-1].ordenVista + 1
             self.dbMarkers[regMarker.id] = regMarker
             self.liPMarkers.append(regMarker)

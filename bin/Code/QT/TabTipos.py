@@ -70,7 +70,7 @@ class TipoLetra:
 
 
 class Bloque:
-    def __init__(self, liVars):
+    def __init__(self, liVars, dic=None):
         self.siMovible = True
         liVars.append(("name", "c", ""))
         liVars.append(("ordenVista", "n", 1))
@@ -79,6 +79,8 @@ class Bloque:
             var, tipo, ini = dato
             setattr(self, var, ini)
             self.liVars[num] = (var, tipo)
+        if dic:
+            self.restore_dic(dic)
 
     def tipoqt(self):
         return {
@@ -104,8 +106,6 @@ class Bloque:
                 if not value:
                     value = b""
                 else:
-                    if type(value) == str:
-                        value = value.encode("utf-8")
                     value = base64.encodebytes(value)
             dic[var] = value.save_dic() if tipo == "o" else value
         dic["ordenVista"] = self.ordenVista
@@ -120,8 +120,6 @@ class Bloque:
                     xvar.restore_dic(value)
                 else:
                     if var == "png":
-                        if type(value) == str:
-                            value = value.encode("utf-8")
                         value = base64.decodebytes(value)
                     setattr(self, var, value)
 
@@ -209,7 +207,7 @@ class Pieza(Bloque):
 
 
 class Flecha(Bloque):
-    def __init__(self):
+    def __init__(self, dic=None):
         liVars = [
             ("position", "o", Posicion(0, 0, 80, 1, 0)),
             ("a1h8", "c", "a1h8"),
@@ -225,12 +223,12 @@ class Flecha(Bloque):
             ("redondeos", "l", False),
             ("forma", "t", "a"),
             # a = abierta -> , c = cerrada la cabeza, 1 = poligono cuadrado, 2 = poligono 1 punto base, 3 = poligono 1 punto base cabeza
-            ("ancho", "n", 10),  # ancho de la base de la flecha si es un poligono
+            ("ancho", "n", 10),  # ancho de la base de la arrow si es un poligono
             ("vuelo", "n", 5),  # ancho adicional en la base
             ("descuelgue", "n", 2),  # angulo de la base de la cabeza
             ("png", "c", ""),  # png para usar como boton
         ]
-        Bloque.__init__(self, liVars)
+        Bloque.__init__(self, liVars, dic=dic)
 
     def copia(self):
         c = Flecha()
@@ -255,7 +253,7 @@ class Flecha(Bloque):
 
 
 class Marco(Bloque):
-    def __init__(self):
+    def __init__(self, dic=None):
         liVars = [
             ("position", "o", Posicion(0, 0, 80, 80, 0)),
             ("a1h8", "c", "a1h8"),
@@ -269,11 +267,11 @@ class Marco(Bloque):
             ("anchoCasilla", "n", 1),
             ("png", "c", ""),  # png para usar como boton
         ]
-        Bloque.__init__(self, liVars)
+        Bloque.__init__(self, liVars, dic=dic)
 
 
 class SVG(Bloque):
-    def __init__(self):
+    def __init__(self, dic=None):
         # orden por debajo de las piezas
         liVars = [
             ("position", "o", Posicion(0, 0, 80, 80, 0, 9)),
@@ -285,11 +283,11 @@ class SVG(Bloque):
             ("psize", "n", 100),  # ajustetama_o
             ("png", "c", ""),  # png para usar como boton
         ]
-        Bloque.__init__(self, liVars)
+        Bloque.__init__(self, liVars, dic=dic)
 
 
 class Marker(Bloque):
-    def __init__(self):
+    def __init__(self, dic=None):
         # orden por debajo de las piezas
         liVars = [
             ("position", "o", Posicion(0, 0, 80, 80, 0, 9)),
@@ -302,7 +300,7 @@ class Marker(Bloque):
             ("poscelda", "n", 1),  # 0 = Up-Left 1 = Up-Right 2 = Down-Right 3 = Down-Left
             ("png", "c", ""),  # png para usar como boton
         ]
-        Bloque.__init__(self, liVars)
+        Bloque.__init__(self, liVars, dic=dic)
 
 
 class Pizarra(QtWidgets.QWidget):

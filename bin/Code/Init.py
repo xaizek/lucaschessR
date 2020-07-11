@@ -22,7 +22,7 @@ def init():
     resp = Gui.run_gui(main_procesador)
     run_sound.close()
     # Added by GON
-    main_procesador.closeEboard()
+    main_procesador.desactivarDGT()
     # ------------
     main_procesador.pararMotores()
     main_procesador.kibitzers_manager.close()

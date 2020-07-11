@@ -4,7 +4,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from Code import Util
 from Code import TrListas
-from Code import TabVisual
+from Code.Director import TabVisual, PantallaTab, PantallaTabVFlechas, PantallaTabVMarcos, PantallaTabVMarkers, PantallaTabVSVGs
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles
@@ -12,11 +12,6 @@ from Code.QT import Delegados
 from Code.QT import FormLayout
 from Code.QT import Grid
 from Code.QT import Iconos
-from Code.QT import PantallaTab
-from Code.QT import PantallaTabVFlechas
-from Code.QT import PantallaTabVMarcos
-from Code.QT import PantallaTabVMarkers
-from Code.QT import PantallaTabVSVGs
 from Code.QT import QTUtil
 from Code.QT import QTUtil2
 from Code.QT import QTVarios
@@ -633,28 +628,28 @@ class WPanelDirector(QTVarios.WDialogo):
         xid = li[2]
         ok = False
         if tp == TabVisual.TP_FLECHA:
-            regFlecha = self.dbFlechas[xid]
+            regFlecha = TabTipos.Flecha(dic = self.dbFlechas[xid])
             w = PantallaTabVFlechas.WTV_Flecha(self, regFlecha, True)
             if w.exec_():
-                self.dbFlechas[xid] = w.regFlecha
+                self.dbFlechas[xid] = w.regFlecha.save_dic()
                 ok = True
         elif tp == TabVisual.TP_MARCO:
-            regMarco = self.dbMarcos[xid]
+            regMarco = TabTipos.Marco(dic=self.dbMarcos[xid])
             w = PantallaTabVMarcos.WTV_Marco(self, regMarco)
             if w.exec_():
-                self.dbMarcos[xid] = w.regMarco
+                self.dbMarcos[xid] = w.regMarco.save_dic()
                 ok = True
         elif tp == TabVisual.TP_SVG:
-            regSVG = self.dbSVGs[xid]
+            regSVG = TabTipos.SVG(dic=self.dbSVGs[xid])
             w = PantallaTabVSVGs.WTV_SVG(self, regSVG)
             if w.exec_():
-                self.dbSVGs[xid] = w.regSVG
+                self.dbSVGs[xid] = w.regSVG.save_dic()
                 ok = True
         elif tp == TabVisual.TP_MARKER:
-            regMarker = self.dbMarkers[xid]
+            regMarker = TabTipos.Marker(dic=self.dbMarkers[xid])
             w = PantallaTabVMarkers.WTV_Marker(self, regMarker)
             if w.exec_():
-                self.dbMarkers[xid] = w.regMarker
+                self.dbMarkers[xid] = w.regMarker.save_dic()
                 ok = True
 
         if ok:
@@ -697,70 +692,66 @@ class WPanelDirector(QTVarios.WDialogo):
                 self.configuracion.graba()
 
     def flechas(self):
-        w = PantallaTabVFlechas.WTV_Flechas(self, self.listaFlechas(), self.dbFlechas)
+        w = PantallaTabVFlechas.WTV_Flechas(self, self.list_arrows(), self.dbFlechas)
         w.exec_()
         self.actualizaBandas()
         QTUtil.refresh_gui()
 
-    def listaFlechas(self):
+    def list_arrows(self):
         dic = self.dbFlechas.as_dictionary()
         li = []
         for k, dicFlecha in dic.items():
-            flecha = TabTipos.Flecha()
-            flecha.restore_dic(dicFlecha)
-            flecha.id = int(k)
-            li.append(flecha)
+            arrow = TabTipos.Flecha(dic=dicFlecha)
+            arrow.id = k
+            li.append(arrow)
 
         li.sort(key=lambda x: x.ordenVista)
         return li
 
     def marcos(self):
-        w = PantallaTabVMarcos.WTV_Marcos(self, self.listaMarcos(), self.dbMarcos)
+        w = PantallaTabVMarcos.WTV_Marcos(self, self.list_boxes(), self.dbMarcos)
         w.exec_()
         self.actualizaBandas()
         QTUtil.refresh_gui()
 
-    def listaMarcos(self):
+    def list_boxes(self):
         dic = self.dbMarcos.as_dictionary()
         li = []
         for k, dicMarco in dic.items():
-            marco = TabTipos.Marco()
-            marco.restore_dic(dicMarco)
-            marco.id = int(k)
-            li.append(marco)
+            box = TabTipos.Marco(dic=dicMarco)
+            box.id = k
+            li.append(box)
         li.sort(key=lambda x: x.ordenVista)
         return li
 
     def svgs(self):
-        w = PantallaTabVSVGs.WTV_SVGs(self, self.listaSVGs(), self.dbSVGs)
+        w = PantallaTabVSVGs.WTV_SVGs(self, self.list_svgs(), self.dbSVGs)
         w.exec_()
         self.actualizaBandas()
         QTUtil.refresh_gui()
 
-    def listaSVGs(self):
+    def list_svgs(self):
         dic = self.dbSVGs.as_dictionary()
         li = []
         for k, dicSVG in dic.items():
-            svg = TabTipos.SVG()
-            svg.restore_dic(dicSVG)
-            svg.id = int(k)
+            svg = TabTipos.SVG(dic=dicSVG)
+            svg.id = k
             li.append(svg)
         li.sort(key=lambda x: x.ordenVista)
         return li
 
     def markers(self):
-        w = PantallaTabVMarkers.WTV_Markers(self, self.listaMarkers(), self.dbMarkers)
+        w = PantallaTabVMarkers.WTV_Markers(self, self.list_markers(), self.dbMarkers)
         w.exec_()
         self.actualizaBandas()
         QTUtil.refresh_gui()
 
-    def listaMarkers(self):
+    def list_markers(self):
         dic = self.dbMarkers.as_dictionary()
         li = []
         for k, dic_marker in dic.items():
-            marker = TabTipos.Marker()
-            marker.restore_dic(dic_marker)
-            marker.id = int(k)
+            marker = TabTipos.Marker(dic=dic_marker)
+            marker.id = k
             li.append(marker)
         li.sort(key=lambda x: x.ordenVista)
         return li
@@ -770,7 +761,7 @@ class WPanelDirector(QTVarios.WDialogo):
         self.dbFlechas = self.dbGestor.dbFlechas
         self.dbMarcos = self.dbGestor.dbMarcos
         self.dbSVGs = self.dbGestor.dbSVGs
-        self.dbMarkers = self.dbGestor.dbMarcos
+        self.dbMarkers = self.dbGestor.dbMarkers
 
     def cierraRecursos(self):
         if self.guion is not None:
@@ -788,34 +779,34 @@ class WPanelDirector(QTVarios.WDialogo):
         self.selectBanda.iniActualizacion()
 
         tipo = _("Arrows")
-        for flecha in self.listaFlechas():
+        for arrow in self.list_arrows():
             pm = QtGui.QPixmap()
-            pm.loadFromData(flecha.png, "PNG")
-            xid = "_F_%d" % flecha.id
-            name = flecha.name
+            pm.loadFromData(arrow.png, "PNG")
+            xid = "_F_%s" % arrow.id
+            name = arrow.name
             self.selectBanda.actualiza(xid, name, pm, tipo)
 
         tipo = _("Boxes")
-        for marco in self.listaMarcos():
+        for box in self.list_boxes():
             pm = QtGui.QPixmap()
-            pm.loadFromData(marco.png, "PNG")
-            xid = "_M_%d" % marco.id
-            name = marco.name
+            pm.loadFromData(box.png, "PNG")
+            xid = "_M_%s" % box.id
+            name = box.name
             self.selectBanda.actualiza(xid, name, pm, tipo)
 
         tipo = _("Images")
-        for svg in self.listaSVGs():
+        for svg in self.list_svgs():
             pm = QtGui.QPixmap()
             pm.loadFromData(svg.png, "PNG")
-            xid = "_S_%d" % svg.id
+            xid = "_S_%s" % svg.id
             name = svg.name
             self.selectBanda.actualiza(xid, name, pm, tipo)
 
         tipo = _("Markers")
-        for marker in self.listaMarkers():
+        for marker in self.list_markers():
             pm = QtGui.QPixmap()
             pm.loadFromData(marker.png, "PNG")
-            xid = "_X_%d" % marker.id
+            xid = "_X_%s" % marker.id
             name = marker.name
             self.selectBanda.actualiza(xid, name, pm, tipo)
 

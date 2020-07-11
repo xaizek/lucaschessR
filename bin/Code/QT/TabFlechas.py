@@ -267,7 +267,7 @@ def paintArrow(painter, bf):
     xp = 1.0 - float(altoCab) / tamLinea
     pbc = linea.pointAt(xp)  # base de la cabeza
 
-    # Usamos una linea a 90 grados para calcular los puntos del final de la cabeza de flecha
+    # Usamos una linea a 90 grados para calcular los puntos del final de la cabeza de arrow
     l90 = linea.normalVector()
     l90.setLength(ancho + vuelo * 2)
     l90.translate(pbc - p_ini)  # la llevamos a la base de la cabeza
@@ -291,7 +291,7 @@ def paintArrow(painter, bf):
     lf.translate(p_base2 - p_base1)
     p_cab2 = lf.p2()
 
-    # Poligonos para determinar si se ha pulsado sobre la flecha
+    # Poligonos para determinar si se ha pulsado sobre la arrow
     xancho = max(ancho + vuelo * 2.0, 16.0)
     xl90 = linea.normalVector()
     xl90.setLength(xancho)

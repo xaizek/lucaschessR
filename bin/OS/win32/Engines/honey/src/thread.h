@@ -57,20 +57,25 @@ public:
   void idle_loop();
   void start_searching();
   void wait_for_search_finished();
-  int best_move_count(Move move) const;
+  int best_move_count(Move move);
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
 
-  size_t pvIdx, pvLast;
-
-  uint64_t ttHitAverage;
-#ifndef Noir
-  int selDepth, nmpMinPly;
-  Color nmpColor;
+#if defined (Sullivan) || (Blau) || (Fortress)
+  size_t pvIdx, pvLast, extension, ttProgress;
 #else
+  size_t pvIdx, pvLast;
+#endif
+//#ifndef Noir
+  uint64_t ttHitAverage;
+//#endif
+#ifdef Noir
   int selDepth;
   bool nmpGuard;
+#else
+  int selDepth, nmpMinPly;
+  Color nmpColor;
 #endif
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 
@@ -79,11 +84,9 @@ public:
   Depth rootDepth, completedDepth;
   CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;
-  LowPlyHistory lowPlyHistory;
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
   Score contempt;
-  bool profound_test;
 
 };
 
@@ -98,7 +101,7 @@ struct MainThread : public Thread {
   void check_time();
 
   double previousTimeReduction;
-  Value bestPreviousScore;
+  Value previousScore;
   Value iterValue[4];
   int callsCnt;
   bool stopOnPonderhit;
@@ -119,9 +122,6 @@ struct ThreadPool : public std::vector<Thread*> {
   MainThread* main()        const { return static_cast<MainThread*>(front()); }
   uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
-  Thread* get_best_thread() const;
-  void start_searching();
-  void wait_for_search_finished() const;
 
   std::atomic_bool stop, increaseDepth;
 

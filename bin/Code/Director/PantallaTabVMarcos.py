@@ -2,7 +2,7 @@ import copy
 
 from PySide2 import QtCore, QtWidgets
 
-from Code import TabVisual
+from Code.Director import TabVisual
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles
@@ -41,7 +41,7 @@ class WTV_Marco(QtWidgets.QDialog):
         # Datos generales
         liGen = []
 
-        # name del marco que se usara en los menus del tutorial
+        # name del box que se usara en los menus del tutorial
         config = FormLayout.Editbox(_("Name"), ancho=120)
         liGen.append((config, regMarco.name))
 
@@ -86,8 +86,8 @@ class WTV_Marco(QtWidgets.QDialog):
         for a1h8 in liMovs:
             regMarco.a1h8 = a1h8
             regMarco.siMovible = True
-            marco = self.tablero.creaMarco(regMarco)
-            self.liEjemplos.append(marco)
+            box = self.tablero.creaMarco(regMarco)
+            self.liEjemplos.append(box)
 
     def process_toolbar(self):
         accion = self.sender().clave
@@ -96,8 +96,8 @@ class WTV_Marco(QtWidgets.QDialog):
     def cambios(self):
         if hasattr(self, "form"):
             li = self.form.get()
-            for n, marco in enumerate(self.liEjemplos):
-                regMarco = marco.bloqueDatos
+            for n, box in enumerate(self.liEjemplos):
+                regMarco = box.bloqueDatos
                 regMarco.name = li[0]
                 regMarco.tipo = li[1]
                 regMarco.color = li[2]
@@ -107,9 +107,9 @@ class WTV_Marco(QtWidgets.QDialog):
                 regMarco.grosor = li[5]
                 regMarco.redEsquina = li[6]
                 regMarco.position.orden = li[7]
-                marco.setOpacity(regMarco.opacidad)
-                marco.setZValue(regMarco.position.orden)
-                marco.update()
+                box.setOpacity(regMarco.opacidad)
+                box.setZValue(regMarco.position.orden)
+                box.update()
             self.tablero.escena.update()
             QTUtil.refresh_gui()
 
@@ -124,13 +124,13 @@ class WTV_Marco(QtWidgets.QDialog):
         pm = self.liEjemplos[0].pixmap()
         bf = QtCore.QBuffer()
         pm.save(bf, "PNG")
-        self.regMarco.png = str(bf.buffer())
+        self.regMarco.png = bytes(bf.buffer())
 
         self.accept()
 
 
 class WTV_Marcos(QTVarios.WDialogo):
-    def __init__(self, owner, listaMarcos, dbMarcos):
+    def __init__(self, owner, list_boxes, dbMarcos):
 
         titulo = _("Boxes")
         icono = Iconos.Marcos()
@@ -141,12 +141,12 @@ class WTV_Marcos(QTVarios.WDialogo):
 
         flb = Controles.TipoLetra(puntos=8)
 
-        self.liPMarcos = listaMarcos
+        self.liPMarcos = list_boxes
         self.configuracion = Code.configuracion
 
         self.dbMarcos = dbMarcos
 
-        self.liPMarcos = owner.listaMarcos()
+        self.liPMarcos = owner.list_boxes()
 
         # Lista
         o_columns = Columnas.ListaColumnas()
@@ -196,8 +196,8 @@ class WTV_Marcos(QTVarios.WDialogo):
         for a1h8 in liMovs:
             regMarco.a1h8 = a1h8
             regMarco.siMovible = True
-            marco = self.tablero.creaMarco(regMarco)
-            self.liEjemplos.append(marco)
+            box = self.tablero.creaMarco(regMarco)
+            self.liEjemplos.append(box)
 
         self.grid.gotop()
         self.grid.setFocus()
@@ -242,9 +242,9 @@ class WTV_Marcos(QTVarios.WDialogo):
         w = WTV_Marco(self, None)
         if w.exec_():
             regMarco = w.regMarco
-            regMarco.id = Util.new_id()
+            regMarco.id = Util.str_id()
             regMarco.ordenVista = (self.liPMarcos[-1].ordenVista + 1) if self.liPMarcos else 1
-            self.dbMarcos[regMarco.id] = regMarco
+            self.dbMarcos[regMarco.id] = regMarco.save_dic()
             self.liPMarcos.append(regMarco)
             self.grid.refresh()
             self.grid.gobottom()
@@ -255,8 +255,8 @@ class WTV_Marcos(QTVarios.WDialogo):
         if fila >= 0:
             if QTUtil2.pregunta(self, _X(_("Delete box %1?"), self.liPMarcos[fila].name)):
                 regMarco = self.liPMarcos[fila]
-                xid = regMarco.id
-                del self.dbMarcos[xid]
+                str_id = regMarco.id
+                del self.dbMarcos[str_id]
                 del self.liPMarcos[fila]
                 self.grid.refresh()
                 self.grid.setFocus()
@@ -267,9 +267,9 @@ class WTV_Marcos(QTVarios.WDialogo):
             w = WTV_Marco(self, self.liPMarcos[fila])
             if w.exec_():
                 regMarco = w.regMarco
-                xid = regMarco.id
+                str_id = regMarco.id
                 self.liPMarcos[fila] = regMarco
-                self.dbMarcos[xid] = regMarco
+                self.dbMarcos[str_id] = regMarco.save_dic()
                 self.grid.refresh()
                 self.grid.setFocus()
                 self.grid_cambiado_registro(self.grid, fila, None)
@@ -291,7 +291,7 @@ class WTV_Marcos(QTVarios.WDialogo):
                 n += 1
                 name = "%s-%d" % (regMarco.name, n)
             regMarco.name = name
-            regMarco.id = Util.new_id()
+            regMarco.id = Util.str_id()
             regMarco.ordenVista = self.liPMarcos[-1].ordenVista + 1
             self.dbMarcos[regMarco.id] = regMarco
             self.liPMarcos.append(regMarco)

@@ -92,10 +92,10 @@ class WVariantes(QtWidgets.QWidget):
         )
         # game = Code.procesador.gestorPartida(self, game, False, self.owner.wParent.gestor.tablero)
         if game:
-            if number == -1:
-                self.li_variations.append(game)
-            else:
-                self.li_variations[number] = game
+            # if number == -1:
+            #     self.li_variations.append(game)
+            # else:
+            #     self.li_variations[number] = game
             self.move.variations.change(number, game)
             self.mostrar()
 

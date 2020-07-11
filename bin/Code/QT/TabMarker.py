@@ -12,7 +12,7 @@ class MarkerSC(TabBloques.BloqueEspSC):
 
         self.distBordes = 0.20 * bloqueMarker.anchoCasilla
 
-        self.pixmap = QtSvg.QSvgRenderer(QtCore.QByteArray(bloqueMarker.xml))
+        self.pixmap = QtSvg.QSvgRenderer(QtCore.QByteArray(bloqueMarker.xml.encode()))
 
         self.posicion2xy()
 

@@ -172,7 +172,7 @@ def read_engines(folder_engines):
     is64 = platform.machine().endswith("64")
     t32_64 = "64" if is64 else "32"
 
-    cm = mas("honey", "Michael Byrne", f"XI-r3 {t32_64}bit", "https://github.com/MichaelB7/Stockfish/tree/honey", f"Honey-XI-r3_x{t32_64}.exe", 3300)
+    cm = mas("honey", "Michael Byrne", f"XI {t32_64}bit", "https://github.com/MichaelB7/Stockfish/tree/honey", f"Honey-XI_x{t32_64}.exe", 3300)
     cm.ordenUCI("Hash", "64")
     cm.ordenUCI("UCI_ShowWDL", "false")
     cm.ponMultiPV(20, 256)

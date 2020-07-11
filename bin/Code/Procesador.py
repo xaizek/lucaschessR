@@ -334,9 +334,9 @@ class Procesador:
         Code.list_engine_managers.close_all()
 
     # Added by GON
-    def closeEboard(self):
+    def desactivarDGT(self):
         if Code.dgt:
-            DGT.close()
+            DGT.desactivar()
     # ------------        
 
     def cambiaRival(self, nuevo):

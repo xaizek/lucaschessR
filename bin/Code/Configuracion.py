@@ -429,6 +429,9 @@ class Configuracion:
     def file_play_game(self):
         return "%s/PlayGame.db" % self.carpeta_results
 
+    def file_gms(self):
+        return "%s/gm.pke" % self.carpeta_config
+
     def set_folders(self):
 
         self.fichero = os.path.join(self.carpeta_config, "lk.pk2")
@@ -445,7 +448,6 @@ class Configuracion:
         self.ficheroMemoria = "%s/memo.pk" % self.carpeta_results
         self.ficheroEntMaquina = "%s/entmaquina.pke" % self.carpeta_results
         self.ficheroEntMaquinaConf = "%s/entmaquinaconf.pkd" % self.carpeta_config
-        self.ficheroGM = "%s/gm.pke" % self.carpeta_config
         self.ficheroGMhisto = "%s/gmh.db" % self.carpeta_results
         self.ficheroPuntuacion = "%s/punt.pke" % self.carpeta_results
         self.ficheroDirSound = "%s/direc.pkv" % self.carpeta_config

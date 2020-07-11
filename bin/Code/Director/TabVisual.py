@@ -53,7 +53,7 @@ TP_FLECHA, TP_MARCO, TP_TEXTO, TP_SVG, TP_MARKER, TP_PIEZACREA, TP_PIEZAMUEVE, T
 class GTarea:
     def __init__(self, guion, tp):
         self.guion = guion
-        self._id = Util.new_id()
+        self._id = Util.str_id()
         self._tp = tp
         self._marcado = False
         self._orden = 0
@@ -535,7 +535,7 @@ class Guion:
 
     def nuevaCopia(self, ntarea):
         tarea = copy.copy(self.tarea(ntarea))
-        tarea._id = Util.new_id()
+        tarea._id = Util.str_id()
         return self.nuevaTarea(tarea, ntarea + 1)
 
     def borra(self, nTarea):

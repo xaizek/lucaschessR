@@ -45,12 +45,12 @@ namespace {
   constexpr int QuadraticTheirs[][PIECE_TYPE_NB] = {
     //           THEIR PIECES
     // pair pawn knight bishop rook queen
-    {                                   }, // Bishop pair
-    {  36,                              }, // Pawn
-    {   9,   63,                        }, // Knight      OUR PIECES
-    {  59,   65,  42,                   }, // Bishop
-    {  46,   39,  24,   -24,            }, // Rook
-    {  97,  100, -42,   137,  268,      }  // Queen
+    {   0                               }, // Bishop pair
+    {  36,    0                         }, // Pawn
+    {   9,   63,   0                    }, // Knight      OUR PIECES
+    {  59,   65,  42,     0             }, // Bishop
+    {  46,   39,  24,   -24,    0       }, // Rook
+    {  97,  100, -42,   137,  268,    0 }  // Queen
   };
 
   // Endgame evaluation and scaling functions are accessed directly and not through
@@ -61,7 +61,7 @@ namespace {
   Endgame<KQKRPs> ScaleKQKRPs[] = { Endgame<KQKRPs>(WHITE), Endgame<KQKRPs>(BLACK) };
   Endgame<KPsK>   ScaleKPsK[]   = { Endgame<KPsK>(WHITE),   Endgame<KPsK>(BLACK) };
   Endgame<KPKP>   ScaleKPKP[]   = { Endgame<KPKP>(WHITE),   Endgame<KPKP>(BLACK) };
-#ifndef Noir
+
   // Helper used to detect a given material distribution
   bool is_KXK(const Position& pos, Color us) {
     return  !more_than_one(pos.pieces(~us))
@@ -72,17 +72,6 @@ namespace {
     return   pos.non_pawn_material(us) == BishopValueMg
           && pos.count<PAWN  >(us) >= 1;
   }
-#else
-  bool is_KXK(const Position& pos, Color us) {
-    return  !more_than_one(pos.pieces(~us))
-          && pos.non_pawn_material(us) >= KnightValueMg;
-  }
-
-  bool is_KBPsK(const Position& pos, Color us) {
-    return    pos.is_scb(us)
-          &&  pos.count<PAWN  >(us) >= 1;
-  }
-#endif
 
   bool is_KQKRPs(const Position& pos, Color us) {
     return  !pos.count<PAWN>(us)
@@ -91,14 +80,12 @@ namespace {
           && pos.count<PAWN>(~us) >= 1;
   }
 
-
   /// imbalance() calculates the imbalance by comparing the piece count of each
   /// piece type for both colors.
-
   template<Color Us>
   int imbalance(const int pieceCount[][PIECE_TYPE_NB]) {
 
-    constexpr Color Them = ~Us;
+    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
 
     int bonus = 0;
 
@@ -108,13 +95,13 @@ namespace {
         if (!pieceCount[Us][pt1])
             continue;
 
-        int v = QuadraticOurs[pt1][pt1] * pieceCount[Us][pt1];
+        int v = 0;
 
-        for (int pt2 = NO_PIECE_TYPE; pt2 < pt1; ++pt2)
+        for (int pt2 = NO_PIECE_TYPE; pt2 <= pt1; ++pt2)
             v +=  QuadraticOurs[pt1][pt2] * pieceCount[Us][pt2]
                 + QuadraticTheirs[pt1][pt2] * pieceCount[Them][pt2];
 
-#ifdef Blue
+#ifdef Bluef
         bonus += pieceCount[Us][pt1] * (100 * v / 128);
 #elif (defined Sullivan)
         bonus += pieceCount[Us][pt1] * (100 * v / 116);
@@ -129,7 +116,6 @@ namespace {
 } // namespace
 
 namespace Material {
-
 
 /// Material::probe() looks up the current position's material configuration in
 /// the material hash table. It returns a pointer to the Entry if the position
@@ -150,7 +136,7 @@ Entry* probe(const Position& pos) {
 
   Value npm_w = pos.non_pawn_material(WHITE);
   Value npm_b = pos.non_pawn_material(BLACK);
-  Value npm   = Utility::clamp(npm_w + npm_b, EndgameLimit, MidgameLimit);
+  Value npm   = clamp(npm_w + npm_b, EndgameLimit, MidgameLimit);
 
   // Map total non-pawn material into [PHASE_ENDGAME, PHASE_MIDGAME]
   e->gamePhase = Phase(((npm - EndgameLimit) * PHASE_MIDGAME) / (MidgameLimit - EndgameLimit));

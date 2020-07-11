@@ -20,7 +20,6 @@
  */
 
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -107,9 +106,9 @@ namespace {
     if (Options.count(name))
         Options[name] = value;
     else
-        sync_cout << FontColor::error << "No such option: " << name << sync_endl;
+        sync_cout << "No such option: " << name << sync_endl;
 }
-
+#ifdef Add_Features
 // set() is called by typing "s" from the terminal when the user wants to use abbreviated
 // non-UCI comamnds and avoid the uci option protocol "setoption name (option name) value (xxx) ",
 // e.g., instead of typing "setoption name threads value 8" to set cores to 8 at the terminal,
@@ -130,101 +129,13 @@ void set(istringstream& is) {
     // provide user confirmation
     if (Options.count(name)) {
         Options[name] = value;
-        sync_cout << FontColor::engine << "Confirmation: "<< name << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "960")
-    {
-      Options["UCI_Chess960"] = {value};
-      sync_cout << FontColor::engine << "Confirmation: "<< "UCI_Chess960" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "dpa")
-    {
-      Options["Deep Pro Analysis"] = {value};
-      sync_cout << FontColor::engine << "Confirmation: "<< "Deep Pro Analysis" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "h")  {
-      TT.resize(stoi(value));
-      sync_cout << FontColor::engine << "Confirmation: "<< "Hash" << " set to " << value << " Mb" << FontColor::reset << sync_endl;
-    }
-    else if (name == "mo")
-    {
-    Options["Min Output"] = {value};
-    sync_cout << FontColor::engine << "Confirmation: "<< "Min Output" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "mv")
-    {
-      Options["MultiPV"] = {value};
-      sync_cout << FontColor::engine << "Confirmation: "<< "MultiPV" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "proa")
-    {
-      Options["Pro Analysis"] = {value};
-      sync_cout << FontColor::engine << "Confirmation: "<< "Pro Analysis" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "prov")
-    {
-      Options["Pro Value"] = {value};
-      sync_cout << FontColor::engine << "Confirmation: "<< "Pro Value" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "so")
-    {
-    Options["Score Output"] = {value};
-    sync_cout << FontColor::engine << "Confirmation: "<< "Score Output" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "t")  {
-      Threads.set(stoi(value));
-      sync_cout << FontColor::engine << "Confirmation: "<< "Threads" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "ta")
-    {
-    Options["Tactical"] = {value};
-    sync_cout << FontColor::engine << "Confirmation: "<< "Tactical" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "z")
-    {
-      Tablebases::init(value);
-      sync_cout << FontColor::engine << "Confirmation: "<< "SyzygyPath" << " set to " << value << FontColor::reset << sync_endl;
-    }
-    else if (name == "" || name == "option" )
-    {
-      sync_cout << ""  << sync_endl;
-      sync_cout <<  " Shortcut Commands:"  << sync_endl;
-      sync_cout << "  Note: setoption name 'option name'  value 'value'"  << sync_endl;
-      sync_cout << "  is replaced  by:"  <<  sync_endl;
-      sync_cout << FontColor::engine << "    set (or 's'), 'option name' or 'option shortcut' 'value'"  << sync_endl;
-      sync_cout << FontColor::reset << "  Note: 'set' or 's', without an 'option' entered, displays the shortcuts"  << sync_endl;
-      sync_cout << "\n Shortcuts:"  << sync_endl;
-      sync_cout << FontColor::engine << "    '960' -> shortcut for 'UCI_Chess960'"  <<  sync_endl;
-      sync_cout << "    'd'   -> shortcut for 'depth'"  <<  sync_endl;
-      sync_cout << "    'dpa' -> shortcut for 'Deep_Pro_Analysis'"  << sync_endl;
-      sync_cout << "    'g'   -> shortcut for 'go'"  << sync_endl;
-      sync_cout << "    'i'   -> shortcut for 'infinite'"  << sync_endl;
-      sync_cout << "    'm'   -> shortcut for 'Mate'"  << sync_endl;
-      sync_cout << "    'mo'  -> shortcut for 'Min Output'" << sync_endl;
-      sync_cout << "    'mv'  -> shortcut for 'MultiPV'"  << sync_endl;
-      sync_cout << "    'mt'  -> shortcut for 'Movetime'-> " << FontColor::reset << sync_endl;
-      sync_cout << FontColor::reset << "  Note: 'mt' is in seconds, while" << sync_endl;
-      sync_cout << "  movetime is in milliseconds"  << sync_endl;
-      sync_cout << FontColor::engine << "    'p f' -> shortcut for 'position fen'" << sync_endl;
-      sync_cout << "    'proa'-> shortcut for 'Pro Analysis'"  << sync_endl;
-      sync_cout << "    'prov'-> shortcut for 'Pro Value'"  << sync_endl;
-      sync_cout << "    'sm'  -> shortcut for 'SearchMoves'" << FontColor::reset << sync_endl;
-      sync_cout << "  Note: 'sm' or 'SearchMoves' MUST be the" << sync_endl;
-      sync_cout << "  last option on the command line!"  << sync_endl;
-      sync_cout << FontColor::engine << "    'so'  -> shortcut for 'Score Output'" << FontColor::engine << sync_endl;
-      sync_cout << "    't'   -> shortcut for 'Threads'"  << sync_endl;
-      sync_cout << "    'ta'  -> shortcut for 'Tactical'"  << sync_endl;
-      sync_cout << "    'q'   -> shortcut for 'quit'"  << sync_endl;
-      sync_cout << "    'z'   -> shortcut for 'SyzygyPath'"  << sync_endl;
-      sync_cout << "    '?'   -> shortcut for 'stop'"  << FontColor::reset << sync_endl;
-
+        sync_cout << "Confirmation: "<< name << " set to " << value << sync_endl;
 
     }
     else
-      sync_cout << FontColor::error << "No such option: " << name << FontColor::reset<< sync_endl;
-
+        sync_cout << "No such option: " << name << sync_endl;
 }
-
+#endif
   // go() is called when engine receives the "go" UCI command. The function sets
   // the thinking time and other parameters from the input string, then starts
   // the search.
@@ -239,9 +150,9 @@ void set(istringstream& is) {
 
     while (is >> token)
 #ifdef Add_Features
-        if (token == "searchmoves" || token == "sm")  // Needs to be the last command on the line
+        if (token == "searchmoves" || token == "sm")
 #else
-        if (token == "searchmoves")  // Needs to be the last command on the line
+        if (token == "searchmoves")
 #endif
             while (is >> token)
                 limits.searchmoves.push_back(UCI::to_move(pos, token));
@@ -261,11 +172,6 @@ void set(istringstream& is) {
 #ifdef Add_Features
         else if (token == "d")         is >> limits.depth;
         else if (token == "i")         limits.infinite = 1;
-        else if (token == "m")         is >> limits.mate;
-        else if (token == "mt")   {
-          is >> limits.movetime;
-          limits.movetime *= 1000;
-        }
 #endif
 
     Threads.start_thinking(pos, states, limits, ponderMode);
@@ -295,7 +201,7 @@ void set(istringstream& is) {
         if (token == "go" || token == "eval")
         {
 
-            cerr << FontColor::reset << "\nPosition: " << cnt++ << '/' << num << endl;
+            cerr << "\nPosition: " << cnt++ << '/' << num << endl;
             if (token == "go")
             {
                lap_time_elapsed = now();
@@ -304,10 +210,8 @@ void set(istringstream& is) {
                nodes += Threads.nodes_searched();
                lap_nodes = Threads.nodes_searched();
                lap_time_elapsed = now() - lap_time_elapsed + 1;
-               if (lap_nodes * 1000 / lap_time_elapsed < 10000000)
-                   cerr << "Nodes/Second: " << (lap_nodes * 1000) / lap_time_elapsed << endl;
-               else
-                   cerr << "Nodes/Second: " << lap_nodes / lap_time_elapsed << "k" << endl;
+               cerr << "Nodes/Second: " << lap_nodes / lap_time_elapsed << "k" << endl;
+               //cerr << "k" << endl;
             }
             else
                sync_cout << "\n" << Eval::trace(pos) << sync_endl;
@@ -316,17 +220,7 @@ void set(istringstream& is) {
 #ifdef Add_Features
         else if (token == "s")          set(is);
 #endif
-#ifndef Noir
         else if (token == "position")   position(pos, is, states);
-#else
-        else if (token == "position")
-        {
-          position(pos, is, states);
-
-          if (Options["Clean Search"] == 1)
-              Search::clear();
-        }
-#endif
         else if (token == "ucinewgame") { Search::clear(); elapsed = now(); } // Search::clear() may take some while
     }
 
@@ -334,35 +228,10 @@ void set(istringstream& is) {
 
     dbg_print(); // Just before exiting
 
-    cerr << "\n================================="
+    cerr << "\n==========================="
          << "\nTotal time (ms) : " << elapsed
-         << "\nNodes searched  : " << nodes << endl;
-    if (nodes * 1000 / elapsed < 10000000)
-         cerr << "\nNodes/second    : " << (nodes * 1000) / elapsed << endl;
-         else
-         cerr << "\nNodes/second    : " << nodes / elapsed << "k" << endl;
-  }
-
-  // The win rate model returns the probability (per mille) of winning given an eval
-  // and a game-ply. The model fits rather accurately the LTC fishtest statistics.
-  int win_rate_model(Value v, int ply) {
-
-     // The model captures only up to 240 plies, so limit input (and rescale)
-     double m = std::min(192, ply) / 32;
-
-     // Coefficients of a 3rd order polynomial fit based on fishtest data
-     // for two parameters needed to transform eval to the argument of a
-     // logistic function.
-     double as[] = {-8.24404295, 64.23892342, -95.73056462, 153.86478679};
-     double bs[] = {-3.37154371, 28.44489198, -56.67657741,  72.05858751};
-     double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
-     double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
-
-     // Transform eval to centipawns with limited range
-     double x = Utility::clamp(double(100 * v) / PawnValueEg, -2000.0, 2000.0);
-
-     // Return win rate in per mille (rounded to nearest)
-     return int(0.5 + 1000 / (1 + std::exp((a - x) / b)));
+         << "\nNodes searched  : " << nodes
+         << "\nNodes/second    : " << 1000 * nodes / elapsed << endl;
   }
 
 } // namespace
@@ -405,8 +274,10 @@ void UCI::loop(int argc, char* argv[]) {
         // 'ponderhit' to stop the search, for instance if max search depth is reached.
         if (    token == "quit"
                 ||  token == "stop"
+#ifdef Add_Features
                 ||  token == "q"
                 ||  token == "?"
+#endif
             )
             Threads.stop = true;
 
@@ -424,6 +295,7 @@ void UCI::loop(int argc, char* argv[]) {
 
         else if (token == "setoption")  setoption(is);
         else if (token == "go")         go(pos, is, states);
+#ifdef Add_Features
         else if (token == "b")     bench(pos, is, states);
         else if (token == "so")         setoption(is);
         else if (token == "set")        set(is);
@@ -443,26 +315,33 @@ void UCI::loop(int argc, char* argv[]) {
             if (Options["Clean_Search"])
                 Search::clear();
         }
+#else
+        else if (token == "position")   position(pos, is, states);
+#endif
         else if (token == "ucinewgame") Search::clear();
         else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
-      // Additional custom non-UCI commands, mainly for debugging.
-      // Do not use these commands during a search!
-      else if (token == "flip")  pos.flip();
-      else if (token == "bench") bench(pos, is, states);
-      else if (token == "d")     sync_cout << pos << sync_endl;
-      else if (token == "eval")  sync_cout << Eval::trace(pos) << sync_endl;
-      else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
-      else if (token == "c++") sync_cout << compiler_info() << sync_endl;
-      else if (token == "") sync_cout << sync_endl;
-      else
-          sync_cout << FontColor::error << "Unknown command: " << cmd << FontColor::reset << sync_endl;
-
-  } while (token != "quit" && token != "q" && argc == 1);
-    // Command line args are one-shot
+		// Additional custom non-UCI commands, mainly for debugging.
+		// Do not use these commands during a search!
+        else if (token == "flip")  pos.flip();
+        else if (token == "bench") bench(pos, is, states);
+        else if (token == "d")     sync_cout << pos << sync_endl;
+        else if (token == "eval")  sync_cout << Eval::trace(pos) << sync_endl;
+        else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
+#ifdef Add_Features
+        else if (token == "c++") sync_cout << compiler_info() << sync_endl;
+#endif
+        else
+            sync_cout << "Unknown command: " << cmd << sync_endl;
+#ifdef Add_Features
+    } while (token != "quit" && token != "q" && argc == 1); // Command line args are one-shot
+#else
+    }
+    while (token != "quit" && argc == 1); // Command line args are one-shot
+#endif
 }
 
-#ifndef Noir
+
 /// UCI::value() converts a Value to a string suitable for use with the UCI
 /// protocol specification:
 ///
@@ -475,187 +354,32 @@ string UCI::value(Value v) {
   assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
 
   stringstream ss;
-
+#ifdef Add_Features
   const float vs = (float)v;
   constexpr float sf = 2.15; // scoring percentage factor
   constexpr float vf = 0.31492; // centipawn value factor
+#endif
+  if (abs(v) < VALUE_MATE - MAX_PLY)
+#ifdef Add_Features
+  // Score percentage evalaution output, similair to Lc0 output.
+  // For use with GUIs that divide centipawn scores by 100, e.g, xBoard, Arena, Fritz, etc.
+  if ( Options["Output"] == "ScorPct-GUI")
+       ss << "cp " << fixed << setprecision(0) << 10000 * (pow (sf,(sf * vs /1000)))
+	  / (pow(sf,(sf * vs /1000)) + 1);
 
-  if (abs(v) < VALUE_MATE_IN_MAX_PLY)
-    {
-      // Score percentage evalaution output, similair to Lc0 output.
-      // For use with GUIs that divide centipawn scores by 100, e.g, xBoard, Arena, Fritz, etc.
-      if ( Options["Score Output"] == "ScorPct-GUI")
-          ss << "cp " << fixed << setprecision(0) << 10000 * (pow (sf,(sf * vs /1000)))
-	            / (pow(sf,(sf * vs /1000)) + 1);
+  // Centipawn scoring, value times centipawn factor
+  // SF values the raw score of pawns much higher than 100, see types.h
+  // The higher raw score allows for greater precison in many evaluation functions
+  else if (Options["Output"] == "Centipawn")
+	  ss << fixed << setprecision(0) << "cp " << (vs * vf);
 
-      // Centipawn scoring, value times centipawn factor
-      // SF values the raw score of pawns much higher than 100, see types.h
-      // The higher raw score allows for greater precison in many evaluation functions
-       else if (Options["Score Output"] == "Centipawn")
-	         ss << fixed << setprecision(0) << "cp " << (vs * vf);
-       else
-            ss << "cp "  << fixed << setprecision(0) << int(1000 * (pow (sf,(sf * vs /1000)))
-                        / (pow(sf,(sf * vs /1000)) + 1));  // Commandline score percenatge
-    }
-   else
-       ss << FontColor::engine <<  "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2 ;
-
-  return ss.str();
-}
-
-
-/// UCI::wdl() report WDL statistics given an evaluation and a game ply, based on
-/// data gathered for fishtest LTC games.
-
-string UCI::wdl(Value v, int ply) {
-
-  int wdl_w, wdl_l;
-
-  Value v_wdl = Value(v * 64783)/100000;
-  stringstream ss;
-  if (abs(Value(v)) <= 1)  {
-      wdl_w = 0;
-      wdl_l = 0;
-    }
-  else  {
-      wdl_w = win_rate_model( v_wdl, ply);
-      wdl_l = win_rate_model(-v_wdl, ply);
-    }
-  int wdl_d = 1000 - int(wdl_w) - int(wdl_l);
-  int wdl_s = int(( 2 * wdl_w ) + wdl_d ) / 2;
-  ss << " wdl " << wdl_w << " " << wdl_d << " " << wdl_l << " sp " << wdl_s ;
-
-  return ss.str();
-}
-
-
-/// UCI::square() converts a Square to a string in algebraic notation (g1, a7, etc.)
-
-std::string UCI::square(Square s) {
-  return std::string{ char('a' + file_of(s)), char('1' + rank_of(s)) };
-}
-
-
-/// UCI::move() converts a Move to a string in coordinate notation (g1f3, a7a8q).
-/// The only special case is castling, where we print in the e1g1 notation in
-/// normal chess mode, and in e1h1 notation in chess960 mode. Internally all
-/// castling moves are always encoded as 'king captures rook'.
-
-string UCI::move(Move m, bool chess960) {
-
-  Square from = from_sq(m);
-  Square to = to_sq(m);
-
-  if (m == MOVE_NONE)
-      return "(none)";
-
-  if (m == MOVE_NULL)
-      return "0000";
-
-  if (type_of(m) == CASTLING && !chess960)
-      to = make_square(to > from ? FILE_G : FILE_C, rank_of(from));
-
-  string move = UCI::square(from) + UCI::square(to);
-
-  if (type_of(m) == PROMOTION)
-      move += " pnbrqk"[promotion_type(m)];
-
-  return move;
-}
-
-
-/// UCI::to_move() converts a string representing a move in coordinate notation
-/// (g1f3, a7a8q) to the corresponding legal Move, if any.
-
-Move UCI::to_move(const Position& pos, string& str) {
-
-  if (str.length() == 5) // Junior could send promotion piece in uppercase
-      str[4] = char(tolower(str[4]));
-
-  for (const auto& m : MoveList<LEGAL>(pos))
-      if (str == UCI::move(m, pos.is_chess960()))
-          return m;
-
-  return MOVE_NONE;
-}
+  else ss << "cp " << fixed << setprecision(2) << 100 * (pow (sf,(sf * vs /1000)))
+                                / (pow(sf,(sf * vs /1000)) + 1);  // Commandline score percenatge
 #else
-
-/// UCI::value() converts a Value to a string suitable for use with the UCI
-/// protocol specification:
-///
-/// cp <x>    The score from the engine's point of view in centipawns.
-/// mate <y>  Mate in y moves, not plies. If the engine is getting mated
-///           use negative values for y.
-
-string UCI::value(Value v , Value v2) {
-
-  //assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
-
-  stringstream ss;
-  const float vs = (float)v + (float)v2 / 4;
-  constexpr float sf = 2.15; // scoring percentage factor
-  constexpr float vf = 0.31492; // centipawn value factor
-
-  if (abs(v) < VALUE_MATE_IN_MAX_PLY)
-    {
-      // Score percentage evalaution output, similair to Lc0 output.
-      // For use with GUIs that divide centipawn scores by 100, e.g, xBoard, Arena, Fritz, etc.
-      if ( Options["Score Output"] == "ScorPct-GUI")
-          ss << "cp " << fixed << setprecision(0) << 10000 * (pow (sf,(sf * vs /1000)))
-	            / (pow(sf,(sf * vs /1000)) + 1);
-
-      // Centipawn scoring, value times centipawn factor
-      // SF values the raw score of pawns much higher than 100, see types.h
-      // The higher raw score allows for greater precison in many evaluation functions
-       else if (Options["Score Output"] == "Centipawn")
-	         ss << fixed << setprecision(0) << "cp " << (vs * vf);
-       else
-            ss << "cp "  << fixed << setprecision(0) << int(1000 * (pow (sf,(sf * vs /1000)))
-                        / (pow(sf,(sf * vs /1000)) + 1));  // Commandline score percenatge
-    }
-   else
-       ss << FontColor::engine <<  "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2 ;
-
-  return ss.str();
-}
-/*  {
-      if (   abs(v) < 95 * PawnValueEg
-          && abs(v - v2) < PawnValueEg)
-          v = (v + v2) / 2;
-
-      ss << "cp " << v * 100 / PawnValueEg;
-  }
+  ss << "cp " << v * 100 / PawnValueEg;
+#endif
   else
-      ss << FontColor::engine << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2 ;
-
-  return ss.str();
-}*/
-
-
-/// UCI::wdl() report WDL statistics given an evaluation and a game ply, based on
-/// data gathered for fishtest LTC games.
-
-/// UCI::wdl() report WDL statistics given an evaluation and a game ply, based on
-/// data gathered for fishtest LTC games.
-
-string UCI::wdl(Value v, int ply) {
-
-  int wdl_w, wdl_l;
-
-  Value v_wdl = Value(v * 64783)/100000;
-  stringstream ss;
-  if (abs(Value(v)) <= 1)  {
-      wdl_w = 0;
-      wdl_l = 0;
-    }
-  else  {
-      wdl_w = win_rate_model( v_wdl, ply);
-      wdl_l = win_rate_model(-v_wdl, ply);
-    }
-  int wdl_d = 1000 - int(wdl_w) - int(wdl_l);
-  int wdl_s = int(( 2 * wdl_w ) + wdl_d ) / 2;
-  ss << " wdl " << wdl_w << " " << wdl_d << " " << wdl_l << " sp " << wdl_s ;
-
+    ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
   return ss.str();
 }
 
@@ -709,4 +433,3 @@ Move UCI::to_move(const Position& pos, string& str) {
 
   return MOVE_NONE;
 }
-#endif //Noir

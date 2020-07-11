@@ -147,7 +147,7 @@ class WEdMove(QtWidgets.QWidget):
             .capturaCambiado(self.miraPromocion)
         )
 
-        self.flecha = flecha = Controles.LB(self).ponImagen(Iconos.pmMover())
+        self.arrow = arrow = Controles.LB(self).ponImagen(Iconos.pmMover())
 
         self.destino = (
             EDCelda(self, "")
@@ -165,7 +165,7 @@ class WEdMove(QtWidgets.QWidget):
             .relleno()
             .control(self.origen)
             .espacio(2)
-            .control(flecha)
+            .control(arrow)
             .espacio(2)
             .control(self.destino)
             .control(self.pbPromocion)
@@ -208,7 +208,7 @@ class WEdMove(QtWidgets.QWidget):
             self.origen.hide()
             self.destino.hide()
             self.pbPromocion.hide()
-            self.flecha.hide()
+            self.arrow.hide()
 
     def habilita(self):
         self.origen.deshabilitado(False)
@@ -216,7 +216,7 @@ class WEdMove(QtWidgets.QWidget):
         self.pbPromocion.setEnabled(True)
         self.origen.show()
         self.destino.show()
-        self.flecha.show()
+        self.arrow.show()
         self.miraPromocion()
 
     def limpia(self):

@@ -39,7 +39,7 @@ class SVGSC(TabBloques.BloqueEspSC):
     def reset(self):
         self.posicion2xy()
         bm = self.bloqueDatos
-        self.pixmap = QtSvg.QSvgRenderer(QtCore.QByteArray(bm.xml))
+        self.pixmap = QtSvg.QSvgRenderer(QtCore.QByteArray(bm.xml.encode()))
         self.setOpacity(bm.opacidad)
         self.setZValue(bm.position.orden)
         self.update()

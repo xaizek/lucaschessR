@@ -90,9 +90,6 @@ def registerBlackMoveInputFunc(dato):
     return envia("blackMove", _dgt2pv(dato))
 
 
-# Activar/desactivar/reactivar
-
-
 def activar():
     dgt = None
     for path in (
@@ -116,6 +113,7 @@ def activar():
     # Added by GON
     # log( "activar" )
     # ------------
+
     Code.dgt = dgt
 
     cmpfunc = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_char_p)
@@ -155,8 +153,9 @@ def activar():
     dgt._DGTDLL_WriteDebug.restype = ctypes.c_int
 
     # Added by GON
-    dgt._DGTDLL_Exit.argtype = []
-    dgt._DGTDLL_Exit.restype = ctypes.c_int
+    if Code.configuracion.x_digital_board == "Novag UCB":
+        dgt._DGTDLL_Exit.argtype = []
+        dgt._DGTDLL_Exit.restype = ctypes.c_int
     # ------------
     dgt._DGTDLL_SetNRun.argtype = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     dgt._DGTDLL_SetNRun.restype = ctypes.c_int
@@ -166,8 +165,11 @@ def activar():
 
 def desactivar():
     if Code.dgt:
-        log( "desactivar" )
+        # log( "desactivar" )
         hideDialog()
+        if Code.configuracion.x_digital_board == "Novag UCB":
+            dgt = Code.dgt
+            dgt._DGTDLL_Exit()
         del Code.dgt
         Code.dgt = None
         Code.dgtDispatch = None

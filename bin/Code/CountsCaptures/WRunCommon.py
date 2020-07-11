@@ -25,8 +25,8 @@ class WEdMove(QtWidgets.QWidget):
 
         self.origen = EDCelda(self, "").caracteres(2).controlrx("(|[a-h][1-8])").anchoFijo(32).alinCentrado()
 
-        self.flecha = flecha = Controles.LB(self).ponImagen(self.PM_MOVE)
-        flecha.mousePressEvent = self.pulsa_flecha
+        self.arrow = arrow = Controles.LB(self).ponImagen(self.PM_MOVE)
+        arrow.mousePressEvent = self.pulsa_flecha
 
         self.destino = EDCelda(self, "").caracteres(2).controlrx("(|[a-h][1-8])").anchoFijo(32).alinCentrado()
 
@@ -37,7 +37,7 @@ class WEdMove(QtWidgets.QWidget):
             .relleno()
             .control(self.origen)
             .espacio(2)
-            .control(flecha)
+            .control(arrow)
             .espacio(2)
             .control(self.destino)
             .espacio(2)

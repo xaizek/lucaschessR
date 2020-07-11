@@ -421,16 +421,17 @@ class WGM(QTVarios.WDialogo):
                 dic[atr.upper()] = getattr(self.record, atr)
         dic["APERTURASFAVORITAS"] = self.liAperturasFavoritas
 
-        Util.save_pickle(self.configuracion.ficheroGM, dic)
+        Util.save_pickle(self.configuracion.file_gms(), dic)
 
         return True
 
     def recuperaDic(self):
-        dic = Util.restore_pickle(self.configuracion.ficheroGM)
+        dic = Util.restore_pickle(self.configuracion.file_gms())
         if dic:
+
             gm = dic["GM"]
             modo = dic.get("MODO", "estandar")
-            is_white = dic.get("ISWHITE", True)
+            is_white = dic.get("IS_WHITE", True)
             siJuez = dic["SIJUEZ"]
             showevals = dic.get("SHOWEVALS", False)
             engine = dic["ENGINE"]

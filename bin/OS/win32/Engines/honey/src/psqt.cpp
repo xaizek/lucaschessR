@@ -22,7 +22,11 @@
 #include <algorithm>
 
 #include "types.h"
-#include "bitboard.h"
+
+Value PieceValue[PHASE_NB][PIECE_NB] = {
+  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg },
+  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg }
+};
 
 namespace PSQT {
 
@@ -35,6 +39,28 @@ namespace PSQT {
 constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   { },
   { },
+#if ((defined Sullivan) || (defined Blau))
+  { // Knight
+   { S( -172, -100), S(-94,-70), S(-77,-47), S(-76,-20) },
+   { S(  -78,  -69), S(-40,-55), S(-26,-17), S(-12,  7) },
+   { S(  -63,  -39), S(-19,-27), S(  5, -7), S( 16, 17) },
+   { S(  -32,  -36), S(  7, -1), S( 41, 13), S( 48, 28) },
+   { S(  -32,  -43), S( 13,-18), S( 43, 11), S( 52, 37) },
+   { S(  -10,  -51), S( 25,-41), S( 61,-17), S( 54, 18) },
+   { S(  -67,  -67), S(-24,-48), S(  5,-44), S( 37, 14) },
+   { S( -201,  -99), S(-82,-89), S(-55,-55), S(-29,-17) }
+  },
+  { // Bishop
+    { S(-53,-57), S( -5,-30), S( -8,-37), S(-23,-12) },
+    { S(-15,-37), S( 19,-13), S( 19,-17), S(  4,  1) },
+    { S( -7,-16), S( 21, -1), S( -5, -2), S( 17, 10) },
+    { S( -5,-20), S( 11, -6), S( 25,  0), S( 39, 17) },
+    { S(-12,-17), S( 29, -1), S( 22,-14), S( 31, 15) },
+    { S(-16,-30), S(  6,  6), S(  1,  4), S( 11,  6) },
+    { S(-17,-31), S(-14,-20), S(  5, -1), S(  0,  1) },
+    { S(-48,-46), S(  1,-42), S(-14,-37), S(-23,-24) }
+  },
+#else
   { // Knight
    { S(-175, -96), S(-92,-65), S(-74,-49), S(-73,-21) },
    { S( -77, -67), S(-41,-54), S(-27,-18), S(-15,  8) },
@@ -55,6 +81,7 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
    { S(-17,-31), S(-14,-20), S(  5, -1), S(  0,  1) },
    { S(-48,-46), S(  1,-42), S(-14,-37), S(-23,-24) }
   },
+#endif
   { // Rook
    { S(-31, -9), S(-20,-13), S(-14,-10), S(-5, -9) },
    { S(-21,-12), S(-13, -9), S( -8, -1), S( 6, -2) },
@@ -77,9 +104,13 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   },
 
   { // King
-
+#if defined (Stockfish) || (Weakfish)
    { S(271,  1), S(327, 45), S(271, 85), S(198, 76) },
    { S(278, 53), S(303,100), S(234,133), S(179,135) },
+#else
+   { S(271,  1), S(327, 45), S(270, 85), S(192, 76) },
+   { S(278, 53), S(303,100), S(230,133), S(174,135) },
+#endif
    { S(195, 88), S(258,130), S(169,169), S(120,175) },
    { S(164,103), S(190,156), S(138,172), S( 98,172) },
    { S(154, 96), S(179,166), S(105,199), S( 70,199) },
@@ -89,14 +120,15 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   }
 };
 
+
 constexpr Score PBonus[RANK_NB][FILE_NB] =
   { // Pawn (asymmetric distribution)
    { },
    { S(  3,-10), S(  3, -6), S( 10, 10), S( 19,  0), S( 16, 14), S( 19,  7), S(  7, -5), S( -5,-19) },
    { S( -9,-10), S(-15,-10), S( 11,-10), S( 15,  4), S( 32,  4), S( 22,  3), S(  5, -6), S(-22, -4) },
-   { S( -4,  6), S(-23, -2), S(  6, -8), S( 20, -4), S( 40,-13), S( 17,-12), S(  4,-10), S( -8, -9) },
-   { S( 13, 10), S(  0,  5), S(-13,  4), S(  1, -5), S( 11, -5), S( -2, -5), S(-13, 14), S(  5,  9) },
-   { S(  5, 28), S(-12, 20), S( -7, 21), S( 22, 28), S( -8, 30), S( -5,  7), S(-15,  6), S( -8, 13) },
+   { S( -8,  6), S(-23, -2), S(  6, -8), S( 20, -4), S( 40,-13), S( 17,-12), S(  4,-10), S(-12, -9) },
+   { S( 13,  9), S(  0,  4), S(-13,  3), S(  1,-12), S( 11,-12), S( -2, -6), S(-13, 13), S(  5,  8) },
+   { S( -5, 28), S(-12, 20), S( -7, 21), S( 22, 28), S( -8, 30), S( -5,  7), S(-15,  6), S(-18, 13) },
    { S( -7,  0), S(  7,-11), S( -3, 12), S(-13, 21), S(  5, 25), S(-16, 19), S( 10,  4), S( -8,  7) }
   };
 
@@ -104,22 +136,24 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
 
 Score psq[PIECE_NB][SQUARE_NB];
 
-
-// PSQT::init() initializes piece-square tables: the white halves of the tables are
-// copied from Bonus[] and PBonus[], adding the piece value, then the black halves of
-// the tables are initialized by flipping and changing the sign of the white scores.
+// init() initializes piece-square tables: the white halves of the tables are
+// copied from Bonus[] adding the piece value, then the black halves of the
+// tables are initialized by flipping and changing the sign of the white scores.
 void init() {
 
-  for (Piece pc : {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING})
+  for (Piece pc = W_PAWN; pc <= W_KING; ++pc)
   {
+      PieceValue[MG][~pc] = PieceValue[MG][pc];
+      PieceValue[EG][~pc] = PieceValue[EG][pc];
+
       Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-          File f = File(edge_distance(file_of(s)));
-          psq[ pc][s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
-                                                     : Bonus[pc][rank_of(s)][f]);
-          psq[~pc][flip_rank(s)] = -psq[pc][s];
+          File f = map_to_queenside(file_of(s));
+          psq[ pc][ s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
+                                                      : Bonus[pc][rank_of(s)][f]);
+          psq[~pc][~s] = -psq[pc][s];
       }
   }
 }

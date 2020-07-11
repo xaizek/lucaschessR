@@ -3,7 +3,7 @@ import os
 
 from PySide2 import QtCore, QtWidgets
 
-from Code import TabVisual
+from Code.Director import TabVisual
 from Code.QT import Colocacion
 from Code.QT import Columnas
 from Code.QT import Controles
@@ -147,13 +147,13 @@ class WTV_SVG(QtWidgets.QDialog):
         pm = self.liEjemplos[0].pixmapX()
         bf = QtCore.QBuffer()
         pm.save(bf, "PNG")
-        self.regSVG.png = str(bf.buffer())
+        self.regSVG.png = bytes(bf.buffer())
 
         self.accept()
 
 
 class WTV_SVGs(QTVarios.WDialogo):
-    def __init__(self, owner, listaSVGs, dbSVGs):
+    def __init__(self, owner, list_svgs, dbSVGs):
 
         titulo = _("Images")
         icono = Iconos.SVGs()
@@ -165,7 +165,7 @@ class WTV_SVGs(QTVarios.WDialogo):
         flb = Controles.TipoLetra(puntos=8)
 
         self.configuracion = Code.configuracion
-        self.liPSVGs = listaSVGs
+        self.liPSVGs = list_svgs
         self.dbSVGs = dbSVGs
 
         # Lista
@@ -303,9 +303,9 @@ class WTV_SVGs(QTVarios.WDialogo):
         w = WTV_SVG(self, None, xml=contenido, name=name)
         if w.exec_():
             regSVG = w.regSVG
-            regSVG.id = Util.new_id()
+            regSVG.id = Util.str_id()
             regSVG.ordenVista = (self.liPSVGs[-1].ordenVista + 1) if self.liPSVGs else 1
-            self.dbSVGs[regSVG.id] = regSVG
+            self.dbSVGs[regSVG.id] = regSVG.save_dic()
             self.liPSVGs.append(regSVG)
             self.grid.refresh()
             self.grid.gobottom()
@@ -316,9 +316,9 @@ class WTV_SVGs(QTVarios.WDialogo):
         if fila >= 0:
             if QTUtil2.pregunta(self, _X(_("Delete %1?"), self.liPSVGs[fila].name)):
                 regSVG = self.liPSVGs[fila]
-                nid = regSVG.id
+                str_id = regSVG.id
                 del self.liPSVGs[fila]
-                del self.dbSVGs[nid]
+                del self.dbSVGs[str_id]
                 self.grid.refresh()
                 self.grid.setFocus()
 
@@ -328,9 +328,9 @@ class WTV_SVGs(QTVarios.WDialogo):
             w = WTV_SVG(self, self.liPSVGs[fila])
             if w.exec_():
                 regSVG = w.regSVG
-                xid = regSVG.id
+                str_id = regSVG.id
                 self.liPSVGs[fila] = regSVG
-                self.dbSVGs[xid] = regSVG
+                self.dbSVGs[str_id] = regSVG.save_dic()
                 self.grid.refresh()
                 self.grid.setFocus()
                 self.grid_cambiado_registro(self.grid, fila, None)
@@ -352,7 +352,7 @@ class WTV_SVGs(QTVarios.WDialogo):
                 n += 1
                 name = "%s-%d" % (regSVG.name, n)
             regSVG.name = name
-            regSVG.id = Util.new_id()
+            regSVG.id = Util.str_id()
             regSVG.ordenVista = self.liPSVGs[-1].ordenVista + 1
             self.dbSVGs[regSVG.id] = regSVG
             self.liPSVGs.append(regSVG)
