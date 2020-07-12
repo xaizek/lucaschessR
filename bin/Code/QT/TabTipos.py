@@ -120,6 +120,8 @@ class Bloque:
                     xvar.restore_dic(value)
                 else:
                     if var == "png":
+                        if type(value) == str:
+                            value = value.encode()
                         value = base64.decodebytes(value)
                     setattr(self, var, value)
 
