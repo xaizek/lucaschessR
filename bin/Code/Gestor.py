@@ -112,7 +112,7 @@ class Gestor:
 
         self.kibitzers_manager = self.procesador.kibitzers_manager
         # DGT
-        self.compruebaDGT()
+        self.compruebaDGT(False)
 
     def new_game(self):
         self.game = Game.Game()
@@ -120,7 +120,7 @@ class Gestor:
         hoy = Util.today()
         self.game.add_tag("Date", "%d-%02d-%02d" % (hoy.year, hoy.month, hoy.day))
 
-    def ponFinJuego(self):
+    def ponFinJuego(self, with_takeback=False):
         self.runSound.close()
         if len(self.game):
             self.state = ST_ENDGAME
@@ -128,10 +128,13 @@ class Gestor:
             li_options = [TB_CLOSE]
             if hasattr(self, "reiniciar"):
                 li_options.append(TB_REINIT)
+            if with_takeback:
+                li_options.append(TB_TAKEBACK)
             li_options.append(TB_CONFIG)
             li_options.append(TB_UTILITIES)
+
             self.main_window.pon_toolbar(li_options)
-            self.quitaAyudas()
+            self.quitaAyudas(siQuitarAtras=not with_takeback)
         else:
             self.procesador.reset()
 
@@ -1117,12 +1120,13 @@ class Gestor:
         else:
             return None
 
-    def compruebaDGT(self):
+    def compruebaDGT(self, set_position):
         if self.configuracion.x_digital_board:
             if not DGT.activarSegunON_OFF(self.dgt):  # Error
                 QTUtil2.message_error(self.main_window, _("Error, could not detect the %s board driver.") % self.configuracion.x_digital_board)
             else:
-                self.dgt_setposition()
+                if set_position:
+                    self.dgt_setposition()
 
     def dgt(self, quien, a1h8):
         if self.tablero.mensajero and self.tablero.siActivasPiezas:
@@ -1283,7 +1287,7 @@ class Gestor:
 
             elif resp == "dgt":
                 DGT.cambiarON_OFF()
-                self.compruebaDGT()
+                self.compruebaDGT(True)
 
             elif resp == "sonido":
                 self.config_sonido()

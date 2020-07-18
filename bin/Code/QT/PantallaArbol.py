@@ -781,7 +781,7 @@ class InfoMove(QtWidgets.QWidget):
         self.ponValores()
 
     def atras(self):
-        self.movActual.atras()
+        self.movActual.takeback()
         self.ponValores()
 
     def adelante(self):

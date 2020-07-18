@@ -446,7 +446,7 @@ def wsave_options_engine(engine):
             valor = True
         # elif tipo == "button":
         #     valor = control.isChecked()
-        if valor != opcion.valor:
+        if valor != opcion.default:
             liUCI.append((opcion.name, valor))
             opcion.valor = valor
         if opcion.name == "MultiPV":

@@ -5,6 +5,7 @@ import Code
 from Code import Apertura
 from Code import GM
 from Code import Gestor
+from Code import Adjourns
 from Code import Move
 from Code.QT import PantallaGM
 from Code.QT import PantallaJuicio
@@ -71,6 +72,7 @@ class GestorGM(Gestor.Gestor):
         self.pensando(False)
 
         self.main_window.pon_toolbar((TB_CLOSE, TB_REINIT, TB_CONFIG, TB_UTILITIES))
+        # self.main_window.pon_toolbar((TB_CLOSE, TB_REINIT, TB_ADJOURN, TB_CONFIG, TB_UTILITIES))
         self.main_window.activaJuego(True, False)
         self.set_dispatcher(self.mueve_humano)
         self.setposition(self.game.last_position)
@@ -99,12 +101,14 @@ class GestorGM(Gestor.Gestor):
         self.ponRotulo2(self.nombreRival + "<br><br>" + self.textoPuntuacion)
 
     def run_action(self, key):
-
         if key == TB_CLOSE:
             self.finPartida()
 
         elif key == TB_REINIT:
             self.reiniciar()
+
+        elif key == TB_ADJOURN:
+            self.adjourn()
 
         elif key == TB_CONFIG:
             self.configurar(siSonidos=True)
@@ -445,3 +449,32 @@ class GestorGM(Gestor.Gestor):
         dbHisto[gmK] = liHisto
         dbHisto.pack()
         dbHisto.close()
+
+    def save_state(self):
+        dic = {
+
+        }
+        li_vars = dir(self)
+        for var in li_vars:
+            xvar = getattr(var)
+            if not var.startswith("__") and not callable(xvar):
+                print(var, type(xvar))
+        return None
+
+    def restore_state(self, dic):
+        pass
+
+    def run_adjourn(self, dic):
+        self.restore_state(dic)
+        self.siguiente_jugada()
+
+    def adjourn(self):
+        if QTUtil2.pregunta(self.main_window, _("Do you want to adjourn the game?")):
+            dic = self.save_state()
+
+            label_menu = "%s %s/%s" % (_("Album"), _F(self.album.name), _F(self.cromo.name))
+            self.state = ST_ENDGAME
+
+            with Adjourns.Adjourns() as adj:
+                adj.add(self.game_type, dic, label_menu)
+                adj.si_seguimos(self)

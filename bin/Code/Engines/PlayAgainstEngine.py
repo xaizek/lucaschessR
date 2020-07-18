@@ -25,11 +25,13 @@ from Code.Constantes import *
 
 
 class WPlayAgainstEngine(QTVarios.WDialogo):
-    def __init__(self, procesador, titulo):
+    def __init__(self, procesador, titulo, save_at_end):
 
         QTVarios.WDialogo.__init__(self, procesador.main_window, titulo, Iconos.Libre(), "entMaquina")
 
         font = Controles.TipoLetra(puntos=procesador.configuracion.x_menu_points)
+
+        self.save_at_end = save_at_end
 
         self.setFont(font)
 
@@ -188,6 +190,10 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
             self, _("Save a summary when the game is finished in the main comment"), False
         ).ponFuente(font)
 
+        self.chbTakeback = Controles.CHB(
+            self, _("Option takeback activated"), True
+        ).ponFuente(font)
+
         # # Tutor
         lbAyudas = Controles.LB2P(self, _("Available hints")).ponFuente(font)
         liAyudas = [(_("Maximum"), 999)]
@@ -241,7 +247,7 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
         gbThoughtOp.setStyleSheet(gbStyle)
 
         ly = Colocacion.V().espacio(16).control(self.gbTutor).control(gbThoughtOp)
-        ly.espacio(16).control(self.chbSummary).margen(6)
+        ly.espacio(16).control(self.chbSummary).control(self.chbTakeback).margen(6)
 
         nueva_tab(ly, _("Help configuration"))
 
@@ -757,6 +763,7 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
         dic["CONTINUETT"] = self.chbContinueTt.isChecked()
         dic["2CHANCE"] = self.chbChance.isChecked()
         dic["SUMMARY"] = self.chbSummary.isChecked()
+        dic["TAKEBACK"] = self.chbTakeback.isChecked()
 
         # Tiempo
         dic["WITHTIME"] = self.chbTiempo.isChecked()
@@ -819,6 +826,7 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
         self.chbContinueTt.setChecked(dic.get("CONTINUETT", True))
         self.chbChance.setChecked(dic.get("2CHANCE", True))
         self.chbSummary.setChecked(dic.get("SUMMARY", False))
+        self.chbTakeback.setChecked(dic.get("TAKEBACK", True))
 
         # Tiempo
         if dic.get("WITHTIME", False):
@@ -892,7 +900,8 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
 
     def aceptar(self):
         self.dic = self.save_dic()
-        Util.save_pickle(self.configuracion.ficheroEntMaquina, self.dic)
+        if self.save_at_end:
+            Util.save_pickle(self.configuracion.ficheroEntMaquina, self.dic)
 
         # Info para el gestor, después de grabar, para que no haga falta salvar esto
         dr = self.dic["RIVAL"]
@@ -938,7 +947,7 @@ class WPlayAgainstEngine(QTVarios.WDialogo):
 
 
 def play_against_engine(procesador, titulo):
-    w = WPlayAgainstEngine(procesador, titulo)
+    w = WPlayAgainstEngine(procesador, titulo, True)
     if w.exec_():
         return w.dic
     else:
@@ -946,7 +955,7 @@ def play_against_engine(procesador, titulo):
 
 
 def play_position(procesador, titulo, is_white):
-    w = WPlayAgainstEngine(procesador, titulo)
+    w = WPlayAgainstEngine(procesador, titulo, False)
     w.posicionQuitar()
     w.btPosicion.setDisabled(True)
     if is_white:
@@ -956,7 +965,7 @@ def play_position(procesador, titulo, is_white):
     if w.exec_():
         return w.dic
     else:
-        None
+        return None
 
 
 class WCambioRival(QtWidgets.QDialog):

@@ -142,6 +142,8 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         if self.nArrowsTt != 0 and self.ayudas == 0:
             self.nArrowsTt = 0
 
+        self.with_takeback = dic_var.get("TAKEBACK", True)
+
         self.tutor_con_flechas = self.nArrowsTt > 0 and self.ayudas > 0
         self.tutor_book = Books.BookGame(Code.tbook)
 
@@ -214,7 +216,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         if self.ayudas_iniciales:
             self.ponAyudasEM()
         else:
-            self.quitaAyudas()
+            self.quitaAyudas(siQuitarAtras=False)
         self.ponPiezasAbajo(is_white)
 
         self.ponRotuloBasico()
@@ -263,7 +265,6 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
                     TB_CANCEL,
                     TB_RESIGN,
                     TB_DRAW,
-                    TB_TAKEBACK,
                     TB_HELP_TO_MOVE,
                     TB_REINIT,
                     TB_PAUSE,
@@ -272,6 +273,9 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
                     TB_UTILITIES,
                     TB_STOP,
                 ]
+                if self.with_takeback:
+                    li.insert(3, TB_TAKEBACK)
+
                 self.main_window.pon_toolbar(li)
             hip = self.human_is_playing
             self.main_window.habilitaToolbar(TB_RESIGN, hip)
@@ -393,7 +397,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             self.tablasPlayer()
 
         elif key == TB_TAKEBACK:
-            self.atras()
+            self.takeback()
 
         elif key == TB_PAUSE:
             self.xpause()
@@ -568,7 +572,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
                 self.xtutor.ac_final(-1)
             self.game.set_unknown()
             self.guardarNoTerminados()
-            self.ponFinJuego()
+            self.ponFinJuego(self.with_takeback)
         else:
             if self.siTiempo:
                 self.main_window.stop_clock()
@@ -592,7 +596,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             self.game.set_termination(TERMINATION_RESIGN, self.is_human_side_white)
             self.guardarGanados(False)
             self.saveSummary()
-            self.ponFinJuego()
+            self.ponFinJuego(self.with_takeback)
         else:
             self.analizaTerminar()
             self.main_window.activaJuego(False, False)
@@ -606,7 +610,7 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             self.is_analyzing = False
             self.xtutor.ac_final(-1)
 
-    def atras(self):
+    def takeback(self):
         if len(self.game):
             self.analizaTerminar()
             if self.ayudas:
@@ -619,6 +623,10 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
             self.goto_end()
             self.reOpenBook()
             self.refresh()
+            if self.state == ST_ENDGAME:
+                self.state = ST_PLAYING
+                self.toolbar_state = None
+                self.pon_toolbar()
             self.siguiente_jugada()
 
     def testBook(self):
@@ -1162,10 +1170,10 @@ class GestorPlayAgainstEngine(Gestor.Gestor):
         if QTUtil2.pregunta(self.main_window, mensaje + "\n\n" + _("Do you want to play again?")):
             self.reiniciar(False)
         else:
-            self.ponFinJuego()
+            self.ponFinJuego(self.with_takeback)
 
     def ponAyudasEM(self):
-        self.ponAyudas(self.ayudas)
+        self.ponAyudas(self.ayudas, siQuitarAtras=False)
 
     def cambioRival(self):
         dic = PlayAgainstEngine.cambioRival(self.main_window, self.configuracion, self.reinicio)

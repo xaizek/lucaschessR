@@ -54,7 +54,13 @@ def envia(quien, dato):
 
 def setposition(game):
     if Code.dgt:
-        writePosition(game.last_position.fenDGT())
+        if Code.configuracion.x_digital_board == "Novag UCB":
+            if Code.configuracion.x_digital_board_version >= 2:
+                writePosition(game.last_position.fen())
+            else:
+                writePosition(game.last_position.fenDGT())
+        else:
+            writePosition(game.last_position.fenDGT())
 
 
 def quitarDispatch():
@@ -110,9 +116,7 @@ def activar():
     if dgt is None:
         return False
 
-    # Added by GON
     # log( "activar" )
-    # ------------
 
     Code.dgt = dgt
 
@@ -156,7 +160,12 @@ def activar():
     if Code.configuracion.x_digital_board == "Novag UCB":
         dgt._DGTDLL_Exit.argtype = []
         dgt._DGTDLL_Exit.restype = ctypes.c_int
+
+        dgt._DGTDLL_GetVersion.argtype = []
+        dgt._DGTDLL_GetVersion.restype = ctypes.c_int
+        Code.configuracion.x_digital_board_version = dgt._DGTDLL_GetVersion()
     # ------------
+
     dgt._DGTDLL_SetNRun.argtype = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     dgt._DGTDLL_SetNRun.restype = ctypes.c_int
 
@@ -216,11 +225,12 @@ def close():
         dgt = Code.dgt
         dgt._DGTDLL_Exit()
 # ------------
+
 # Utilidades para la trasferencia de datos
 
-
-def _dgt2fen(dato):
+def _dgt2fen(datobyte):
     n = 0
+    dato = datobyte.decode()
     ndato = len(dato)
     caja = [""] * 8
     ncaja = 0
@@ -257,7 +267,8 @@ def _dgt2fen(dato):
     return "/".join(caja)
 
 
-def _dgt2pv(dato):
+def _dgt2pv(datobyte):
+    dato = datobyte.decode()
     # Coronacion
     if dato[0] in "Pp" and dato[3].lower() != "p":
         return dato[1:3] + dato[4:6] + dato[3].lower()

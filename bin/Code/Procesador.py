@@ -809,14 +809,6 @@ class Procesador:
 
     def torneos(self):
         WTournaments.tournaments(self.main_window)
-        # xjugar =
-        # while xjugar:
-        #     nombre_torneo, liNumGames = xjugar
-        #     self.gestor = GestorTorneo.GestorTorneo(self)
-        #     self.gestor.inicio(nombre_torneo, liNumGames)
-        #     self.inicio()
-        #     xjugar = PantallaTorneos.unTorneo(self.main_window, nombre_torneo)
-        # self.reiniciar()
 
     def sts(self):
         PantallaSTS.sts(self, self.main_window)
@@ -827,8 +819,6 @@ class Procesador:
             self.entrenaMaquina(dic)
 
     def entrenaMaquina(self, dic):
-        # self.game_type = GT_AGAINST_ENGINE
-        # self.state = ST_PLAYING
         self.gestor = GestorPlayAgainstEngine.GestorPlayAgainstEngine(self)
         side = dic["SIDE"]
         if side == "R":
